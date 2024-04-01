@@ -11,6 +11,8 @@ import androidx.core.view.WindowInsetsCompat;
 public class MainActivity extends AppCompatActivity {
 
     //test1 김태엽 제발
+    //test1 박재형 테스트
+    //test1 김민지 테스트
     int a; //추가
 
     @Override
