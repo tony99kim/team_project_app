@@ -4,4 +4,10 @@
     <string name="title_board">게시판</string>
     <string name="title_chat">채팅</string>
     <string name="title_profile">프로필</string>
+    <string name="username" />
+    <string name="password" />
+    <string name="login" />
+    <string name="sign_up" />
+    <string name="name" />
+    <string name="email" />
 </resources>

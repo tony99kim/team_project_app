@@ -12,14 +12,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Team_project"
         tools:targetApi="31">
+
         <activity
-            android:name=".MainActivity"
+            android:name=".RegisterActivity">
+        </activity>
+
+        <!-- LoginActivity가 앱의 시작 화면으로 설정됩니다. -->
+        <activity
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <!-- MainActivity의 정의는 그대로 유지하되, LAUNCHER 카테고리를 제거합니다. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
         </activity>
     </application>
 

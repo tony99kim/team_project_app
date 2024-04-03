@@ -28,19 +28,16 @@ public class MainActivity extends AppCompatActivity {
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                     Fragment selectedFragment = null;
 
-                    switch (item.getItemId()) {
-                        case R.id.navigation_home:
-                            selectedFragment = new HomeFragment();
-                            break;
-                        case R.id.navigation_board:
-                            selectedFragment = new BoardFragment();
-                            break;
-                        case R.id.navigation_chat:
-                            selectedFragment = new ChatFragment();
-                            break;
-                        case R.id.navigation_profile:
-                            selectedFragment = new ProfileFragment();
-                            break;
+
+                    int itemId = item.getItemId();
+                    if (itemId == R.id.navigation_home) {
+                        selectedFragment = new HomeFragment();
+                    } else if (itemId == R.id.navigation_board) {
+                        selectedFragment = new BoardFragment();
+                    } else if (itemId == R.id.navigation_chat) {
+                        selectedFragment = new ChatFragment();
+                    } else if (itemId == R.id.navigation_profile) {
+                        selectedFragment = new ProfileFragment();
                     }
 
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
