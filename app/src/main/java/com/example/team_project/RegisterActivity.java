@@ -16,20 +16,26 @@ public class RegisterActivity extends AppCompatActivity {
         final EditText etPassword = findViewById(R.id.etSignUpPassword);
         final EditText etName = findViewById(R.id.etName);
         Button btnSubmitSignUp = findViewById(R.id.btnSubmitSignUp);
+        Button btnBack = findViewById(R.id.btnBackToLogin); // 뒤로 가기 버튼 찾기
 
         btnSubmitSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // 여기에서 회원가입 로직을 처리합니다.
-                // 예를 들어, etEmail, etPassword, etName에서 텍스트를 가져와서 사용할 수 있습니다.
                 String email = etEmail.getText().toString();
                 String password = etPassword.getText().toString();
                 String name = etName.getText().toString();
 
                 // 회원가입 처리 로직을 구현하세요.
-                // 예: 서버에 사용자 정보를 전송하고 응답을 처리합니다.
+            }
+        });
 
-                // 회원가입 성공 후 액션, 예를 들어 로그인 화면으로 돌아가거나 메인 화면으로 이동 등
+        // 뒤로 가기 버튼 클릭 이벤트 처리
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 현재 액티비티 종료하여 이전 화면(로그인 화면)으로 돌아가기
+                finish();
             }
         });
     }
