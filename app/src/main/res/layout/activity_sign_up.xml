@@ -7,32 +7,35 @@
     android:gravity="center"
     android:padding="16dp">
 
+    <!-- 이메일, 비밀번호, 이름 등 기본적인 회원 정보 입력 필드 예시 -->
     <EditText
-        android:id="@+id/etUsername"
+        android:id="@+id/etEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/username"
+        android:hint="@string/email"
         android:inputType="textEmailAddress"/>
 
     <EditText
-        android:id="@+id/etPassword"
+        android:id="@+id/etSignUpPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/password"
         android:inputType="textPassword"
         android:layout_marginTop="8dp"/>
 
-    <Button
-        android:id="@+id/btnLogin"
+    <EditText
+        android:id="@+id/etName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/login"
-        android:layout_marginTop="16dp"/>
+        android:hint="@string/name"
+        android:inputType="text"
+        android:layout_marginTop="8dp"/>
 
     <Button
-        android:id="@+id/btnSignUp"
+        android:id="@+id/btnSubmitSignUp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/sign_up"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="16dp"/>
+
 </LinearLayout>
