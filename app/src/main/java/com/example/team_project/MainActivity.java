@@ -11,7 +11,7 @@ public class MainActivity extends AppCompatActivity {
     //test 민지 2
     //test 가현 1
     //test 재형 1
-    //test 태엽 병합2
+    //test 태엽 병합3
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
