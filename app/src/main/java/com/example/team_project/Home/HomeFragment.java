@@ -18,6 +18,7 @@ import com.example.team_project.R;
 
 public class HomeFragment extends Fragment {
 
+    //태엽
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
