@@ -27,7 +27,6 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-
         usernameTextView = view.findViewById(R.id.usernameTextView);
         profileImageView = view.findViewById(R.id.profileImageView);
         logoutButton = view.findViewById(R.id.logoutButton);
@@ -37,6 +36,7 @@ public class ProfileFragment extends Fragment {
         int profileImageResId = R.drawable.ic_profile; // 사용자 프로필 이미지 리소스 ID
         usernameTextView.setText(username);
         profileImageView.setImageResource(profileImageResId);
+
 
         // 로그아웃 버튼 클릭 리스너 설정
         logoutButton.setOnClickListener(new View.OnClickListener() {
