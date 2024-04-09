@@ -14,6 +14,8 @@ import com.example.team_project.Profile.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import android.view.MenuItem;
 
+
+//민지 test1
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
