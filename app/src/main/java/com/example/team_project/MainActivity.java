@@ -4,12 +4,18 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+
+import com.example.team_project.Home.HomeFragment;
+import com.example.team_project.Profile.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import android.view.MenuItem;
 
-
-//민지 test1
 public class MainActivity extends AppCompatActivity {
+    //test 민지 2
+    //test 가현 1
+    //test 재형 3
+    //test 태엽 테스트 병합 4
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,5 +54,3 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
 }
-
-
