@@ -11,5 +11,9 @@
     <string name="email" >이메일</string>
     <string name="back_to_login">뒤로가기</string>
     <string name="username" >이름</string>
+    <string name="search" >검색</string>
+    <string name="notifications" >알림</string>
+    <string name="search_hint" >검색</string>
+    <string name="notification_title">알림 제목</string>
 
 </resources>
