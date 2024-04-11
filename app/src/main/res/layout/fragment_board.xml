@@ -1,136 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    >
+    android:gravity="center"
+    android:padding="16dp">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <!-- 게시글 목록을 담는 세로 스크롤되는 컨테이너 -->
-        <LinearLayout
-            android:id="@+id/ll_posts_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+    <TextView
+        android:id="@+id/textViewBoard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="게시판 화면"
+        android:textSize="24sp" />
 
-            <!-- 첫 번째 게시글 -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:background="#FFFFFF"
-                android:layout_marginBottom="16dp"> <!-- 아래쪽 간격 추가 -->
-
-                <!-- 게시글 사진 -->
-                <ImageView
-                    android:id="@+id/image_post1"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/tree_image"
-                    android:layout_marginEnd="16dp" />
-
-                <!-- 게시글 제목 -->
-                <TextView
-                    android:id="@+id/text_post_title1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_toEndOf="@id/image_post1"
-                    android:layout_marginBottom="8dp"
-                    android:text="제목1"/>
-
-                <!-- 작성자 닉네임 -->
-                <TextView
-                    android:id="@+id/text_post_author1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:layout_below="@id/text_post_title1"
-                    android:layout_toEndOf="@id/image_post1"
-                    android:text="사용자1"/>
-            </RelativeLayout>
-
-            <!-- 두 번째 게시글 -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:background="#FFFFFF"
-                android:layout_marginBottom="16dp">
-
-                <!-- 게시글 사진 -->
-                <ImageView
-                    android:id="@+id/image_post2"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/tree_image"
-                    android:layout_marginEnd="16dp" />
-
-                <!-- 게시글 제목 -->
-                <TextView
-                    android:id="@+id/text_post_title2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_toEndOf="@id/image_post2"
-                    android:layout_marginBottom="8dp"
-                    android:text="제목2"/>
-
-                <!-- 작성자 닉네임 -->
-                <TextView
-                    android:id="@+id/text_post_author2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:layout_below="@id/text_post_title2"
-                    android:layout_toEndOf="@id/image_post2"
-                    android:text="사용자2"/>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:background="#FFFFFF"
-                android:layout_marginBottom="16dp">
-
-                <!-- 게시글 사진 -->
-                <ImageView
-                    android:id="@+id/image_post3"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/tree_image"
-                    android:layout_marginEnd="16dp" />
-
-                <!-- 게시글 제목 -->
-                <TextView
-                    android:id="@+id/text_post_title3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_toEndOf="@id/image_post3"
-                    android:layout_marginBottom="8dp"
-                    android:text="제목3"/>
-
-                <!-- 작성자 닉네임 -->
-                <TextView
-                    android:id="@+id/text_post_author3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:layout_below="@id/text_post_title3"
-                    android:layout_toEndOf="@id/image_post3"
-                    android:text="사용자3"/>
-            </RelativeLayout>
-
-        </LinearLayout>
-    </ScrollView>
 </LinearLayout>
