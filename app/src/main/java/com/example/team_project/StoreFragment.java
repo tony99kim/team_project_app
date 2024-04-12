@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 
 public class StoreFragment extends Fragment {
 
+    //태엽 추가
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
