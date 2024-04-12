@@ -20,16 +20,20 @@ public class ProfileFragment extends Fragment {
 
     private TextView usernameTextView;
     private ImageView profileImageView;
-    private Button logoutButton;
+    private Button recentVisitButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        usernameTextView = view.findViewById(R.id.usernameTextView);
         profileImageView = view.findViewById(R.id.profileImageView);
+        usernameTextView = view.findViewById(R.id.usernameTextView);
+        recentVisitButton = view.findViewById(R.id.recentVisitButton);
+        noticeButton = view.findViewById(R.id.noticeButton);
+        customerServiceButton = view.findViewById(R.id.customerServiceButton);
         logoutButton = view.findViewById(R.id.logoutButton);
+        withdrawButton = view.findViewById(R.id.withdrawButton);
 
         // 사용자 정보 설정
         String username = "사용자 이름"; // 여기에 사용자 이름을 가져오는 로직을 추가해야 합니다.
