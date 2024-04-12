@@ -3,6 +3,7 @@ package com.example.team_project.Profile;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.team_project.LoginActivity;
@@ -21,6 +23,7 @@ public class ProfileFragment extends Fragment {
     private TextView usernameTextView;
     private ImageView profileImageView;
     private Button recentVisitButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
+    private androidx.appcompat.widget.Toolbar toolbar;
 
     @Nullable
     @Override
@@ -34,7 +37,14 @@ public class ProfileFragment extends Fragment {
         customerServiceButton = view.findViewById(R.id.customerServiceButton);
         logoutButton = view.findViewById(R.id.logoutButton);
         withdrawButton = view.findViewById(R.id.withdrawButton);
-
+        // 툴바 설정
+        toolbar = view.findViewById(R.id.toolbar);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            activity.setSupportActionBar(toolbar);
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            activity.getSupportActionBar().setTitle("뒤로가기");
+        }
         // 사용자 정보 설정
         String username = "사용자 이름"; // 여기에 사용자 이름을 가져오는 로직을 추가해야 합니다.
         int profileImageResId = R.drawable.ic_profile; // 사용자 프로필 이미지 리소스 ID
@@ -58,5 +68,16 @@ public class ProfileFragment extends Fragment {
         startActivity(intent);
         getActivity().finish();
     }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            getActivity().onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }
+
 
