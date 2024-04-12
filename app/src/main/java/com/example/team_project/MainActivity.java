@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
                     int itemId = item.getItemId();
                     if (itemId == R.id.navigation_home) {
                         selectedFragment = new HomeFragment();
+                    } else if (itemId == R.id.navigation_store) {
+                        selectedFragment = new StoreFragment();
                     } else if (itemId == R.id.navigation_board) {
                         selectedFragment = new BoardFragment();
                     } else if (itemId == R.id.navigation_chat) {
