@@ -1,15 +1,14 @@
 package com.example.team_project.Home;
 
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import com.example.team_project.R;
 
 public class NotificationsFragment extends Fragment {
@@ -28,14 +27,13 @@ public class NotificationsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setHasOptionsMenu(true); // 이 Fragment에서 옵션 메뉴를 사용하겠다는 것을 시스템에 알림
 
-        ImageView backButton = view.findViewById(R.id.back_button_notification);
-        backButton.setOnClickListener(v -> {
-            // Fragment 스택에서 현재 Fragment를 제거하여 이전 화면으로 돌아감
-            if (getFragmentManager() != null) {
-                getFragmentManager().popBackStack();
-            }
-        });
+        Toolbar toolbar = view.findViewById(R.id.toolbar_notification);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("알림");
+        }
     }
-
 }

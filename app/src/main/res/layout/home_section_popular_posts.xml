@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="인기 게시글"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- 여러 항목이 포함된 박스 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:layout_marginTop="8dp">
+
+        <!-- 여기서 10개의 항목을 예시로 추가합니다. 실제 앱에서는 이 부분을 동적으로 생성하게 될 것입니다. -->
+        <!-- 항목 1 -->
+        <TextView
+            android:id="@+id/popular_post_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="게시글 제목 1"
+            android:paddingBottom="4dp"/>
+
+        <!-- 항목 2 -->
+        <TextView
+            android:id="@+id/popular_post_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="게시글 제목 2"
+            android:paddingBottom="4dp"/>
+
+        <!-- 항목 추가... -->
+
+        <!-- 항목 10 -->
+        <TextView
+            android:id="@+id/popular_post_10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="게시글 제목 10"
+            android:paddingBottom="4dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

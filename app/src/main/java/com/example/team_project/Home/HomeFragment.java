@@ -1,74 +1,79 @@
 package com.example.team_project.Home;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-
+import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
 import com.example.team_project.R;
 
 public class HomeFragment extends Fragment {
 
-    //태엽
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
         Toolbar toolbar = view.findViewById(R.id.toolbar);
+
+        Button settingsButton = view.findViewById(R.id.btn_home_settings);
+
         toolbar.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
             if (id == R.id.action_search) {
-                // 검색 화면으로 전환하는 로직 구현
-                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.setCustomAnimations(
-                        R.anim.slide_in_right,  // 들어올 때 애니메이션
-                        R.anim.fade_out,        // 현재 Fragment가 사라질 때 애니메이션
-                        R.anim.fade_in,         // BackStack에서 돌아올 때 애니메이션
-                        R.anim.slide_out_right  // BackStack으로 돌아갈 때 애니메이션
-                );
-                transaction.replace(R.id.fragment_container, new SearchFragment()); // SearchFragment로 전환
-                transaction.addToBackStack(null);
-                transaction.commit();
+                replaceFragment(new SearchFragment());
                 return true;
             } else if (id == R.id.action_notifications) {
-                // NotificationsFragment로 화면 전환
-                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.setCustomAnimations(
-                        R.anim.slide_in_right,
-                        R.anim.fade_out,
-                        R.anim.fade_in,
-                        R.anim.slide_out_right
-                );
-                transaction.replace(R.id.fragment_container, new NotificationsFragment());
-                transaction.addToBackStack(null);
-                transaction.commit();
+                replaceFragment(new NotificationsFragment());
                 return true;
             }
             return false;
         });
+
+        settingsButton.setOnClickListener(v -> replaceFragment(new HomeSettingsFragment()));
+
         return view;
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+    public void onResume() {
+        super.onResume();
+        // 설정 변경 반영
+        updateLayoutBasedOnSettings();
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_home, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+    private void updateLayoutBasedOnSettings() {
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("HomeSettingsPrefs", getContext().MODE_PRIVATE);
+        boolean showPopularPosts = sharedPref.getBoolean("popularPosts", true);
+        boolean showEvents = sharedPref.getBoolean("events", true);
+
+        View popularPostsSection = getView().findViewById(R.id.home_popular_posts_section);
+        View eventsSection = getView().findViewById(R.id.home_events_section);
+
+        // 인기 게시글 섹션의 표시 여부 설정
+        popularPostsSection.setVisibility(showPopularPosts ? View.VISIBLE : View.GONE);
+
+        // 이벤트 공지 섹션의 표시 여부 설정
+        eventsSection.setVisibility(showEvents ? View.VISIBLE : View.GONE);
     }
 
 
+    private void replaceFragment(Fragment fragment) {
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(
+                R.anim.slide_in_right,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.slide_out_right
+        );
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
 }

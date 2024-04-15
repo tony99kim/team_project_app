@@ -2,4 +2,5 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimaryDark">#00574B</color> <!-- 사용자 이름 텍스트 색상 -->
 </resources>

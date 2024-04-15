@@ -10,4 +10,5 @@
         android:title="@string/notifications"
         android:icon="@drawable/ic_notifications"
         app:showAsAction="ifRoom" />
+
 </menu>
