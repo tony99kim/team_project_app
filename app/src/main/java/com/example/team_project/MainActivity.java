@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 앱이 시작될 때 기본으로 보여줄 프래그먼트를 설정합니다.
+        // 앱이 시작될 때 기본으로 보여줄 프래그먼트를 설정합니다
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
         }

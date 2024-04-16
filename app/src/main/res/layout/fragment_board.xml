@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- 첫 번째 게시글 -->
+            <!-- 첫 번째 게시글입니다 -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
