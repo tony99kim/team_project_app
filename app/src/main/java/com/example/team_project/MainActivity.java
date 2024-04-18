@@ -89,3 +89,5 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setVisibility(BottomNavigationView.VISIBLE); // 하단 메뉴바 보이기
     }
 }
+
+//민지 test1
