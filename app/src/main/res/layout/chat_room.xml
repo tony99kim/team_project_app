@@ -63,6 +63,17 @@
                         android:layout_height="wrap_content"
                         android:text="마지막 메시지"
                         android:textSize="14sp"/>
+
+                    <!-- Enter button -->
+                    <Button
+                        android:id="@+id/button_enter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="입장"
+                        android:layout_marginTop="8dp"
+                        android:backgroundTint="#000000"
+                        android:onClick="goToChatFragment"/>
+
                 </LinearLayout>
             </LinearLayout>
 
