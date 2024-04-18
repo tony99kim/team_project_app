@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+
+
 
     <!-- 툴 바 -->
     <androidx.appcompat.widget.Toolbar
@@ -14,27 +15,48 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <!-- 사용자 사진 -->
-    <ImageView
-        android:id="@+id/profileImageView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@drawable/ic_profile"
-        android:layout_marginTop="70dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"/>
-
-    <!-- 사용자 이름 -->
-    <TextView
-        android:id="@+id/usernameTextView"
-        android:layout_width="wrap_content"
+    <!-- 사용자 정보 레이아웃 -->
+    <RelativeLayout
+        android:id="@+id/userInfoLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="사용자 이름"
-        android:gravity="center"
         android:layout_below="@id/toolbar"
-        android:layout_toEndOf="@id/profileImageView"
-        android:layout_alignTop="@id/profileImageView"
-        android:layout_marginStart="16dp"/>
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="#ECECEC"> <!-- 배경색 -->>
+
+
+        <!-- 사용자 사진 -->
+        <ImageView
+            android:id="@+id/profileImageView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_profile"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"/>
+
+        <!-- 사용자 이름 -->
+        <TextView
+            android:id="@+id/usernameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="사용자 이름"
+            android:gravity="center"
+            android:layout_toEndOf="@id/profileImageView"
+            android:layout_alignTop="@id/profileImageView"
+            android:layout_marginStart="16dp"/>
+        <!-- 수정하기 버튼 -->
+        <Button
+            android:id="@+id/editButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="수정하기"
+            android:layout_alignParentEnd="true"
+            android:layout_alignBottom="@id/profileImageView"
+            android:layout_marginEnd="16dp"/>
+
+    </RelativeLayout>
 
     <!-- 최근 방문 -->
     <Button
@@ -42,7 +64,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="최근 방문"
-        android:layout_below="@id/profileImageView"
+        android:layout_below="@id/userInfoLayout"
         android:layout_alignParentStart="true"
         android:layout_marginTop="16dp"/>
 
@@ -83,7 +105,9 @@
         android:layout_height="wrap_content"
         android:text="회원탈퇴"
         android:layout_above="@id/logoutButton"
-        android:layout_alignStart="@id/logoutButton"
+        android:layout_alignStart="@id/recentVisitButton"
         android:layout_marginBottom="16dp"/>
+
+
 
 </RelativeLayout>
