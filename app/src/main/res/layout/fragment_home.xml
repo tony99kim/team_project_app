@@ -30,17 +30,17 @@
             android:gravity="center_horizontal">
 
             <!-- 환경 포인트 섹션 -->
-            <include layout="@layout/home_section_environment_points" />
+            <include layout="@layout/fragment_home_section_environment_points" />
 
             <!-- 인기 게시글 섹션 -->
             <include
                 android:id="@+id/home_popular_posts_section"
-                layout="@layout/home_section_popular_posts" />
+                layout="@layout/fragment_home_section_popular_posts" />
 
             <!-- 이벤트 공지 섹션 -->
             <include
                 android:id="@+id/home_events_section"
-                layout="@layout/home_section_events" />
+                layout="@layout/fragment_home_section_events" />
 
 
             <LinearLayout
