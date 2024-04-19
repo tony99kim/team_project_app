@@ -2,15 +2,40 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="16dp">
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textViewBoard"
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="게시판 화면"
-        android:textSize="24sp" />
+        android:orientation="horizontal">
 
+        <Button
+            android:id="@+id/boardbutton1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="환경 뉴스" />
+
+        <Button
+            android:id="@+id/boardbutton2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="자유게시판" />
+
+    </LinearLayout>
+
+    <!-- 게시글 목록 구현 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/boardwriteButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="글쓰기" />
 </LinearLayout>
