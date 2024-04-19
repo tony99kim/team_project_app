@@ -24,7 +24,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:background="#ECECEC"> <!-- 배경색 -->>
+        android:background="#ECECEC">
 
 
         <!-- 사용자 사진 -->
