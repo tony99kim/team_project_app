@@ -6,12 +6,14 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.team_project.Board.BoardFragment;
 import com.example.team_project.Chat.FragmentChat;
 import com.example.team_project.Home.HomeFragment;
 import com.example.team_project.Home.HomeSettingsFragment;
 import com.example.team_project.Home.NotificationsFragment;
 import com.example.team_project.Home.SearchFragment;
 import com.example.team_project.Profile.ProfileFragment;
+import com.example.team_project.Store.StoreFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import android.view.MenuItem;
 
