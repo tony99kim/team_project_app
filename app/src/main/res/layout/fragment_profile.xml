@@ -59,16 +59,18 @@
     </RelativeLayout>
 
     <!-- 최근 방문 -->
+
+    <!-- 공지사항 -->
     <Button
         android:id="@+id/recentVisitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="최근 방문"
         android:layout_below="@id/userInfoLayout"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="24dp"
+        android:text="최근 방문" />
 
-    <!-- 공지사항 -->
     <Button
         android:id="@+id/noticeButton"
         android:layout_width="wrap_content"
@@ -89,16 +91,18 @@
         android:layout_marginTop="16dp"/>
 
     <!-- 로그아웃 버튼 -->
+
+    <!-- 회원탈퇴 버튼 -->
     <Button
         android:id="@+id/logoutButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="로그아웃"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="16dp"/>
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginBottom="16dp"
+        android:text="로그아웃" />
 
-    <!-- 회원탈퇴 버튼 -->
     <Button
         android:id="@+id/withdrawButton"
         android:layout_width="wrap_content"

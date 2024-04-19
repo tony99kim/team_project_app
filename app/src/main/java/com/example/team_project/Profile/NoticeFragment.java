@@ -18,7 +18,7 @@ public class NoticeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.notice_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile_notice_fragment, container, false);
 
         // 툴바 설정
         Toolbar toolbar = view.findViewById(R.id.toolbar);
