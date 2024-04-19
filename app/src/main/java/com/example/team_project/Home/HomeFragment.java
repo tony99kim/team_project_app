@@ -53,8 +53,8 @@ public class HomeFragment extends Fragment {
         boolean showPopularPosts = sharedPref.getBoolean("popularPosts", true);
         boolean showEvents = sharedPref.getBoolean("events", true);
 
-        View popularPostsSection = getView().findViewById(R.id.home_popular_posts_section);
-        View eventsSection = getView().findViewById(R.id.home_events_section);
+        View popularPostsSection = getView().findViewById(R.id.fragment_home_section_popular_posts);
+        View eventsSection = getView().findViewById(R.id.fragment_home_section_events);
 
         // 인기 게시글 섹션의 표시 여부 설정
         popularPostsSection.setVisibility(showPopularPosts ? View.VISIBLE : View.GONE);
