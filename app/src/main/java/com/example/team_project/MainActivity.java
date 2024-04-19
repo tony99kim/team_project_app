@@ -6,7 +6,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.example.team_project.Chat.ChatFragment;
+import com.example.team_project.Chat.FragmentChat;
 import com.example.team_project.Home.HomeFragment;
 import com.example.team_project.Home.HomeSettingsFragment;
 import com.example.team_project.Home.NotificationsFragment;
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                     } else if (itemId == R.id.navigation_board) {
                         selectedFragment = new BoardFragment();
                     } else if (itemId == R.id.navigation_chat) {
-                        selectedFragment = new ChatFragment();
+                        selectedFragment = new FragmentChat();
                     } else if (itemId == R.id.navigation_profile) {
                         selectedFragment = new ProfileFragment();
                     }
