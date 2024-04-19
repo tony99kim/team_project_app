@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -15,7 +16,24 @@ public class FragmentChat_room extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // fragment_chat.xml 파일을 인플레이트하여 뷰를 생성합니다.
+        // fragment_chat_room.xml 파일을 인플레이트하여 뷰를 생성합니다.
         return inflater.inflate(R.layout.fragment_chat_room, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // 뷰가 완성된 후 ImageButton을 찾고, 클릭 리스너를 설정합니다.
+        ImageButton backButton = view.findViewById(R.id.btn_back);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 호스팅 액티비티의 onBackPressed() 메서드를 호출합니다.
+                if (getActivity() != null) {
+                    getActivity().onBackPressed();
+                }
+            }
+        });
     }
 }
