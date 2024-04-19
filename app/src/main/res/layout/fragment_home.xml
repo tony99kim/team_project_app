@@ -34,12 +34,12 @@
 
             <!-- 인기 게시글 섹션 -->
             <include
-                android:id="@+id/home_popular_posts_section"
+                android:id="@+id/fragment_home_section_popular_posts"
                 layout="@layout/fragment_home_section_popular_posts" />
 
             <!-- 이벤트 공지 섹션 -->
             <include
-                android:id="@+id/home_events_section"
+                android:id="@+id/fragment_home_section_events"
                 layout="@layout/fragment_home_section_events" />
 
 
