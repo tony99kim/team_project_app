@@ -18,7 +18,7 @@ public class RecentVisitFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.recent_visit_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile_recent_visit_fragment, container, false);
 
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
