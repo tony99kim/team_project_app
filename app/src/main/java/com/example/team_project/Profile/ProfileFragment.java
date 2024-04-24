@@ -1,12 +1,16 @@
 package com.example.team_project.Profile;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,17 +21,29 @@ import androidx.fragment.app.Fragment;
 import com.example.team_project.LoginActivity;
 import com.example.team_project.R;
 
+import java.util.ArrayList;
+
 public class ProfileFragment extends Fragment {
 
-    private TextView usernameTextView;
+    private TextView usernameTextView, environmentPointsTextView;
     private ImageView profileImageView;
     private Button editButton, recentVisitButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
     private androidx.appcompat.widget.Toolbar toolbar;
+
+    private ListView recentVisitListView;
+    private ArrayList<String> recentVisitList;
+    private ArrayAdapter<String> adapter;
+    private SharedPreferences sharedPreferences;
+
+
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        recentVisitList = new ArrayList<>();
 
         profileImageView = view.findViewById(R.id.profileImageView);
         usernameTextView = view.findViewById(R.id.usernameTextView);
@@ -37,19 +53,41 @@ public class ProfileFragment extends Fragment {
         logoutButton = view.findViewById(R.id.logoutButton);
         withdrawButton = view.findViewById(R.id.withdrawButton);
         editButton = view.findViewById(R.id.editButton);
+        recentVisitListView = view.findViewById(R.id.recentVisitListView);
         // 툴바 설정
         toolbar = view.findViewById(R.id.toolbar);
+        environmentPointsTextView = view.findViewById(R.id.environmentPointsTextView);
+
+
+        sharedPreferences = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+
+        // setUsername() 호출
+        setUsername();
+        // 최근 방문 기록을 담을 리스트 초기화
+        recentVisitList = new ArrayList<>();
+        recentVisitListView = view.findViewById(R.id.recentVisitListView);
+        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, recentVisitList);
+        recentVisitListView.setAdapter(adapter);
+
+        // 최근 방문 버튼 클릭 리스너 설정
+        // 여기에 최근 방문 기록을 추가하는 코드를 넣으세요.
+        // 예시로 아래와 같이 리스트에 데이터를 추가할 수 있습니다.
+        recentVisitList.add("상품 1");
+        recentVisitList.add("상품 2");
+        recentVisitList.add("상품 3");
+        adapter.notifyDataSetChanged(); // 어댑터에 데이터가 변경되었음을 알려줍니다.
+
+        // 사용자의 환경 포인트 설정 (예시로 1000이라고 가정)
+        int environmentPoints = 1000;
+        environmentPointsTextView.setText("환경 포인트: " + environmentPoints);
+
+
+
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
             activity.getSupportActionBar().setTitle("마이 페이지");
         }
-        // 사용자 정보 설정
-        String username = "사용자 이름"; // 여기에 사용자 이름을 가져오는 로직을 추가해야 합니다.
-        int profileImageResId = R.drawable.ic_profile; // 사용자 프로필 이미지 리소스 ID
-        usernameTextView.setText(username);
-        profileImageView.setImageResource(profileImageResId);
-
 
         // 로그아웃 버튼 클릭 리스너 설정
         logoutButton.setOnClickListener(new View.OnClickListener() {
@@ -99,8 +137,14 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+
+
         return view;
     }
+
+
+
+
 
     private  void logout() {
         Intent intent = new Intent(getActivity() , LoginActivity.class);
@@ -174,6 +218,17 @@ public class ProfileFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        // onResume()에서 setUsername() 호출하여 사용자 이름 업데이트
+        setUsername();
+    }
+
+    private void setUsername() {
+        String savedUsername = sharedPreferences.getString("username", "사용자 이름");
+        usernameTextView.setText(savedUsername);
     }
 
 
