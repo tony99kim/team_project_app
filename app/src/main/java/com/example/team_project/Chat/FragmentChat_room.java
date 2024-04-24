@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.example.team_project.R;
@@ -24,16 +26,13 @@ public class FragmentChat_room extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 뷰가 완성된 후 ImageButton을 찾고, 클릭 리스너를 설정합니다.
-        ImageButton backButton = view.findViewById(R.id.btn_back);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 호스팅 액티비티의 onBackPressed() 메서드를 호출합니다.
-                if (getActivity() != null) {
-                    getActivity().onBackPressed();
-                }
-            }
-        });
+        // 툴바를 설정합니다.
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            activity.setSupportActionBar(toolbar);
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            activity.getSupportActionBar().setTitle("채팅방이름");
+        }
     }
 }
