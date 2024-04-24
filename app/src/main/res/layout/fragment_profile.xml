@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
 
 
@@ -14,6 +18,7 @@
         android:elevation="4dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
 
     <!-- 사용자 정보 레이아웃 -->
     <RelativeLayout
@@ -45,73 +50,114 @@
             android:gravity="center"
             android:layout_toEndOf="@id/profileImageView"
             android:layout_alignTop="@id/profileImageView"
-            android:layout_marginStart="16dp"/>
+            android:layout_marginStart="16dp" />
+        <!-- 사용자 환경 포인트 -->
+        <TextView
+            android:id="@+id/environmentPointsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/usernameTextView"
+            android:layout_alignStart="@id/usernameTextView"
+            android:text="환경 포인트: "
+            android:textColor="@color/black"
+            android:layout_marginTop="8dp"/>
         <!-- 수정하기 버튼 -->
         <Button
             android:id="@+id/editButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="수정하기"
+            android:text="프로필 보기"
             android:layout_alignParentEnd="true"
             android:layout_alignBottom="@id/profileImageView"
             android:layout_marginEnd="16dp"/>
 
     </RelativeLayout>
-
-    <!-- 최근 방문 -->
-
-    <!-- 공지사항 -->
+    <!-- 최근 방문 버튼 -->
     <Button
         android:id="@+id/recentVisitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/userInfoLayout"
-        android:layout_alignParentStart="true"
+        android:text="최근 방문"
         android:layout_marginStart="15dp"
         android:layout_marginTop="24dp"
-        android:text="최근 방문" />
+        android:layout_below="@id/userInfoLayout" />
 
-    <Button
-        android:id="@+id/noticeButton"
-        android:layout_width="wrap_content"
+    <!-- LinearLayout -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="공지사항"
+        android:orientation="vertical"
         android:layout_below="@id/recentVisitButton"
-        android:layout_alignStart="@id/recentVisitButton"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp">
 
-    <!-- 고객센터 -->
-    <Button
-        android:id="@+id/customerServiceButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="고객센터"
-        android:layout_below="@id/noticeButton"
-        android:layout_alignStart="@id/recentVisitButton"
-        android:layout_marginTop="16dp"/>
+        <!-- 최근 방문 리스트뷰 -->
+        <ListView
+            android:id="@+id/recentVisitListView"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_below="@id/recentVisitButton"
+            android:layout_marginTop="0dp"
+            android:divider="@null"
+            android:dividerHeight="0dp" />
 
-    <!-- 로그아웃 버튼 -->
+        <!-- 구분선 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_below="@id/recentVisitListView"
+            android:layout_marginTop="8dp" />
 
-    <!-- 회원탈퇴 버튼 -->
-    <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="15dp"
-        android:layout_marginBottom="16dp"
-        android:text="로그아웃" />
+        <!-- 공지사항 버튼 -->
+        <Button
+            android:id="@+id/noticeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="공지사항"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="16dp"/>
 
-    <Button
-        android:id="@+id/withdrawButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="회원탈퇴"
-        android:layout_above="@id/logoutButton"
-        android:layout_alignStart="@id/recentVisitButton"
-        android:layout_marginBottom="16dp"/>
+        <!-- 고객센터 버튼 -->
+        <Button
+            android:id="@+id/customerServiceButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="고객센터"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="16dp"/>
+        <!-- 구분선 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_below="@id/noticeButton"
+            android:layout_marginTop="8dp" />
 
+        <!-- 로그아웃 버튼 -->
+        <Button
+            android:id="@+id/logoutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="로그아웃"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="16dp"/>
 
+        <!-- 회원탈퇴 버튼 -->
+        <Button
+            android:id="@+id/withdrawButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="회원탈퇴"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="16dp"/>
+        <!-- 구분선 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_below="@id/noticeButton"
+            android:layout_marginTop="8dp" />
 
-</RelativeLayout>
+    </LinearLayout>
+    </RelativeLayout>
+</ScrollView>
