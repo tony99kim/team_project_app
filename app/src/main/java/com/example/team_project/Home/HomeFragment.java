@@ -12,6 +12,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.example.team_project.R;
+import com.example.team_project.Toolbar.NotificationsFragment;
+import com.example.team_project.Toolbar.SearchFragment;
 
 public class HomeFragment extends Fragment {
 
