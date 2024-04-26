@@ -1,8 +1,10 @@
 package com.example.team_project;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
@@ -15,16 +17,17 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Calendar;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText editTextEmail, editTextPassword, editTextName, editTextPhone;
+    private EditText editTextEmail, editTextPassword, editTextName, editTextPhone, editTextBirthDate;
     private RadioButton radioButtonMale, radioButtonFemale;
     private Button buttonRegister, btnBack;
     private FirebaseAuth mAuth;
-    private DatabaseReference mDatabase;
+    private FirebaseFirestore db; // Firestore 인스턴스 추가
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,17 +35,24 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        db = FirebaseFirestore.getInstance(); // Firestore 인스턴스 초기화
 
         editTextEmail = findViewById(R.id.etEmail);
         editTextPassword = findViewById(R.id.etSignUpPassword);
         editTextName = findViewById(R.id.etName);
         editTextPhone = findViewById(R.id.etPhoneNumber);
+        editTextBirthDate = findViewById(R.id.etBirthDate);
         radioButtonMale = findViewById(R.id.rbMale);
         radioButtonFemale = findViewById(R.id.rbFemale);
         buttonRegister = findViewById(R.id.btnSubmitSignUp);
         btnBack = findViewById(R.id.btnBackToLogin);
 
+        editTextBirthDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog();
+            }
+        });
 
         buttonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,9 +64,27 @@ public class RegisterActivity extends AppCompatActivity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish(); // 현재 액티비티 종료하여 이전 화면(로그인 화면)으로 돌아가기
+                finish(); // 현재 액티비티 종료하여 이전 화면으로 돌아가기
             }
         });
+    }
+
+    private void showDatePickerDialog() {
+        final Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        // 날짜 선택 후 editTextBirthDate에 날짜 설정
+                        String date = year + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
+                        editTextBirthDate.setText(date);
+                    }
+                }, year, month, day);
+        datePickerDialog.show();
     }
 
     private void registerUser() {
@@ -64,12 +92,12 @@ public class RegisterActivity extends AppCompatActivity {
         String password = editTextPassword.getText().toString().trim();
         final String name = editTextName.getText().toString().trim();
         final String phone = editTextPhone.getText().toString().trim();
+        final String birthDate = editTextBirthDate.getText().toString().trim(); // 생년월일 정보 가져오기
         final String gender = radioButtonMale.isChecked() ? "Male" : "Female";
 
-        // 입력 값 검증
-        if (email.isEmpty() || password.isEmpty() || name.isEmpty() || phone.isEmpty() || gender.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty() || name.isEmpty() || phone.isEmpty() || birthDate.isEmpty() || gender.isEmpty()) {
             Toast.makeText(RegisterActivity.this, "모든 항목을 입력해주세요.", Toast.LENGTH_LONG).show();
-            return; // 필요한 모든 항목이 입력되지 않았으므로 여기서 메소드 종료
+            return;
         }
 
         mAuth.createUserWithEmailAndPassword(email, password)
@@ -77,14 +105,15 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            User user = new User(name, email, phone, gender);
-                            mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).setValue(user)
+                            // Firestore에 사용자 정보 저장
+                            User user = new User(name, email, phone, gender, birthDate);
+                            db.collection("users").document(mAuth.getCurrentUser().getUid()).set(user)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
                                                 Toast.makeText(RegisterActivity.this, "회원가입 성공", Toast.LENGTH_LONG).show();
-                                                finish(); // 등록 성공 후 이전 화면으로 돌아가기
+                                                finish();
                                             } else {
                                                 Toast.makeText(RegisterActivity.this, "회원 정보 등록 실패", Toast.LENGTH_LONG).show();
                                             }
@@ -98,18 +127,19 @@ public class RegisterActivity extends AppCompatActivity {
                             }
                         }
                     }
-
                 });
     }
 
+    // User 클래스 정의, 생년월일(birthDate) 필드 추가
     private static class User {
-        public String name, email, phone, gender;
+        public String name, email, phone, gender, birthDate;
 
-        public User(String name, String email, String phone, String gender) {
+        public User(String name, String email, String phone, String gender, String birthDate) {
             this.name = name;
             this.email = email;
             this.phone = phone;
             this.gender = gender;
+            this.birthDate = birthDate;
         }
     }
 }
