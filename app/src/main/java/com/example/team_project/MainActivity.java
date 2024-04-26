@@ -1,6 +1,8 @@
 package com.example.team_project;
 
 import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,11 +17,13 @@ import com.example.team_project.Toolbar.SearchFragment;
 import com.example.team_project.Profile.ProfileFragment;
 import com.example.team_project.Store.StoreFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import android.view.MenuItem;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

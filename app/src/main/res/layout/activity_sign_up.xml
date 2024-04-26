@@ -7,7 +7,6 @@
     android:gravity="center"
     android:padding="16dp">
 
-    <!-- 이메일, 비밀번호, 이름 등 기본적인 회원 정보 입력 필드 예시 -->
     <EditText
         android:id="@+id/etEmail"
         android:layout_width="match_parent"
@@ -31,6 +30,34 @@
         android:inputType="text"
         android:layout_marginTop="8dp"/>
 
+    <!-- 전화번호 입력 필드 추가 -->
+    <EditText
+        android:id="@+id/etPhoneNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/phone_number"
+        android:inputType="phone"
+        android:layout_marginTop="8dp"/>
+
+    <!-- 성별 선택 라디오 버튼 추가 -->
+    <RadioGroup
+        android:id="@+id/rgGender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+        <RadioButton
+            android:id="@+id/rbMale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/male" />
+        <RadioButton
+            android:id="@+id/rbFemale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/female" />
+    </RadioGroup>
+
     <Button
         android:id="@+id/btnSubmitSignUp"
         android:layout_width="match_parent"
@@ -43,6 +70,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/back_to_login" />
-
 
 </LinearLayout>
