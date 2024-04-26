@@ -77,12 +77,13 @@ public class FragmentChat extends Fragment {
             roomLayout.addView(enterButton);
 
             Button deleteButton = new Button(getContext());
-            deleteButton.setText("삭제");
+            deleteButton.setText("나가기");
             deleteButton.setOnClickListener(v -> deleteChatRoom(roomName));
             roomLayout.addView(deleteButton);
 
             layout.addView(roomLayout);
         }
+
     }
 
     private void deleteChatRoom(String roomName) {
