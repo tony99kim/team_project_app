@@ -10,15 +10,19 @@
     <string name="name" >이름</string>
     <string name="email" >이메일</string>
     <string name="back_to_login">뒤로가기</string>
-    <string name="username" >이름</string>
+    <string name="userid" >아이디(이메일)</string>
     <string name="search" >검색</string>
     <string name="notifications" >알림</string>
     <string name="search_hint" >검색</string>
     <string name="notification_title">알림 제목</string>
     <string name="title_store" >상점</string>
-    <string name="home_setting">홈 화면 설정</string>
+    <string name="home_setting">홈 화면 설정</string> // 메인홈 설정
     <string name="settings">홈 화면 설정</string>
     <string name="back_button">뒤로 가기</string>
     <string name="hint_enter_message">메세지 입력</string>
     <string name="send">전송 </string>
+    <string name="male">남</string> //회원가입 성별 선택
+    <string name="female">여</string> //회원가입 성별 선택
+    <string name="phone_number">전화번호</string>
+    <string name="remember_me">아이디(이메일) 기억</string>  // 회원가입 전화번호
 </resources>
