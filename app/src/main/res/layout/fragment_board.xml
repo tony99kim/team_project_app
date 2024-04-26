@@ -4,38 +4,90 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
-    <LinearLayout
+    <!-- 툴 바 -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/board_toolbar"
         android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <TextView
+        android:id="@+id/board_news_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_gravity=""
+        android:text="오늘의 환경"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/boardbutton1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="환경 뉴스" />
+    <!-- 게시글 가로 슬라이드 부분 -->
 
-        <Button
-            android:id="@+id/boardbutton2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="자유게시판" />
+    <HorizontalScrollView
+        android:layout_width="475dp"
+        android:layout_height="44dp"
+        android:layout_weight="3">
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="15dp">
 
-    <!-- 게시글 목록 구현 -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+            <include layout="@layout/fragment_board_news_board" />
+
+            <include layout="@layout/fragment_board_news_board" />
+
+            <include layout="@layout/fragment_board_news_board" />
+
+            <include layout="@layout/fragment_board_news_board" />
+
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/board_free_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity=""
+        android:text="자유게시판"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <!-- 게시글 세로 슬라이드 부분 -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="5">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="1dp">
+
+            <include layout="@layout/fragment_board_free_board" />
+
+            <include layout="@layout/fragment_board_free_board" />
+
+            <include layout="@layout/fragment_board_free_board" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
     <Button
         android:id="@+id/boardwriteButton"
-        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="글쓰기" />
+        android:text="게시글쓰기"
+        android:layout_marginTop="16dp"/>
+
 </LinearLayout>
