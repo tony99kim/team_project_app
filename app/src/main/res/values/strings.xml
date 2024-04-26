@@ -23,6 +23,6 @@
     <string name="send">전송 </string>
     <string name="male">남</string> //회원가입 성별 선택
     <string name="female">여</string> //회원가입 성별 선택
-    <string name="phone_number">전화번호</string>
-    <string name="remember_me">아이디(이메일) 기억</string>  // 회원가입 전화번호
+    <string name="phone_number">전화번호</string> // 회원가입 전화번호
+    <string name="loginauto">자동로그인</string>
 </resources>

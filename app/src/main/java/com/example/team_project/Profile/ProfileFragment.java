@@ -146,11 +146,20 @@ public class ProfileFragment extends Fragment {
 
 
 
-    private  void logout() {
-        Intent intent = new Intent(getActivity() , LoginActivity.class);
+    private void logout() {
+        // SharedPreferences에서 로그인 상태와 자동 로그인 설정을 초기화
+        SharedPreferences prefs = getActivity().getSharedPreferences("team_project_preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("isLoggedIn", false);
+        editor.putBoolean("autoLogin", false);
+        editor.apply();
+
+        // 로그인 액티비티로 이동
+        Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivity(intent);
         getActivity().finish();
     }
+
     private void openRecentVisitFragment() {
         // 최근 방문 프래그먼트 객체 생성
         RecentVisitFragment fragment = new RecentVisitFragment();
