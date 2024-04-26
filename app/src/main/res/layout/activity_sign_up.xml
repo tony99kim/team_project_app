@@ -30,7 +30,6 @@
         android:inputType="text"
         android:layout_marginTop="8dp"/>
 
-    <!-- 전화번호 입력 필드 추가 -->
     <EditText
         android:id="@+id/etPhoneNumber"
         android:layout_width="match_parent"
@@ -39,7 +38,16 @@
         android:inputType="phone"
         android:layout_marginTop="8dp"/>
 
-    <!-- 성별 선택 라디오 버튼 추가 -->
+    <!-- 생년월일 입력을 위한 EditText 추가 -->
+    <EditText
+        android:id="@+id/etBirthDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/birth_date"
+        android:focusable="false"
+        android:layout_marginTop="8dp"/>
+
+
     <RadioGroup
         android:id="@+id/rgGender"
         android:layout_width="match_parent"
