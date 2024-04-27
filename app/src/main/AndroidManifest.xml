@@ -14,7 +14,7 @@
         tools:targetApi="34">
 
         <activity
-            android:name=".RegisterActivity">
+            android:name=".SignUpActivity">
         </activity>
 
         <!-- LoginActivity가 앱의 시작 화면으로 설정됩니다. -->
