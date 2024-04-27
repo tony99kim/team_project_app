@@ -21,7 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
 
-public class RegisterActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
 
     private EditText editTextEmail, editTextPassword, editTextName, editTextPhone, editTextBirthDate;
     private RadioButton radioButtonMale, radioButtonFemale;
@@ -96,7 +96,7 @@ public class RegisterActivity extends AppCompatActivity {
         final String gender = radioButtonMale.isChecked() ? "Male" : "Female";
 
         if (email.isEmpty() || password.isEmpty() || name.isEmpty() || phone.isEmpty() || birthDate.isEmpty() || gender.isEmpty()) {
-            Toast.makeText(RegisterActivity.this, "모든 항목을 입력해주세요.", Toast.LENGTH_LONG).show();
+            Toast.makeText(SignUpActivity.this, "모든 항목을 입력해주세요.", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -112,18 +112,18 @@ public class RegisterActivity extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
-                                                Toast.makeText(RegisterActivity.this, "회원가입 성공", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(SignUpActivity.this, "회원가입 성공", Toast.LENGTH_LONG).show();
                                                 finish();
                                             } else {
-                                                Toast.makeText(RegisterActivity.this, "회원 정보 등록 실패", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(SignUpActivity.this, "회원 정보 등록 실패", Toast.LENGTH_LONG).show();
                                             }
                                         }
                                     });
                         } else {
                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                Toast.makeText(RegisterActivity.this, "이미 사용중인 아이디(이메일)입니다.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(SignUpActivity.this, "이미 사용중인 아이디(이메일)입니다.", Toast.LENGTH_LONG).show();
                             } else {
-                                Toast.makeText(RegisterActivity.this, "회원가입에 실패하였습니다.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(SignUpActivity.this, "회원가입에 실패하였습니다.", Toast.LENGTH_LONG).show();
                             }
                         }
                     }
