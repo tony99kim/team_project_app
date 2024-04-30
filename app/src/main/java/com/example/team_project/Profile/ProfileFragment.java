@@ -67,48 +67,65 @@ public class ProfileFragment extends Fragment {
         environmentPointsTextView = view.findViewById(R.id.environmentPointsTextView);
 
         setUsername();
+        // 최근 방문 기록을 담을 리스트 초기화
+        recentVisitList = new ArrayList<>();
+        recentVisitListView = view.findViewById(R.id.recentVisitListView);
+        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, recentVisitList);
+        recentVisitListView.setAdapter(adapter);
+
+        // 최근 방문 버튼 클릭 리스너 설정
+        // 여기에 최근 방문 기록을 추가하는 코드를 넣으세요.
+        // 예시로 아래와 같이 리스트에 데이터를 추가할 수 있습니다.
+        recentVisitList.add("상품 1");
+        recentVisitList.add("상품 2");
+        recentVisitList.add("상품 3");
+        adapter.notifyDataSetChanged(); // 어댑터에 데이터가 변경되었음을 알려줍니다.
+
+        // 사용자의 환경 포인트 설정 (예시로 1000이라고 가정)
+        int environmentPoints = 1000;
+        environmentPointsTextView.setText("환경 포인트: " + environmentPoints);
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
             activity.getSupportActionBar().setTitle("마이 페이지");
         }
-
+        // 로그아웃 버튼 클릭 리스너 설정
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 logout();
             }
         });
-
+        // 최근 방문 버튼 클릭 리스너 설정
         recentVisitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openRecentVisitFragment();
             }
         });
-
+        // 공지사항 버튼 클릭 리스너 설정
         noticeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openNoticeFragment();
             }
         });
-
+        // 고객센터 버튼 클릭 리스너 설정
         customerServiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openCustomerServiceFragment();
             }
         });
-
+        // 회원탈퇴 버튼 클릭 리스너 설정
         withdrawButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openWithdrawFragment();
             }
         });
-
+        // 수정하기 버튼 클릭 리스너 설정
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,26 +137,30 @@ public class ProfileFragment extends Fragment {
     }
 
     private void logout() {
+        // SharedPreferences에서 로그인 상태와 자동 로그인 설정을 초기화
         SharedPreferences prefs = getActivity().getSharedPreferences("team_project_preferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("autoLogin", false);
         editor.apply();
-
+        // 로그인 액티비티로 이동
         mAuth.signOut();
 
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivity(intent);
         getActivity().finish();
     }
-
+    // 최근 방문 프래그먼트 객체 생성
     private void openRecentVisitFragment() {
         RecentVisitFragment fragment = new RecentVisitFragment();
+        // 현재 액티비티가 AppCompatActivity 인지 확인
         AppCompatActivity activity = (AppCompatActivity) getActivity();
+        // 현재 액티비티가 AppCompatActivity 인 경우에만 프래그먼트 트랜잭션 수행
         if (activity != null) {
+            // 프래그먼트 트랜잭션을 사용하여 최근 방문 프래그먼트를 화면에 표시
             activity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
+                    .replace(R.id.fragment_container, fragment)// R.id.fragment_container는 프래그먼트를 표시할 레이아웃의 ID입니다.
+                    .addToBackStack(null) // 백 스택에 프래그먼트를 추가하여 뒤로 가기 기능을 지원합니다.
                     .commit();
         }
     }
