@@ -29,7 +29,7 @@ public class StoreFragment extends Fragment {
         toolbar.setTitle("지역 선택 ▼");
         toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
         // 툴바 메뉴 설정
-        toolbar.inflateMenu(R.menu.menu_home_toolbar); // 여기서 menu_main은 툴바에 보여질 메뉴를 정의한 XML 파일입니다.
+
         toolbar.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
             if (id == R.id.action_search) {

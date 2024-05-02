@@ -11,7 +11,8 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         app:title="내 동네 설정"
-        app:navigationIcon="?attr/homeAsUpIndicator">
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
     </androidx.appcompat.widget.Toolbar>
 
