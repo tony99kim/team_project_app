@@ -1,7 +1,10 @@
 package com.example.team_project.Profile;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +21,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.example.team_project.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,12 +36,23 @@ import java.util.Map;
 public class EditButtonFragment extends Fragment {
     private EditText usernameEditText;
     private ImageView profileImageView;
-    private Button changePhotoButton,saveButton;
+    private Button changePhotoButton, saveButton;
+
+    private Uri imageUri;
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private StorageReference storageRef;
+    private static final int PICK_IMAGE_REQUEST = 1;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile_edit_button_fragment, container, false);
+
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        storageRef = FirebaseStorage.getInstance().getReference();
+
         // 툴바 설정
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -42,15 +61,18 @@ public class EditButtonFragment extends Fragment {
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             activity.getSupportActionBar().setTitle("프로필 편집");
         }
+
         // 뷰 초기화
         profileImageView = view.findViewById(R.id.profileImageView);
         usernameEditText = view.findViewById(R.id.usernameEditText);
         changePhotoButton = view.findViewById(R.id.changePhotoButton);
         saveButton = view.findViewById(R.id.saveButton);
+
         // 저장된 사용자 이름 불러오기
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         String savedUsername = sharedPreferences.getString("username", "사용자 이름");
         usernameEditText.setText(savedUsername);
+
         // 저장 버튼 클릭 이벤트 처리
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,17 +86,32 @@ public class EditButtonFragment extends Fragment {
                 }
             }
         });
+
         // 프로필 사진 변경 버튼 클릭 이벤트 처리
         changePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 프로필 사진 변경 기능을 구현할 수 있도록 코드를 작성하세요.
-                // 예시로 Toast 메시지를 사용합니다.
-                Toast.makeText(getActivity(), "프로필 사진을 변경합니다.", Toast.LENGTH_SHORT).show();
+                openGallery();
             }
         });
 
         return view;
+    }
+
+    private void openGallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+            imageUri = data.getData();
+            profileImageView.setImageURI(imageUri);
+        }
     }
 
     private void saveProfile(String username) {
@@ -88,7 +125,33 @@ public class EditButtonFragment extends Fragment {
         usernameEditText.setText(username);
         Toast.makeText(getActivity(), "이름이 변경되었습니다: " + username, Toast.LENGTH_SHORT).show();
 
+        // 프로필 사진이 변경되었으면 업로드
+        if (imageUri != null) {
+            uploadProfileImage(imageUri);
+        }
+
         saveProfileToFirebase(username);
+    }
+
+    private void uploadProfileImage(Uri imageUri) {
+        // 프로필 사진을 Firebase Storage에 업로드합니다.
+        StorageReference profileImageRef = storageRef.child("profileImages/" + mAuth.getCurrentUser().getUid() + ".jpg");
+
+        profileImageRef.putFile(imageUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // 업로드 성공 시 동작
+                        Toast.makeText(getActivity(), "프로필 사진이 업로드되었습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // 업로드 실패 시 동작
+                        Toast.makeText(getActivity(), "프로필 사진 업로드에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void saveProfileToFirebase(String username) {
