@@ -33,4 +33,6 @@ public class ProductRegistrationFragment extends Fragment {
         return view;
     }
 
+
+
 }
