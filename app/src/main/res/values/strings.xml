@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">team_project</string> //앱 이름
 
+    //로그인,회원가입
     <string name="login" >로그인</string>  //로그인 페이지 로그인
     <string name="userid" >아이디(이메일)</string> //로그인페이지 아이디
     <string name="sign_up" >회원가입</string> //로그인,회원가입페이지 회원가입
@@ -15,19 +16,32 @@
     <string name="female">여</string> //회원가입페이지 성별 선택
     <string name="back_to_login">뒤로가기</string> //회원가입페이지 뒤로가기
 
+    //메인홈 프레그먼트
     <string name="title_home">홈</string> //홈프레그먼트 메뉴 이름
-    <string name="title_store" >상점</string> //상점프레그먼트 메뉴 이름
+    <string name="home_setting">홈 화면 설정</string> // 메인홈 설정
+
+    //환경 프레그먼트
+    <string name="title_environment" >환경</string> //환경프레그먼트 메뉴 이름
+    <string name="point_page">포인트페이지</string> //환경프레그먼트 탭 포인트페이지 이름
+    <string name="store_page">상점페이지</string>//환경프레그먼트 탭 상점페이지 이름
+
+    //게시판 프레그먼트
     <string name="title_board">게시판</string> //게시판프레그먼트 메뉴 이름
+
+    //채팅 프레그먼트
+    <string name="send">전송 </string>
     <string name="title_chat">채팅</string> //채팅프레그먼트 메뉴 이름
+    <string name="hint_enter_message">메세지 입력</string>
+
+    //프로필(마이페이지)프레그먼트
     <string name="title_profile">프로필</string> //프로필프레그먼트 메뉴 이름
 
-    <string name="home_setting">홈 화면 설정</string> // 메인홈 설정
+    //툴바
     <string name="notifications" >알림</string> //툴바 알림
     <string name="search" >검색</string> //툴바 검색
     <string name="search_hint" >검색</string> //검색페이지
     <string name="notification_title">알림 제목</string> //알림페이지
-
     <string name="back_button">뒤로 가기</string>
-    <string name="hint_enter_message">메세지 입력</string>
-    <string name="send">전송 </string>
+
+
 </resources>

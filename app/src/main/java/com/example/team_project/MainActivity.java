@@ -3,21 +3,16 @@ package com.example.team_project;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.widget.Toast;
-import androidx.annotation.NonNull;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import com.example.team_project.Board.BoardFragment;
 import com.example.team_project.Chat.FragmentChat;
+import com.example.team_project.Environment.EnvironmentFragment;
 import com.example.team_project.Home.HomeFragment;
-import com.example.team_project.Home.HomeSettingsFragment;
-import com.example.team_project.Toolbar.NotificationsFragment;
-import com.example.team_project.Toolbar.SearchFragment;
 import com.example.team_project.Profile.ProfileFragment;
-import com.example.team_project.Store.StoreFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportFragmentManager().addOnBackStackChangedListener(() -> {
             Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-            if (currentFragment instanceof HomeFragment || currentFragment instanceof StoreFragment || currentFragment instanceof BoardFragment || currentFragment instanceof FragmentChat || currentFragment instanceof ProfileFragment) {
+            if (currentFragment instanceof HomeFragment || currentFragment instanceof EnvironmentFragment || currentFragment instanceof BoardFragment || currentFragment instanceof FragmentChat || currentFragment instanceof ProfileFragment) {
                 showBottomNav();
             } else {
                 hideBottomNav();
@@ -87,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
 
                 if (itemId == R.id.navigation_home) {
                     selectedFragment = new HomeFragment();
-                } else if (itemId == R.id.navigation_store) {
-                    selectedFragment = new StoreFragment();
+                } else if (itemId == R.id.navigation_environment) {
+                    selectedFragment = new EnvironmentFragment();
                 } else if (itemId == R.id.navigation_board) {
                     selectedFragment = new BoardFragment();
                 } else if (itemId == R.id.navigation_chat) {

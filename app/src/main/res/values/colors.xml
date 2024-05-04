@@ -3,4 +3,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="colorPrimaryDark">#00574B</color> <!-- 사용자 이름 텍스트 색상 -->
+
+    <color name="tab_selected">#000000</color> <!-- 선택된 탭의 색상 -->
+    <color name="tab_unselected">#8E8E8E</color> <!-- 선택되지 않은 탭의 색상 -->
+
 </resources>
