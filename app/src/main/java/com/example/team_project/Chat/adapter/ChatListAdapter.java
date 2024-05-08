@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.team_project.Data.Chat;
-import com.example.team_project.Data.User;
+import com.example.team_project.chatData.Chat;
+import com.example.team_project.chatData.User;
 import com.example.team_project.R;
 
 import java.text.SimpleDateFormat;
@@ -31,7 +31,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_chat, parent, false);
+                .inflate(R.layout.fragment_chat_item, parent, false);
         return new ViewHolder(view);
     }
 

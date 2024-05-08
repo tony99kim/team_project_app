@@ -7,7 +7,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.team_project.Data.User;
+import com.example.team_project.chatData.User;
 import com.example.team_project.R;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_user, parent, false);
+                .inflate(R.layout.fragment_chat_item_user, parent, false);
         return new ViewHolder(view);
     }
 

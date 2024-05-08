@@ -1,4 +1,4 @@
-package com.example.team_project.Data;
+package com.example.team_project.chatData;
 
 
 import java.util.Date;

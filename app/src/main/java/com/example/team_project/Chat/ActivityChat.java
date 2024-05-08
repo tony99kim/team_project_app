@@ -2,7 +2,6 @@ package com.example.team_project.Chat;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,8 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.team_project.Chat.adapter.MessageListAdapter;
-import com.example.team_project.Data.Chat;
-import com.example.team_project.Data.Message;
+import com.example.team_project.chatData.Chat;
+import com.example.team_project.chatData.Message;
 import com.example.team_project.R;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
