@@ -28,6 +28,10 @@
     //게시판 프레그먼트
     <string name="title_board">게시판</string> //게시판프레그먼트 메뉴 이름
 
+    //프로필(마이페이지)프레그먼트
+    <string name="title_user">친구</string> //친구프레그먼트 메뉴 이름
+    <string name="chat_button">채팅하기</string>
+
     //채팅 프레그먼트
     <string name="send">전송 </string>
     <string name="title_chat">채팅</string> //채팅프레그먼트 메뉴 이름

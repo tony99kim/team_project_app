@@ -1,7 +1,9 @@
 package com.example.team_project.Chat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,26 +17,141 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.team_project.Chat.adapter.ChatListAdapter;
+import com.example.team_project.Chat.adapter.UserListAdapter;
+import com.example.team_project.Data.Chat;
+import com.example.team_project.Data.User;
 import com.example.team_project.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
 import android.util.TypedValue;
+import android.widget.Toast;
 
 public class FragmentChat extends Fragment {
 
     private LinearLayout layout; // 뷰 참조를 유지
+    private ArrayList<Chat> chats = new ArrayList<>(); // 채팅방 리스트
+    private ArrayList<User> users = new ArrayList<>(); // 유저 리스트
     private ArrayList<String> chatRooms = new ArrayList<>(); // 채팅방 리스트
+
+    private RecyclerView recyclerView;
+    private ChatListAdapter adapter;
+    private String email = "";
+    private String name = "";
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
-        layout = view.findViewById(R.id.linear_layout_chat_rooms);
+        //layout = view.findViewById(R.id.linear_layout_chat_rooms);
 
-        Button addButton = view.findViewById(R.id.button_add_chat_room);
-        addButton.setOnClickListener(v -> showAddRoomDialog());
+        Button addButton = view.findViewById(R.id.button_find_user);
+        addButton.setOnClickListener(v -> showFragmentUser());
+
+        recyclerView = view.findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new ChatListAdapter(email, chats, users, chat -> {
+
+            String receiverEmail = "";
+            String receiverName = "";
+
+            if (chat.getUserEmail1().equals(email)) {
+                receiverEmail = chat.getUserEmail2();
+            } else {
+                receiverEmail = chat.getUserEmail1();
+            }
+
+            for (User user : users) {
+                if (user.getEmail().equals(receiverEmail)) {
+                    receiverName = user.getName();
+                    break;
+                }
+            }
+
+            Intent intent = new Intent(getContext(), ActivityChat.class);
+            intent.putExtra("userEmail1", email);
+            intent.putExtra("userEmail2", receiverEmail);
+            intent.putExtra("user1", name);
+            intent.putExtra("user2", receiverName);
+
+            startActivity(intent);
+        });
+        recyclerView.setAdapter(adapter);
+
+        loadUsers();
 
         return view;
+    }
+
+    private void showFragmentUser() {
+        FragmentUser fragmentUser = new FragmentUser();
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.fragment_container, fragmentUser);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+
+    private void loadUsers() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    User user = document.toObject(User.class);
+
+                    users.add(user);
+                }
+                getMyInfo();
+
+            } else {
+                // 데이터 로드 실패 처리
+            }
+        });
+    }
+
+    private void getMyInfo() {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(userId);
+
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        email = documentSnapshot.getString("email");
+                        name = documentSnapshot.getString("name");
+
+                        loadChats();
+                    }
+                })
+                .addOnFailureListener(e -> Toast.makeText(getActivity(), "닉네임을 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show());
+    }
+
+    private void loadChats() {
+        chats.clear();
+
+        try {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("chats").whereEqualTo("userEmail1", email).get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        chats.addAll(queryDocumentSnapshots.toObjects(Chat.class));
+                        db.collection("chats").whereEqualTo("userEmail2", email).get()
+                                .addOnSuccessListener(queryDocumentSnapshots2 -> {
+                                    chats.addAll(queryDocumentSnapshots2.toObjects(Chat.class));
+                                    chats.sort((c1, c2) -> c2.getUpdatedAt().compareTo(c1.getUpdatedAt()));
+
+                                    adapter.notifyDataSetChanged();
+                                });
+                    });
+        } catch (Exception e) {
+            Log.e("ChatListFragment", "loadChats: " + e.getMessage());
+        }
     }
 
     private void showAddRoomDialog() {

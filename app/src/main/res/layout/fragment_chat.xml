@@ -15,30 +15,39 @@
         android:textStyle="bold"
         android:padding="16dp" />
 
-    <!-- Chat room list -->
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <LinearLayout
-            android:id="@+id/linear_layout_chat_rooms"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
 
-            <!-- Add more chat room items here -->
+    </androidx.recyclerview.widget.RecyclerView>
 
-        </LinearLayout>
-    </ScrollView>
+
+    <!-- Chat room list -->
+<!--    <ScrollView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_weight="1">-->
+
+<!--        <LinearLayout-->
+<!--            android:id="@+id/linear_layout_chat_rooms"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical">-->
+
+<!--            &lt;!&ndash; Add more chat room items here &ndash;&gt;-->
+
+<!--        </LinearLayout>-->
+<!--    </ScrollView>-->
 
     <!-- Button to add new chat room -->
     <Button
-        android:id="@+id/button_add_chat_room"
+        android:id="@+id/button_find_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="새로운 채팅방 추가"
-        android:layout_margin="16dp"
-        android:onClick="addNewChatRoom" />
+        android:text="친구 목록 확인"
+        android:layout_margin="16dp" />
 
 </LinearLayout>
