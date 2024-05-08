@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 툴바 -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/board_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="댓글 단 글"
+        android:textSize="24sp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"/>
+
+    <!-- 내가 댓글 단 글을 표시하는 뷰들을 추가하세요. -->
+
+
+
+
+</RelativeLayout>
