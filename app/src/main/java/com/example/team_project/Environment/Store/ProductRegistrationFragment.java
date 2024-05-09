@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import com.example.team_project.Environment.Store.Product;
 
 import com.example.team_project.Environment.EnvironmentFragment;
 import com.google.firebase.auth.FirebaseAuth;
@@ -154,20 +155,6 @@ public class ProductRegistrationFragment extends Fragment {
     private String getFileExtension(Uri uri) {
         // ContentResolver를 사용하여 파일 확장자를 가져옵니다.
         return "jpg"; // 예시로 "jpg"를 반환합니다. 실제 구현에서는 uri에 따른 실제 확장자를 반환해야 합니다.
-    }
-
-    // Product 클래스 (상품 정보 저장을 위한 클래스)
-    // 이 클래스는 상품의 아이디, 제목, 가격, 설명을 저장합니다.
-    public static class Product {
-        public String productId, userId, title, price, description;
-
-        public Product(String productId, String userId, String title, String price, String description) {
-            this.productId = productId;
-            this.userId = userId; // 사용자 ID 필드 추가
-            this.title = title;
-            this.price = price;
-            this.description = description;
-        }
     }
 
 }
