@@ -69,7 +69,7 @@
             android:layout_marginTop="8dp" />
         <!-- 전화번호 -->
         <EditText
-            android:id="@+id/etPassword"
+            android:id="@+id/etPhoneNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="전화번호"
@@ -83,25 +83,24 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/darker_gray"
-            android:layout_below="@id/etPassword"
+            android:layout_below="@id/etPhoneNumber"
             android:layout_marginTop="8dp" />
-        <!-- 닉네임 -->
         <EditText
-            android:id="@+id/etUsername"
+            android:id="@+id/etSignUpPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="이메일"
+            android:hint="비밀번호"
             android:inputType="text"
             android:textSize="18sp"
             android:layout_marginStart="15dp"
             android:layout_marginTop="24dp"
-            android:layout_below="@id/etPassword"/>
+            android:layout_below="@id/etPhoneNumber"/>
         <!-- 구분선 -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/darker_gray"
-            android:layout_below="@id/etUsername"
+            android:layout_below="@id/etSignUpPassword"
             android:layout_marginTop="8dp" />
         <!-- 프로필 저장 버튼 -->
     <Button
@@ -109,9 +108,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="저장"
-        android:layout_below="@id/etUsername"
+        android:layout_below="@id/etSignUpPassword"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp" />
+        <!-- 구분선 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_below="@id/saveButton"
+            android:layout_marginTop="8dp" />
+
 
 </RelativeLayout>
 </ScrollView>
