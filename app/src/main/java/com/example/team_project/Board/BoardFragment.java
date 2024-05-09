@@ -42,6 +42,10 @@ public class BoardFragment extends Fragment {
         TextView eventTextView = view.findViewById(R.id.event_board_textview);
         TextView volunteerTextView = view.findViewById(R.id.volunteer_board_textview);
 
+        TextView myPostTextView = view.findViewById(R.id.board_my_post_list_textview);
+        TextView myCommentPostTextView = view.findViewById(R.id.board_my_comment_post_list_textview);
+        TextView myFavoritesPostTextView = view.findViewById(R.id.board_my_favorites_post_list_textview);
+
         // 각 TextView의 클릭 이벤트 처리
         newsTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +90,50 @@ public class BoardFragment extends Fragment {
                 viewPager.setCurrentItem(3);
             }
         });
+
+
+
+        // 사용자 맞춤 카테고리
+
+        myPostTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 내가 쓴 글 Fragment로 이동하는 코드
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, new BoardMyPostFragment());
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
+
+        myCommentPostTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 댓글 단 글 Fragment로 이동하는 코드
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, new BoardMyCommentFragment());
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
+
+        myFavoritesPostTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 즐겨찾기 한 글 Fragment로 이동하는 코드
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, new BoardMyFavoritesFragment());
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
+
+
+
+
+
+
+
 
 
         // 게시판 작성 버튼 클릭 이벤트 처리
@@ -145,4 +193,3 @@ public class BoardFragment extends Fragment {
         transaction.commit();
     }
 }
-

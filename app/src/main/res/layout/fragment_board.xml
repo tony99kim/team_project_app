@@ -90,28 +90,34 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/board_my_post_list_textview"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="내가 쓴 글"
             android:textColor="@color/black"
             android:textSize="15dp"
-            android:layout_marginEnd="8dp"></TextView>
+            android:layout_marginEnd="8dp"
+            android:clickable="true"></TextView>
 
         <TextView
+            android:id="@+id/board_my_comment_post_list_textview"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="댓글 단 글"
             android:textColor="@color/black"
             android:textSize="15dp"
-            android:layout_marginEnd="8dp"></TextView>
+            android:layout_marginEnd="8dp"
+            android:clickable="true"></TextView>
 
         <TextView
+            android:id="@+id/board_my_favorites_post_list_textview"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="즐겨찾기 한 글"
             android:textColor="@color/black"
             android:textSize="15dp"
-            android:layout_marginEnd="8dp"></TextView>
+            android:layout_marginEnd="8dp"
+            android:clickable="true"></TextView>
 
 
     </LinearLayout>

@@ -48,6 +48,12 @@
                 android:text="작성 날짜"
                 android:textSize="16sp" />
 
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:background="@drawable/layout_background"
+                android:src="@drawable/tree_image" />
+
             <TextView
                 android:id="@+id/board_post_content"
                 android:layout_width="match_parent"

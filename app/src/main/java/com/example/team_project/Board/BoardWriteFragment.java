@@ -19,7 +19,7 @@ import com.example.team_project.R;
 public class BoardWriteFragment extends Fragment {
 
     private Button postButton;
-    private CheckBox board_free_checkbox, board_news_checkbox;
+    private CheckBox board_free_checkbox, board_news_checkbox, board_event_checkbox, board_volunteer_checkbox;
 
     @Nullable
     @Override
@@ -56,47 +56,45 @@ public class BoardWriteFragment extends Fragment {
         // 체크박스 초기화 및 이벤트 리스너 설정
         board_news_checkbox = view.findViewById(R.id.board_news_checkbox);
         board_free_checkbox = view.findViewById(R.id.board_free_checkbox);
+        board_event_checkbox = view.findViewById(R.id.board_event_checkbox);
+        board_volunteer_checkbox = view.findViewById(R.id.board_volunteer_checkbox);
 
-        board_news_checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            onNewsCheckboxClicked(buttonView, isChecked);
-        });
-
-        board_free_checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            onFreeCheckboxClicked(buttonView, isChecked);
-        });
+        board_news_checkbox.setOnCheckedChangeListener(this::onNewsCheckboxClicked);
+        board_free_checkbox.setOnCheckedChangeListener(this::onFreeCheckboxClicked);
+        board_event_checkbox.setOnCheckedChangeListener(this::onEventCheckboxClicked);
+        board_volunteer_checkbox.setOnCheckedChangeListener(this::onVolunteerCheckboxClicked);
 
         return view;
     }
 
     public void onNewsCheckboxClicked(View view, boolean isChecked) {
-        // 체크박스 상태 확인
-        boolean newsChecked = isChecked;
-
-        // 두 체크박스가 모두 선택되었는지 검사
-        board_free_checkbox = getView().findViewById(R.id.board_free_checkbox);
-        boolean freeChecked = board_free_checkbox.isChecked();
-
-        if (newsChecked && freeChecked) {
-            // 경고 메시지 표시
-            Toast.makeText(getContext(), "한 개의 카테고리만 선택해주세요", Toast.LENGTH_SHORT).show();
-            // 체크 해제
-            board_news_checkbox.setChecked(false);
-        }
+        checkMultipleCategories(board_news_checkbox, board_free_checkbox, board_event_checkbox, board_volunteer_checkbox, isChecked);
     }
 
     public void onFreeCheckboxClicked(View view, boolean isChecked) {
+        checkMultipleCategories(board_free_checkbox, board_news_checkbox, board_event_checkbox, board_volunteer_checkbox, isChecked);
+    }
+
+    public void onEventCheckboxClicked(View view, boolean isChecked) {
+        checkMultipleCategories(board_event_checkbox, board_news_checkbox, board_free_checkbox, board_volunteer_checkbox, isChecked);
+    }
+
+    public void onVolunteerCheckboxClicked(View view, boolean isChecked) {
+        checkMultipleCategories(board_volunteer_checkbox, board_news_checkbox, board_free_checkbox, board_event_checkbox, isChecked);
+    }
+
+    private void checkMultipleCategories(CheckBox checkBox1, CheckBox checkBox2, CheckBox checkBox3, CheckBox checkBox4, boolean isChecked) {
         // 체크박스 상태 확인
-        boolean freeChecked = isChecked;
+        boolean categoryChecked = isChecked;
 
-        // 두 체크박스가 모두 선택되었는지 검사
-        board_news_checkbox = getView().findViewById(R.id.board_news_checkbox);
-        boolean newsChecked = board_news_checkbox.isChecked();
+        // 다른 체크박스의 상태 확인
+        boolean otherCategoryChecked = checkBox2.isChecked() || checkBox3.isChecked() || checkBox4.isChecked();
 
-        if (freeChecked && newsChecked) {
+        if (categoryChecked && otherCategoryChecked) {
             // 경고 메시지 표시
             Toast.makeText(getContext(), "한 개의 카테고리만 선택해주세요", Toast.LENGTH_SHORT).show();
             // 체크 해제
-            board_free_checkbox.setChecked(false);
+            checkBox1.setChecked(false);
         }
     }
 }
