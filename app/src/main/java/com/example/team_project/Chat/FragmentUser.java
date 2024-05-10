@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.team_project.Chat.adapter.UserListAdapter;
-import com.example.team_project.chatData.User;
+import com.example.team_project.Chat.ChatData.User_ChatData;
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class FragmentUser extends Fragment {
     private RecyclerView recyclerView;
     private UserListAdapter adapter;
-    private ArrayList<User> users = new ArrayList<>(); // 사용자 목록
+    private ArrayList<User_ChatData> users = new ArrayList<>(); // 사용자 목록
 
     private String email = "";
     private String name = "";
@@ -75,7 +75,7 @@ public class FragmentUser extends Fragment {
         db.collection("users").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
-                    User user = document.toObject(User.class);
+                    User_ChatData user = document.toObject(User_ChatData.class);
 
                     if (user.getEmail().equals(email)) continue;
 

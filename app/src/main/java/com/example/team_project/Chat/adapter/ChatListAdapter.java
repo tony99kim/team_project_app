@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.team_project.chatData.Chat;
-import com.example.team_project.chatData.User;
+import com.example.team_project.Chat.ChatData.Chat_ChatData;
+import com.example.team_project.Chat.ChatData.User_ChatData;
 import com.example.team_project.R;
 
 import java.text.SimpleDateFormat;
@@ -17,11 +17,11 @@ import java.util.Locale;
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
 
     private String userEmail;
-    private List<Chat> dataList;
-    private List<User> users;
+    private List<Chat_ChatData> dataList;
+    private List<User_ChatData> users;
     private OnClickUser listener;
 
-    public ChatListAdapter(String userEmail, List<Chat> dataList, List<User> users, OnClickUser listener) {
+    public ChatListAdapter(String userEmail, List<Chat_ChatData> dataList, List<User_ChatData> users, OnClickUser listener) {
         this.userEmail = userEmail;
         this.dataList = dataList;
         this.users = users;
@@ -37,9 +37,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Chat chat = dataList.get(position);
+        Chat_ChatData chat = dataList.get(position);
         String otherUserEmail = chat.getUserEmail1().equals(userEmail) ? chat.getUserEmail2() : chat.getUserEmail1();
-        User otherUser = findUserByEmail(otherUserEmail);
+        User_ChatData otherUser = findUserByEmail(otherUserEmail);
 
         if (otherUser != null) {
             holder.textName.setText(otherUser.getName());
@@ -63,8 +63,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         return dataList.size();
     }
 
-    private User findUserByEmail(String email) {
-        for (User user : users) {
+    private User_ChatData findUserByEmail(String email) {
+        for (User_ChatData user : users) {
             if (user.getEmail().equals(email)) {
                 return user;
             }
@@ -86,6 +86,6 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     }
 
     public interface OnClickUser {
-        void onStartChat(Chat chat);
+        void onStartChat(Chat_ChatData chat);
     }
 }

@@ -1,16 +1,16 @@
-package com.example.team_project.chatData;
+package com.example.team_project.Chat.ChatData;
 
 
 import java.util.Date;
 
-public class Chat {
+public class Chat_ChatData {
     private String id;
     private String userEmail1;
     private String userEmail2;
     private String lastMessage;
     private Date updatedAt;
 
-    public Chat() {
+    public Chat_ChatData() {
         this.id = "";
         this.userEmail1 = "";
         this.userEmail2 = "";
@@ -18,7 +18,7 @@ public class Chat {
         this.updatedAt = new Date();
     }
 
-    public Chat(String id, String userEmail1, String userEmail2, String lastMessage, Date updatedAt) {
+    public Chat_ChatData(String id, String userEmail1, String userEmail2, String lastMessage, Date updatedAt) {
         this.id = id;
         this.userEmail1 = userEmail1;
         this.userEmail2 = userEmail2;

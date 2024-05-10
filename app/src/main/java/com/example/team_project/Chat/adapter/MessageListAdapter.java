@@ -7,7 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.team_project.chatData.Message;
+import com.example.team_project.Chat.ChatData.Message_ChatData;
 import com.example.team_project.R;
 
 import java.util.List;
@@ -15,9 +15,9 @@ import java.util.List;
 public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.ViewHolder> {
 
     private String email;
-    private List<Message> dataList;
+    private List<Message_ChatData> dataList;
 
-    public MessageListAdapter(String email, List<Message> dataList) {
+    public MessageListAdapter(String email, List<Message_ChatData> dataList) {
         this.email = email;
         this.dataList = dataList;
     }
@@ -31,7 +31,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Message message = dataList.get(position);
+        Message_ChatData message = dataList.get(position);
 
         if ("system".equals(message.getSender())) {
             holder.textSystemMessage.setText(message.getContent());

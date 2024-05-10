@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.team_project.Chat.adapter.MessageListAdapter;
-import com.example.team_project.chatData.Chat;
-import com.example.team_project.chatData.Message;
+import com.example.team_project.Chat.ChatData.Chat_ChatData;
+import com.example.team_project.Chat.ChatData.Message_ChatData;
 import com.example.team_project.R;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -39,7 +39,7 @@ public class ActivityChat extends AppCompatActivity {
     private String user1;
     private String user2;
 
-    private ArrayList<Message> messages = new ArrayList<>();
+    private ArrayList<Message_ChatData> messages = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,7 +85,7 @@ public class ActivityChat extends AppCompatActivity {
                 db.collection("chats").document(id).get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         if (!task.getResult().exists()) {
-                            Chat newChat = new Chat(id, email1, email2, "", new Date());
+                            Chat_ChatData newChat = new Chat_ChatData(id, email1, email2, "", new Date());
                             db.collection("chats").document(id).set(newChat);
                             addInitialMessage(id);
                         } else {
@@ -112,13 +112,13 @@ public class ActivityChat extends AppCompatActivity {
                     }
 
                     if (snapshot != null && !snapshot.isEmpty()) {
-                        ArrayList<Message> newMessages = new ArrayList<>();
+                        ArrayList<Message_ChatData> newMessages = new ArrayList<>();
                         for (DocumentSnapshot doc : snapshot.getDocuments()) {
-                            newMessages.add(doc.toObject(Message.class));
+                            newMessages.add(doc.toObject(Message_ChatData.class));
                         }
                         messages.clear();
                         messages.addAll(newMessages);
-                        Collections.sort(messages, Comparator.comparing(Message::getCreatedAt));
+                        Collections.sort(messages, Comparator.comparing(Message_ChatData::getCreatedAt));
                         recyclerView.getAdapter().notifyDataSetChanged();
                         recyclerView.scrollToPosition(messages.size() - 1);
                     } else {
@@ -132,7 +132,7 @@ public class ActivityChat extends AppCompatActivity {
             try {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일(E)", Locale.KOREAN);
                 String currentDate = dateFormat.format(new Date());
-                Message initialMessage = new Message(chatId, "system", currentDate, new Date());
+                Message_ChatData initialMessage = new Message_ChatData(chatId, "system", currentDate, new Date());
 
                 db.collection("messages").add(initialMessage).addOnSuccessListener(documentReference -> {
                     messages.add(initialMessage);
@@ -158,11 +158,11 @@ public class ActivityChat extends AppCompatActivity {
                 .orderBy("createdAt")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    ArrayList<Message> loadedMessages = new ArrayList<>();
+                    ArrayList<Message_ChatData> loadedMessages = new ArrayList<>();
                     for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                        loadedMessages.add(document.toObject(Message.class));
+                        loadedMessages.add(document.toObject(Message_ChatData.class));
                     }
-                    Collections.sort(loadedMessages, Comparator.comparing(Message::getCreatedAt));
+                    Collections.sort(loadedMessages, Comparator.comparing(Message_ChatData::getCreatedAt));
                     messages.clear();
                     messages.addAll(loadedMessages);
 
@@ -178,7 +178,7 @@ public class ActivityChat extends AppCompatActivity {
     private void sendMessage(String chatId, String email, String content) {
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                Message newMessage = new Message(chatId, email, content, new Date());
+                Message_ChatData newMessage = new Message_ChatData(chatId, email, content, new Date());
                 db.collection("messages").add(newMessage).addOnSuccessListener(documentReference -> {
                     messages.add(newMessage);
                     runOnUiThread(() -> {
