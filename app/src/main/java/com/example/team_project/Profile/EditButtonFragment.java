@@ -1,8 +1,6 @@
 package com.example.team_project.Profile;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,27 +12,27 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.example.team_project.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class EditButtonFragment extends Fragment {
-    private EditText usernameEditText, phoneEditText, passwordEditText;
+    private EditText usernameEditText, etPhoneNumber, passwordEditText;
     private ImageView profileImageView;
     private Button changePhotoButton, saveButton;
 
@@ -42,13 +40,17 @@ public class EditButtonFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private StorageReference storageRef;
-    private static final int PICK_IMAGE_REQUEST = 1;
 
+    private ActivityResultLauncher<String> galleryLauncher;
+    private SharedPreferences sharedPreferences; // sharedPreferences를 클래스 필드로 선언합니다.
+
+    // onCreateView 메서드 수정
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile_edit_button_fragment, container, false);
 
+        // FirebaseAuth, FirebaseFirestore, FirebaseStorage 인스턴스 생성
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         storageRef = FirebaseStorage.getInstance().getReference();
@@ -65,82 +67,124 @@ public class EditButtonFragment extends Fragment {
         // 뷰 초기화
         profileImageView = view.findViewById(R.id.profileImageView);
         usernameEditText = view.findViewById(R.id.usernameEditText);
-        phoneEditText = view.findViewById(R.id.etPhoneNumber); // 전화번호 EditText
+        etPhoneNumber = view.findViewById(R.id.etPhoneNumber); // 전화번호 EditText
         passwordEditText = view.findViewById(R.id.etSignUpPassword); // 비밀번호 EditText
         changePhotoButton = view.findViewById(R.id.changePhotoButton);
         saveButton = view.findViewById(R.id.saveButton);
 
         // 저장된 사용자 정보 불러오기
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        sharedPreferences = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         String savedUsername = sharedPreferences.getString("username", "사용자 이름");
+        String savedPhone = sharedPreferences.getString("phone", ""); // SharedPreferences에서 전화번호를 가져옵니다.
         usernameEditText.setText(savedUsername);
+        etPhoneNumber.setText(savedPhone);
 
         // 저장 버튼 클릭 이벤트 처리
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 사용자가 입력한 정보 가져오기
-                String username = usernameEditText.getText().toString().trim();
-                String password = passwordEditText.getText().toString().trim(); // 입력된 비밀번호 가져오기
-                String phone = phoneEditText.getText().toString().trim(); // 입력된 전화번호 가져오기
+        saveButton.setOnClickListener(v -> {
+            // 사용자가 입력한 정보 가져오기
+            String username = usernameEditText.getText().toString().trim();
+            String password = passwordEditText.getText().toString().trim(); // 입력된 비밀번호 가져오기
+            String phone = etPhoneNumber.getText().toString().trim(); // 입력된 전화번호 가져오기
 
-                // 입력한 정보가 비어있지 않은지 확인
-                if (!username.isEmpty() && !password.isEmpty() && !phone.isEmpty()) {
-                    // 정보 저장 및 업로드 함수 호출
-                    saveProfile(username, password, phone);
-                } else {
-                    Toast.makeText(getActivity(), "모든 필드를 입력하세요.", Toast.LENGTH_SHORT).show();
-                }
+            // Firebase에 정보 업로드
+            saveProfileToFirebase(username, password, phone);
+
+            etPhoneNumber.setText(phone); // 전화번호 업로드 후 EditText에 표시
+            usernameEditText.setText(username); // 닉네임 업로드 후 EditText에 표시
+
+            // 프로필 사진이 변경되었으면 업로드
+            if (imageUri != null) {
+                uploadProfileImage(imageUri);
             }
+
+            // 업로드 성공 메시지 표시
+            Toast.makeText(getActivity(), "프로필이 업데이트되었습니다.", Toast.LENGTH_SHORT).show();
         });
 
         // 프로필 사진 변경 버튼 클릭 이벤트 처리
-        changePhotoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openGallery();
+        changePhotoButton.setOnClickListener(v -> openGallery());
+
+        // 갤러리 런처 설정
+        galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
+            if (result != null) {
+                imageUri = result;
+                profileImageView.setImageURI(imageUri);
             }
         });
 
+        // 저장된 프로필 이미지가 있으면 설정
+        String profileImageUrl = sharedPreferences.getString("profileImageUrl", null);
+        if (profileImageUrl != null) {
+            profileImageView.setImageURI(Uri.parse(profileImageUrl));
+        }
+        // 사용자 정보 가져오기
+        setUserInfoFromFirebase();
+        // 프로필 사진 설정
+        setProfileImageFromFirebase();
+
         return view;
     }
+    private void setUserInfoFromFirebase() {
+// 현재 사용자의 UID 가져오기
+        String userId = mAuth.getCurrentUser().getUid();
+
+// Firestore에서 사용자 정보 가져오기
+        DocumentReference userRef = db.collection("users").document(userId);
+        userRef.get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // 사용자 정보가 있을 경우
+                        String username = documentSnapshot.getString("username");
+                        String phone = documentSnapshot.getString("phone");
+
+                        // 가져온 정보를 SharedPreferences에 저장
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("username", username);
+                        editor.putString("phone", phone);
+                        editor.apply();
+
+                        // 가져온 정보를 EditText에 설정
+                        usernameEditText.setText(username);
+                        etPhoneNumber.setText(phone);
+                    } else {
+                        // 사용자 정보가 없을 경우
+                        Toast.makeText(getActivity(), "사용자 정보를 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // 정보를 가져오는 중 오류 발생 시
+                    Toast.makeText(getActivity(), "사용자 정보를 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                });
+    }
+    // 프로필 사진 가져와서 설정
+    private void setProfileImageFromFirebase() {
+        // 현재 사용자의 UID 가져오기
+        String userId = mAuth.getCurrentUser().getUid();
+
+        // Firestore에서 사용자의 프로필 사진 가져오기
+        StorageReference profileImageRef = storageRef.child("profileImages/" + userId + ".jpg");
+        profileImageRef.getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+                    // 프로필 사진 URL을 가져옴
+                    String profileImageUrl = uri.toString();
+
+                    // 프로필 사진을 설정
+                    Glide.with(requireContext())
+                            .load(profileImageUrl)
+                            .placeholder(R.drawable.ic_profile) // 기본 이미지 설정
+                            .error(R.drawable.ic_profile) // 에러 시 이미지 설정
+                            .into(profileImageView);
+                })
+                .addOnFailureListener(e -> {
+                    // 프로필 사진이 없을 경우
+                    Toast.makeText(getActivity(), "프로필 사진을 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+
 
     private void openGallery() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
-            imageUri = data.getData();
-            profileImageView.setImageURI(imageUri);
-        }
-    }
-
-    private void saveProfile(String username, String password, String phone) {
-        // SharedPreferences를 사용하여 사용자 정보 저장
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("username", username);
-        editor.apply(); // 변경 사항 저장
-
-        // Firebase에 정보 업로드
-        saveProfileToFirebase(username, password, phone);
-
-        // 업로드 후 화면에 변경된 정보 표시
-        usernameEditText.setText(username);
-
-        // 프로필 사진이 변경되었으면 업로드
-        if (imageUri != null) {
-            uploadProfileImage(imageUri);
-        }
-
-        // 업로드 성공 메시지 표시
-        Toast.makeText(getActivity(), "프로필이 업데이트되었습니다.", Toast.LENGTH_SHORT).show();
+        galleryLauncher.launch("image/*");
     }
 
     private void uploadProfileImage(Uri imageUri) {
@@ -148,25 +192,25 @@ public class EditButtonFragment extends Fragment {
         StorageReference profileImageRef = storageRef.child("profileImages/" + mAuth.getCurrentUser().getUid() + ".jpg");
 
         profileImageRef.putFile(imageUri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // 업로드 성공 시 동작
-                        Toast.makeText(getActivity(), "프로필 사진이 업로드되었습니다.", Toast.LENGTH_SHORT).show();
-                    }
+                .addOnSuccessListener(taskSnapshot -> {
+                    // 업로드 성공 시 다운로드 URL 가져와서 저장
+                    profileImageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        // 이미지 다운로드 URL을 SharedPreferences에 저장
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("profileImageUrl", uri.toString());
+                        editor.apply();
+                    });
+
+                    Toast.makeText(getActivity(), "프로필 사진이 업로드되었습니다.", Toast.LENGTH_SHORT).show();
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // 업로드 실패 시 동작
-                        Toast.makeText(getActivity(), "프로필 사진 업로드에 실패했습니다.", Toast.LENGTH_SHORT).show();
-                    }
+                .addOnFailureListener(e -> {
+                    // 업로드 실패 시 동작
+                    Toast.makeText(getActivity(), "프로필 사진 업로드에 실패했습니다.", Toast.LENGTH_SHORT).show();
                 });
     }
 
     private void saveProfileToFirebase(String username, String password, String phone) {
         String userId = mAuth.getCurrentUser().getUid();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userRef = db.collection("users").document(userId);
         Map<String, Object> updates = new HashMap<>();
         updates.put("username", username);
@@ -186,4 +230,7 @@ public class EditButtonFragment extends Fragment {
                     Toast.makeText(getActivity(), "Firebase에 프로필 업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show();
                 });
     }
+
+
+
 }
