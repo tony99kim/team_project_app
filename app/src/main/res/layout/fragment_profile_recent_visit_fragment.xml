@@ -14,13 +14,12 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="최근 방문 화면"
-        android:textSize="24sp"
-        android:layout_gravity="center"
-        android:layout_marginTop="16dp"/>
+    <!-- Recent Visit ListView -->
+    <ListView
+        android:id="@+id/recentVisitListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar" />
 
     <!-- 최근 방문 내용을 표시하는 뷰들을 추가하세요. -->
 
