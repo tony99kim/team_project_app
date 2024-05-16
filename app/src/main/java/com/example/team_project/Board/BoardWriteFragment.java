@@ -16,9 +16,15 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.example.team_project.R;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+
 public class BoardWriteFragment extends Fragment {
 
-    private Button postButton;
+    private static final int PICK_IMAGE_REQUEST = 1;
+
+    private Button postButton, board_post_pic_button;
     private CheckBox board_free_checkbox, board_news_checkbox, board_event_checkbox, board_volunteer_checkbox;
 
     @Nullable
@@ -33,6 +39,18 @@ public class BoardWriteFragment extends Fragment {
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             activity.getSupportActionBar().setTitle("글쓰기");
         }
+
+
+        board_post_pic_button = view.findViewById(R.id.board_post_pic_button);
+        board_post_pic_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFileChooser(); // 버튼을 클릭할 때 파일 선택기를 열도록 openFileChooser() 메서드를 호출합니다.
+            }
+        });
+
+
+
 
         postButton = view.findViewById(R.id.buttonPost);
         postButton.setOnClickListener(v -> {
@@ -97,4 +115,14 @@ public class BoardWriteFragment extends Fragment {
             checkBox1.setChecked(false);
         }
     }
+
+
+    private void openFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
 }
