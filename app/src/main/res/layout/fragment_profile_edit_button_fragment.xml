@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-//
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -30,7 +30,7 @@
                 android:id="@+id/profileImageView"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-
+                android:src="@drawable/ic_profile"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"/>
             <!-- 프로필 사진 변경 버튼 -->
@@ -69,11 +69,11 @@
             android:layout_marginTop="8dp" />
         <!-- 전화번호 -->
         <EditText
-            android:id="@+id/etPhoneNumber"
+            android:id="@+id/etPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="전화번호"
-            android:inputType="phone"
+            android:inputType="text"
             android:textSize="18sp"
             android:layout_marginStart="15dp"
             android:layout_marginTop="24dp"
@@ -83,24 +83,25 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/darker_gray"
-            android:layout_below="@id/etPhoneNumber"
+            android:layout_below="@id/etPassword"
             android:layout_marginTop="8dp" />
+        <!-- 닉네임 -->
         <EditText
-            android:id="@+id/etSignUpPassword"
+            android:id="@+id/etUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="비밀번호"
-            android:inputType="textPassword"
+            android:hint="이메일"
+            android:inputType="text"
             android:textSize="18sp"
             android:layout_marginStart="15dp"
             android:layout_marginTop="24dp"
-            android:layout_below="@id/etPhoneNumber"/>
+            android:layout_below="@id/etPassword"/>
         <!-- 구분선 -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/darker_gray"
-            android:layout_below="@id/etSignUpPassword"
+            android:layout_below="@id/etUsername"
             android:layout_marginTop="8dp" />
         <!-- 프로필 저장 버튼 -->
     <Button
@@ -108,17 +109,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="저장"
-        android:layout_below="@id/etSignUpPassword"
+        android:layout_below="@id/etUsername"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp" />
-        <!-- 구분선 -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray"
-            android:layout_below="@id/saveButton"
-            android:layout_marginTop="8dp" />
-
 
 </RelativeLayout>
 </ScrollView>

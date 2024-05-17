@@ -23,25 +23,13 @@
             android:id="@+id/board_news_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="환경 뉴스" />
+            android:text="오늘의 환경" />
 
         <CheckBox
             android:id="@+id/board_free_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="자유게시판" />
-
-        <CheckBox
-            android:id="@+id/board_event_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="이벤트" />
-
-        <CheckBox
-            android:id="@+id/board_volunteer_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="봉사" />
 
     </LinearLayout>
 
