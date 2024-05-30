@@ -1,5 +1,5 @@
 package com.example.team_project.Chat;
-
+// 최종확인
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
