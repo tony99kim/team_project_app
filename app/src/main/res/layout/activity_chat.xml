@@ -33,6 +33,16 @@
             android:textSize="20sp"
             android:textStyle="bold"/>
 
+        <ImageView
+            android:id="@+id/btn_exit"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/ic_exit"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
