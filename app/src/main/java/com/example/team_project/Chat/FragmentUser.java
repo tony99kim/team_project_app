@@ -2,13 +2,9 @@ package com.example.team_project.Chat;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.team_project.Chat.adapter.UserListAdapter;
-import com.example.team_project.Data.User;
+import com.example.team_project.Chat.ChatData.User_ChatData;
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -30,28 +26,16 @@ import java.util.ArrayList;
 public class FragmentUser extends Fragment {
     private RecyclerView recyclerView;
     private UserListAdapter adapter;
-    private ArrayList<User> users = new ArrayList<>(); // 사용자 목록
-    private ImageView buttonBack;
-    private EditText editSearch;
+    private ArrayList<User_ChatData> users = new ArrayList<>(); // 사용자 목록
 
     private String email = "";
     private String name = "";
-
-
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat_user, container, false);
-
-        buttonBack = view.findViewById(R.id.btn_back);
-        buttonBack.setOnClickListener(v -> {
-            if (getParentFragmentManager() != null) {
-                getParentFragmentManager().popBackStack();
-            }
-        });
-
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new UserListAdapter(users, user -> {
@@ -65,45 +49,9 @@ public class FragmentUser extends Fragment {
         });
         recyclerView.setAdapter(adapter);
 
-        editSearch = view.findViewById(R.id.edit_search);
-        editSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String keyword = charSequence.toString();
-
-                if (!keyword.trim().isEmpty()) {
-                    ArrayList<User> filteredUsers = new ArrayList<>();
-                    for (User user : users) {
-                        // 사용자의 이름 또는 이메일에 키워드가 포함되어 있는지 확인
-                        if (user.getName().toLowerCase().contains(keyword) || user.getEmail().toLowerCase().contains(keyword)) {
-                            filteredUsers.add(user);
-                        }
-                    }
-                    adapter.setUsers(filteredUsers);
-                } else {
-                    adapter.setUsers(users);
-                }
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
+        getMyInfo();
 
         return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        getMyInfo();
     }
 
     private void getMyInfo() {
@@ -127,7 +75,7 @@ public class FragmentUser extends Fragment {
         db.collection("users").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
-                    User user = document.toObject(User.class);
+                    User_ChatData user = document.toObject(User_ChatData.class);
 
                     if (user.getEmail().equals(email)) continue;
 

@@ -9,9 +9,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.team_project.R;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import java.util.ArrayList;
+import com.example.team_project.Environment.Store.Product;
+
+
 
 public class StoreFragment extends Fragment {
+
+    private RecyclerView productsRecyclerView;
+    private ProductAdapter productAdapter;
+    private ArrayList<Product> productList;
+    private FirebaseFirestore firestore;
 
     @Nullable
     @Override
@@ -26,11 +39,40 @@ public class StoreFragment extends Fragment {
             replaceFragment(new ProductRegistrationFragment());
         });
 
+        // RecyclerView와 Adapter 초기화
+        productsRecyclerView = view.findViewById(R.id.productListRecyclerView); // RecyclerView ID 확인 필요
+        productList = new ArrayList<>();
+        productAdapter = new ProductAdapter(getContext(), productList);
+        productsRecyclerView.setAdapter(productAdapter);
+        productsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        // Firestore 인스턴스 초기화
+        firestore = FirebaseFirestore.getInstance();
+
+        // 제품 데이터 로드
+        loadProductsFromFirestore();
+
         return view;
     }
 
+    private void loadProductsFromFirestore() {
+        firestore.collection("products") // Firestore에서 "products" 컬렉션 참조
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        productList.clear(); // 기존 목록을 클리어
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Product product = document.toObject(Product.class); // Document를 Product 객체로 변환
+                            productList.add(product); // 목록에 추가
+                        }
+                        productAdapter.notifyDataSetChanged(); // 데이터 변경 알림
+                    } else {
+                        // 에러 처리
+                    }
+                });
+    }
+
     private void replaceFragment(Fragment fragment) {
-        // getActivity().getSupportFragmentManager()를 사용하여 액티비티의 FragmentManager를 가져옵니다.
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(
                 R.anim.slide_in_right,
@@ -38,9 +80,9 @@ public class StoreFragment extends Fragment {
                 R.anim.fade_in,
                 R.anim.slide_out_right
         );
-        // fragment_container를 대상으로 프래그먼트 교체를 수행합니다.
         transaction.replace(R.id.fragment_container, fragment);
-        transaction.addToBackStack(null); // 이전 상태를 백스택에 추가합니다. (선택적)
-        transaction.commit(); // 변화를 커밋하여 적용합니다.
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
+
 }
