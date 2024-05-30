@@ -5,9 +5,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.team_project.Chat.ChatData.Message_ChatData;
+import com.example.team_project.Data.Message;
 import com.example.team_project.R;
 
 import java.util.List;
@@ -15,9 +16,9 @@ import java.util.List;
 public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.ViewHolder> {
 
     private String email;
-    private List<Message_ChatData> dataList;
+    private List<Message> dataList;
 
-    public MessageListAdapter(String email, List<Message_ChatData> dataList) {
+    public MessageListAdapter(String email, List<Message> dataList) {
         this.email = email;
         this.dataList = dataList;
     }
@@ -25,13 +26,13 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_chat_item_message, parent, false);
+                .inflate(R.layout.item_message, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Message_ChatData message = dataList.get(position);
+        Message message = dataList.get(position);
 
         if ("system".equals(message.getSender())) {
             holder.textSystemMessage.setText(message.getContent());

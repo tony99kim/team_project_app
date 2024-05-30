@@ -7,13 +7,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.team_project.Chat.adapter.MessageListAdapter;
-import com.example.team_project.Chat.ChatData.Chat_ChatData;
-import com.example.team_project.Chat.ChatData.Message_ChatData;
+import com.example.team_project.Data.Chat;
+import com.example.team_project.Data.Message;
 import com.example.team_project.R;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -35,11 +36,12 @@ public class ActivityChat extends AppCompatActivity {
     private EditText editInput;
     private ImageView btnSend;
     private ImageView btnBack;
+    private ImageView btnExit;
 
     private String user1;
     private String user2;
 
-    private ArrayList<Message_ChatData> messages = new ArrayList<>();
+    private ArrayList<Message> messages = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,6 +76,25 @@ public class ActivityChat extends AppCompatActivity {
         btnBack = findViewById(R.id.btn_back);
         btnBack.setOnClickListener(v -> finish());
 
+        btnExit = findViewById(R.id.btn_exit);
+        btnExit.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("채팅 종료");
+            builder.setMessage("채팅방을 나가시겠습니까?");
+
+            builder.setPositiveButton("확인", (dialog, which) -> {
+                deleteChatAndMessages(chatId);
+                finish(); 
+            });
+
+            builder.setNegativeButton("취소", (dialog, which) -> {
+                dialog.dismiss();
+            });
+
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        });
+
         fetchChat(chatId, userEmail1, userEmail2);
         setupRealtimeMessageUpdates(chatId);
     }
@@ -85,7 +106,7 @@ public class ActivityChat extends AppCompatActivity {
                 db.collection("chats").document(id).get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         if (!task.getResult().exists()) {
-                            Chat_ChatData newChat = new Chat_ChatData(id, email1, email2, "", new Date());
+                            Chat newChat = new Chat(id, email1, email2, "", new Date());
                             db.collection("chats").document(id).set(newChat);
                             addInitialMessage(id);
                         } else {
@@ -112,13 +133,13 @@ public class ActivityChat extends AppCompatActivity {
                     }
 
                     if (snapshot != null && !snapshot.isEmpty()) {
-                        ArrayList<Message_ChatData> newMessages = new ArrayList<>();
+                        ArrayList<Message> newMessages = new ArrayList<>();
                         for (DocumentSnapshot doc : snapshot.getDocuments()) {
-                            newMessages.add(doc.toObject(Message_ChatData.class));
+                            newMessages.add(doc.toObject(Message.class));
                         }
                         messages.clear();
                         messages.addAll(newMessages);
-                        Collections.sort(messages, Comparator.comparing(Message_ChatData::getCreatedAt));
+                        Collections.sort(messages, Comparator.comparing(Message::getCreatedAt));
                         recyclerView.getAdapter().notifyDataSetChanged();
                         recyclerView.scrollToPosition(messages.size() - 1);
                     } else {
@@ -132,7 +153,7 @@ public class ActivityChat extends AppCompatActivity {
             try {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일(E)", Locale.KOREAN);
                 String currentDate = dateFormat.format(new Date());
-                Message_ChatData initialMessage = new Message_ChatData(chatId, "system", currentDate, new Date());
+                Message initialMessage = new Message(chatId, "system", currentDate, new Date());
 
                 db.collection("messages").add(initialMessage).addOnSuccessListener(documentReference -> {
                     messages.add(initialMessage);
@@ -158,11 +179,11 @@ public class ActivityChat extends AppCompatActivity {
                 .orderBy("createdAt")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    ArrayList<Message_ChatData> loadedMessages = new ArrayList<>();
+                    ArrayList<Message> loadedMessages = new ArrayList<>();
                     for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                        loadedMessages.add(document.toObject(Message_ChatData.class));
+                        loadedMessages.add(document.toObject(Message.class));
                     }
-                    Collections.sort(loadedMessages, Comparator.comparing(Message_ChatData::getCreatedAt));
+                    Collections.sort(loadedMessages, Comparator.comparing(Message::getCreatedAt));
                     messages.clear();
                     messages.addAll(loadedMessages);
 
@@ -178,7 +199,7 @@ public class ActivityChat extends AppCompatActivity {
     private void sendMessage(String chatId, String email, String content) {
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                Message_ChatData newMessage = new Message_ChatData(chatId, email, content, new Date());
+                Message newMessage = new Message(chatId, email, content, new Date());
                 db.collection("messages").add(newMessage).addOnSuccessListener(documentReference -> {
                     messages.add(newMessage);
                     runOnUiThread(() -> {
@@ -199,4 +220,25 @@ public class ActivityChat extends AppCompatActivity {
         });
     }
 
+    private void deleteChatAndMessages(String chatId) {
+        // chats 컬렉션에서 채팅방 삭제
+        db.collection("chats").document(chatId)
+                .delete()
+                .addOnSuccessListener(aVoid -> Log.d("ChatActivity", "Chat successfully deleted!"))
+                .addOnFailureListener(e -> Log.e("ChatActivity", "Error deleting chat", e));
+
+        // messages 컬렉션에서 해당 채팅방의 모든 메시지 삭제
+        db.collection("messages")
+                .whereEqualTo("chatId", chatId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                        db.collection("messages").document(document.getId())
+                                .delete()
+                                .addOnSuccessListener(aVoid -> Log.d("ChatActivity", "Message successfully deleted!"))
+                                .addOnFailureListener(e -> Log.e("ChatActivity", "Error deleting message", e));
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("ChatActivity", "Error finding messages to delete", e));
+    }
 }

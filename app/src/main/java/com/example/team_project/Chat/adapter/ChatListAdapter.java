@@ -4,10 +4,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.team_project.Chat.ChatData.Chat_ChatData;
-import com.example.team_project.Chat.ChatData.User_ChatData;
+import com.example.team_project.Data.Chat;
+import com.example.team_project.Data.User;
 import com.example.team_project.R;
 
 import java.text.SimpleDateFormat;
@@ -17,12 +18,11 @@ import java.util.Locale;
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
 
     private String userEmail;
-    private List<Chat_ChatData> dataList;
-    private List<User_ChatData> users;
+    private List<Chat> dataList;
+    private List<User> users;
     private OnClickUser listener;
 
-    public ChatListAdapter(String userEmail, List<Chat_ChatData> dataList, List<User_ChatData> users, OnClickUser listener) {
-        this.userEmail = userEmail;
+    public ChatListAdapter(List<Chat> dataList, List<User> users, OnClickUser listener) {
         this.dataList = dataList;
         this.users = users;
         this.listener = listener;
@@ -31,15 +31,15 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_chat_item, parent, false);
+                .inflate(R.layout.item_chat, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Chat_ChatData chat = dataList.get(position);
+        Chat chat = dataList.get(position);
         String otherUserEmail = chat.getUserEmail1().equals(userEmail) ? chat.getUserEmail2() : chat.getUserEmail1();
-        User_ChatData otherUser = findUserByEmail(otherUserEmail);
+        User otherUser = findUserByEmail(otherUserEmail);
 
         if (otherUser != null) {
             holder.textName.setText(otherUser.getName());
@@ -63,8 +63,12 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         return dataList.size();
     }
 
-    private User_ChatData findUserByEmail(String email) {
-        for (User_ChatData user : users) {
+    public void setUserEmail(String email) {
+        userEmail = email;
+    }
+
+    private User findUserByEmail(String email) {
+        for (User user : users) {
             if (user.getEmail().equals(email)) {
                 return user;
             }
@@ -86,6 +90,6 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     }
 
     public interface OnClickUser {
-        void onStartChat(Chat_ChatData chat);
+        void onStartChat(Chat chat);
     }
 }
