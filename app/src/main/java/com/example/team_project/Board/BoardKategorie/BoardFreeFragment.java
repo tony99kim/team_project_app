@@ -1,4 +1,4 @@
-package com.example.team_project.Board;
+package com.example.team_project.Board.BoardKategorie;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

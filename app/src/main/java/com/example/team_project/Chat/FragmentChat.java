@@ -21,9 +21,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.team_project.Chat.adapter.ChatListAdapter;
-import com.example.team_project.Chat.adapter.UserListAdapter;
-import com.example.team_project.Data.Chat;
-import com.example.team_project.Data.User;
+import com.example.team_project.Chat.ChatData.Chat_ChatData;
+import com.example.team_project.Chat.ChatData.User_ChatData;
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -37,8 +36,8 @@ import android.widget.Toast;
 public class FragmentChat extends Fragment {
 
     private LinearLayout layout; // 뷰 참조를 유지
-    private ArrayList<Chat> chats = new ArrayList<>(); // 채팅방 리스트
-    private ArrayList<User> users = new ArrayList<>(); // 유저 리스트
+    private ArrayList<Chat_ChatData> chats = new ArrayList<>(); // 채팅방 리스트
+    private ArrayList<User_ChatData> users = new ArrayList<>(); // 유저 리스트
     private ArrayList<String> chatRooms = new ArrayList<>(); // 채팅방 리스트
 
     private RecyclerView recyclerView;
@@ -58,7 +57,7 @@ public class FragmentChat extends Fragment {
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ChatListAdapter(chats, users, chat -> {
+        adapter = new ChatListAdapter(email, chats, users, chat -> {
 
             String receiverEmail = "";
             String receiverName = "";
@@ -69,7 +68,7 @@ public class FragmentChat extends Fragment {
                 receiverEmail = chat.getUserEmail1();
             }
 
-            for (User user : users) {
+            for (User_ChatData user : users) {
                 if (user.getEmail().equals(receiverEmail)) {
                     receiverName = user.getName();
                     break;
@@ -86,14 +85,9 @@ public class FragmentChat extends Fragment {
         });
         recyclerView.setAdapter(adapter);
 
+        loadUsers();
 
         return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        loadUsers();
     }
 
     private void showFragmentUser() {
@@ -111,7 +105,7 @@ public class FragmentChat extends Fragment {
         db.collection("users").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
-                    User user = document.toObject(User.class);
+                    User_ChatData user = document.toObject(User_ChatData.class);
 
                     users.add(user);
                 }
@@ -132,7 +126,6 @@ public class FragmentChat extends Fragment {
                         email = documentSnapshot.getString("email");
                         name = documentSnapshot.getString("name");
 
-                        adapter.setUserEmail(email);
                         loadChats();
                     }
                 })
@@ -146,10 +139,10 @@ public class FragmentChat extends Fragment {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection("chats").whereEqualTo("userEmail1", email).get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
-                        chats.addAll(queryDocumentSnapshots.toObjects(Chat.class));
+                        chats.addAll(queryDocumentSnapshots.toObjects(Chat_ChatData.class));
                         db.collection("chats").whereEqualTo("userEmail2", email).get()
                                 .addOnSuccessListener(queryDocumentSnapshots2 -> {
-                                    chats.addAll(queryDocumentSnapshots2.toObjects(Chat.class));
+                                    chats.addAll(queryDocumentSnapshots2.toObjects(Chat_ChatData.class));
                                     chats.sort((c1, c2) -> c2.getUpdatedAt().compareTo(c1.getUpdatedAt()));
 
                                     adapter.notifyDataSetChanged();

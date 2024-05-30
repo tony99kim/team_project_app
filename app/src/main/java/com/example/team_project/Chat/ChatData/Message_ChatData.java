@@ -1,20 +1,20 @@
-package com.example.team_project.Data;
+package com.example.team_project.Chat.ChatData;
 
 import java.util.Date;
 
-public class Message {
+public class Message_ChatData {
     private String chatId;
     private String sender;
     private String content;
     private Date createdAt;
 
-    public Message() {
+    public Message_ChatData() {
         this.chatId = "";
         this.sender = "";
         this.content = "";
         this.createdAt = new Date();
     }
-    public Message(String chatId, String sender, String content, Date createdAt) {
+    public Message_ChatData(String chatId, String sender, String content, Date createdAt) {
         this.chatId = chatId;
         this.sender = sender;
         this.content = content;
