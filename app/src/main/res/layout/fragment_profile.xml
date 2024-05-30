@@ -47,20 +47,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="사용자 이름"
+            android:textSize="24sp"
             android:gravity="center"
             android:layout_toEndOf="@id/profileImageView"
             android:layout_alignTop="@id/profileImageView"
             android:layout_marginStart="16dp" />
-        <!-- 사용자 환경 포인트 -->
-        <TextView
-            android:id="@+id/environmentPointsTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/usernameTextView"
-            android:layout_alignStart="@id/usernameTextView"
-            android:text="환경 포인트: "
-            android:textColor="@color/black"
-            android:layout_marginTop="8dp"/>
         <!-- 수정하기 버튼 -->
         <Button
             android:id="@+id/editButton"
@@ -72,6 +63,54 @@
             android:layout_marginEnd="16dp"/>
 
     </RelativeLayout>
+    <!-- 사용자 정보 레이아웃 -->
+    <RelativeLayout
+        android:id="@+id/userPayLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/userInfoLayout"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="#ECECEC"
+        android:clickable="true"
+        android:onClick="onUserPayLayoutClicked">
+        <!-- 사용자 환경 포인트 -->
+        <TextView
+            android:id="@+id/environmentPointsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="환경 포인트: "
+            android:layout_marginStart="16dp"
+            android:textColor="@color/black"
+            android:layout_marginTop="8dp"/>
+        <TextView
+            android:id="@+id/environmentPayTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="환경 페이: "
+            android:layout_marginStart="16dp"
+            android:layout_below="@id/environmentPointsTextView"
+            android:textColor="@color/black"
+            android:layout_marginTop="8dp"/>
+        <Button
+            android:id="@+id/payrecharge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="페이 충전"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="24dp"
+            android:layout_below="@id/environmentPayTextView" />
+        <Button
+            android:id="@+id/payexchange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="페이 환전"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/environmentPayTextView" />
+    </RelativeLayout>
     <!-- 최근 방문 버튼 -->
     <Button
         android:id="@+id/recentVisitButton"
@@ -80,7 +119,7 @@
         android:text="최근 방문"
         android:layout_marginStart="15dp"
         android:layout_marginTop="24dp"
-        android:layout_below="@id/userInfoLayout" />
+        android:layout_below="@id/userPayLayout" />
 
     <!-- LinearLayout -->
     <LinearLayout
@@ -99,13 +138,30 @@
             android:layout_marginTop="0dp"
             android:divider="@null"
             android:dividerHeight="0dp" />
-
+        <!-- 관심상품 버튼 -->
+        <Button
+            android:id="@+id/wishlistButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="관심상품"
+            android:layout_below="@id/recentVisitButton"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="16dp"/>
+        <!-- 관심게시물 버튼 -->
+        <Button
+            android:id="@+id/wishpostButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="관심게시물"
+            android:layout_below="@id/wishlistButton"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="16dp"/>
         <!-- 구분선 -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/darker_gray"
-            android:layout_below="@id/recentVisitListView"
+            android:layout_below="@id/wishpostButton"
             android:layout_marginTop="8dp" />
 
         <!-- 공지사항 버튼 -->

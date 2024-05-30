@@ -6,7 +6,7 @@
 
     <!-- 툴바 -->
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/board_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
@@ -14,14 +14,15 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <!-- Recent Visit ListView -->
-    <ListView
-        android:id="@+id/recentVisitListView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/toolbar" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="즐겨찾기한 글"
+        android:textSize="24sp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"/>
 
-    <!-- 최근 방문 내용을 표시하는 뷰들을 추가하세요. -->
+    <!-- 즐겨찾기 한 글을 표시하는 뷰들을 추가하세요. -->
 
 
 

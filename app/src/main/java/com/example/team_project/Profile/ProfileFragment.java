@@ -18,14 +18,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
+import com.bumptech.glide.Glide;
 import com.example.team_project.LoginActivity;
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ProfileFragment extends Fragment {
 
@@ -38,6 +44,7 @@ public class ProfileFragment extends Fragment {
     private ArrayList<String> recentVisitList;
     private ArrayAdapter<String> adapter;
     private SharedPreferences sharedPreferences;
+    private StorageReference storageRef;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
@@ -50,10 +57,14 @@ public class ProfileFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         sharedPreferences = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
 
+        storageRef = FirebaseStorage.getInstance().getReference();
+
         recentVisitList = new ArrayList<>();
         recentVisitListView = view.findViewById(R.id.recentVisitListView);
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, recentVisitList);
         recentVisitListView.setAdapter(adapter);
+
+
 
         profileImageView = view.findViewById(R.id.profileImageView);
         usernameTextView = view.findViewById(R.id.usernameTextView);
@@ -67,19 +78,14 @@ public class ProfileFragment extends Fragment {
         environmentPointsTextView = view.findViewById(R.id.environmentPointsTextView);
 
         setUsername();
+        setProfileImageFromFirebase();
         // 최근 방문 기록을 담을 리스트 초기화
         recentVisitList = new ArrayList<>();
         recentVisitListView = view.findViewById(R.id.recentVisitListView);
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, recentVisitList);
         recentVisitListView.setAdapter(adapter);
 
-        // 최근 방문 버튼 클릭 리스너 설정
-        // 여기에 최근 방문 기록을 추가하는 코드를 넣으세요.
-        // 예시로 아래와 같이 리스트에 데이터를 추가할 수 있습니다.
-        recentVisitList.add("상품 1");
-        recentVisitList.add("상품 2");
-        recentVisitList.add("상품 3");
-        adapter.notifyDataSetChanged(); // 어댑터에 데이터가 변경되었음을 알려줍니다.
+
 
         // 사용자의 환경 포인트 설정 (예시로 1000이라고 가정)
         int environmentPoints = 1000;
@@ -134,6 +140,29 @@ public class ProfileFragment extends Fragment {
         });
 
         return view;
+    }
+    private void addRecentVisit(String productName) {
+        // SharedPreferences에서 최근 방문 기록 가져오기
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("recent_visit", Context.MODE_PRIVATE);
+        Set<String> visitSet = sharedPreferences.getStringSet("visit_list", new HashSet<>());
+
+        // 최대 5개까지만 저장하도록
+        if (visitSet.size() >= 5) {
+            visitSet.remove(visitSet.iterator().next()); // 첫 번째 항목 제거
+        }
+
+        // 새로운 상품을 추가
+        visitSet.add(productName);
+
+        // 변경된 최근 방문 기록을 다시 SharedPreferences에 저장
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putStringSet("visit_list", visitSet);
+        editor.apply();
+
+        // 변경된 최근 방문 기록을 리스트뷰에 업데이트
+        recentVisitList.clear();
+        recentVisitList.addAll(visitSet);
+        adapter.notifyDataSetChanged();
     }
 
     private void logout() {
@@ -214,6 +243,15 @@ public class ProfileFragment extends Fragment {
         super.onResume();
         setUsernameFromFirebase(); // Firebase에서 닉네임을 가져와서 설정
     }
+    // 사용자 환경페이 레이아웃 클릭 이벤트
+    public void onUserPayLayoutClicked(View view) {
+        // PayFragment로 전환
+        PayFragment payFragment = new PayFragment();
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, new PayFragment());
+        transaction.addToBackStack(null); // 뒤로가기 버튼을 눌렀을 때 이전 상태로 돌아갈 수 있도록 스택에 추가
+        transaction.commit();
+    }
 
     private void setUsernameFromFirebase() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -235,6 +273,29 @@ public class ProfileFragment extends Fragment {
                     }
                 })
                 .addOnFailureListener(e -> Toast.makeText(getActivity(), "닉네임을 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show());
+    }
+    private void setProfileImageFromFirebase() {
+        // 현재 사용자의 UID 가져오기
+        String userId = mAuth.getCurrentUser().getUid();
+
+        // Firestore에서 사용자의 프로필 사진 가져오기
+        StorageReference profileImageRef = storageRef.child("profileImages/" + userId + ".jpg");
+        profileImageRef.getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+                    // 프로필 사진 URL을 가져옴
+                    String profileImageUrl = uri.toString();
+
+                    // 프로필 사진을 설정
+                    Glide.with(requireContext())
+                            .load(profileImageUrl)
+                            .placeholder(R.drawable.ic_profile) // 기본 이미지 설정
+                            .error(R.drawable.ic_profile) // 에러 시 이미지 설정
+                            .into(profileImageView);
+                })
+                .addOnFailureListener(e -> {
+                    // 프로필 사진이 없을 경우
+                    Toast.makeText(getActivity(), "프로필 사진을 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void setUsername() {
