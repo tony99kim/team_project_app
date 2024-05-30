@@ -1,4 +1,4 @@
-package com.example.team_project.Board.BoardKategorie;
+package com.example.team_project.Board;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,10 +11,10 @@ import androidx.fragment.app.Fragment;
 
 import com.example.team_project.R;
 
-public class BoardVolunteerFragment extends Fragment {
+public class BoardEventFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_board_volunteer_post_list, container, false);
+        return inflater.inflate(R.layout.fragment_board_event_post_list, container, false);
     }
 }

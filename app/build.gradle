@@ -30,33 +30,33 @@ android {
 }
 
 dependencies {
+
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
     implementation libs.recyclerview
+
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+}
+dependencies {
     implementation libs.firebase.firestore
-
     // ViewModel
-    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.3.1'
     // LiveData
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.3.1'
     // ViewModel 사용을 위한 KTX 확장 기능
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
 
-    implementation platform('com.google.firebase:firebase-bom:33.0.0')
+    implementation platform('com.google.firebase:firebase-bom:32.8.1')
 
     implementation 'com.google.firebase:firebase-analytics'
+
     implementation("com.google.firebase:firebase-auth")
+
     implementation 'com.google.firebase:firebase-database'
-    implementation 'com.google.firebase:firebase-storage'
-    implementation 'com.google.firebase:firebase-firestore'
 
-    implementation 'com.firebaseui:firebase-ui-storage:8.0.2'
-
-    implementation 'com.github.bumptech.glide:glide:4.12.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+    implementation 'com.google.firebase:firebase-storage:20.0.0'
 }

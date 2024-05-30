@@ -7,16 +7,16 @@ import android.widget.Button;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.team_project.Chat.ChatData.User_ChatData;
+import com.example.team_project.Data.User;
 import com.example.team_project.R;
 
 import java.util.List;
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHolder> {
-    private List<User_ChatData> dataList;
+    private List<User> dataList;
     private OnClickUser listener;
 
-    public UserListAdapter(List<User_ChatData> dataList, OnClickUser listener) {
+    public UserListAdapter(List<User> dataList, OnClickUser listener) {
         this.dataList = dataList;
         this.listener = listener;
     }
@@ -30,7 +30,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        User_ChatData user = dataList.get(position);
+        User user = dataList.get(position);
         holder.textName.setText(user.getName());
         holder.textEmail.setText(user.getEmail());
         holder.btnChat.setOnClickListener(v -> listener.onStartChat(user));
@@ -39,6 +39,10 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
     @Override
     public int getItemCount() {
         return dataList.size();
+    }
+
+    public void setUsers(List<User> users) {
+        dataList = users;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -55,6 +59,6 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
     }
 
     public interface OnClickUser {
-        void onStartChat(User_ChatData user);
+        void onStartChat(User user);
     }
 }

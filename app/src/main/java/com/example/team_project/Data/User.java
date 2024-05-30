@@ -1,7 +1,7 @@
-package com.example.team_project.Chat.ChatData;
+package com.example.team_project.Data;
 
 
-public class User_ChatData {
+public class User {
 
     private String email;
     private String name;
@@ -12,11 +12,11 @@ public class User_ChatData {
     private String birthDate;
 
 
-    public User_ChatData() {
+    public User() {
 
     }
 
-    public User_ChatData(String email, String name, String username, String gender, String phone, String profileImageUrl, String birthDate) {
+    public User(String email, String name, String username, String gender, String phone, String profileImageUrl, String birthDate) {
         this.username = username;
         this.gender = gender;
         this.profileImageUrl = profileImageUrl;
