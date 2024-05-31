@@ -54,7 +54,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_marginBottom="8dp"
-                        android:text="5/10"
+                        android:text="0/10"
                         android:textAppearance="?attr/textAppearanceSubtitle1" />
 
                 </FrameLayout>
@@ -65,7 +65,7 @@
                     android:id="@+id/tvTitleLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="제목" />
+                    android:text="상품명" />
 
                 <EditText
                     android:id="@+id/etTitle"

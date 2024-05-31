@@ -12,13 +12,15 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/board_news_post1"
             android:layout_margin="10dp"
             android:background="@drawable/layout_background"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clickable="true">
 
             <TextView
                 android:layout_width="wrap_content"

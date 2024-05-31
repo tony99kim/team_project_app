@@ -43,7 +43,7 @@ public class FragmentUser extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_chat_user, container, false);
+        View view = inflater.inflate(R.layout.fragment_user, container, false);
 
         buttonBack = view.findViewById(R.id.btn_back);
         buttonBack.setOnClickListener(v -> {
