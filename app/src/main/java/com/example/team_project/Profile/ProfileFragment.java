@@ -7,10 +7,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,10 +27,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
 public class ProfileFragment extends Fragment {
 
     private TextView usernameTextView, environmentPointsTextView;
@@ -40,13 +34,10 @@ public class ProfileFragment extends Fragment {
     private Button editButton, recentVisitButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
     private androidx.appcompat.widget.Toolbar toolbar;
 
-    private ListView recentVisitListView;
-    private ArrayList<String> recentVisitList;
-    private ArrayAdapter<String> adapter;
     private SharedPreferences sharedPreferences;
-    private StorageReference storageRef;
     private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
+    private StorageReference storageRef;
+
 
     @Nullable
     @Override
@@ -54,17 +45,8 @@ public class ProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
         sharedPreferences = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
-
         storageRef = FirebaseStorage.getInstance().getReference();
-
-        recentVisitList = new ArrayList<>();
-        recentVisitListView = view.findViewById(R.id.recentVisitListView);
-        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, recentVisitList);
-        recentVisitListView.setAdapter(adapter);
-
-
 
         profileImageView = view.findViewById(R.id.profileImageView);
         usernameTextView = view.findViewById(R.id.usernameTextView);
@@ -79,13 +61,6 @@ public class ProfileFragment extends Fragment {
 
         setUsername();
         setProfileImageFromFirebase();
-        // 최근 방문 기록을 담을 리스트 초기화
-        recentVisitList = new ArrayList<>();
-        recentVisitListView = view.findViewById(R.id.recentVisitListView);
-        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, recentVisitList);
-        recentVisitListView.setAdapter(adapter);
-
-
 
         // 사용자의 환경 포인트 설정 (예시로 1000이라고 가정)
         int environmentPoints = 1000;
@@ -141,30 +116,6 @@ public class ProfileFragment extends Fragment {
 
         return view;
     }
-    private void addRecentVisit(String productName) {
-        // SharedPreferences에서 최근 방문 기록 가져오기
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("recent_visit", Context.MODE_PRIVATE);
-        Set<String> visitSet = sharedPreferences.getStringSet("visit_list", new HashSet<>());
-
-        // 최대 5개까지만 저장하도록
-        if (visitSet.size() >= 5) {
-            visitSet.remove(visitSet.iterator().next()); // 첫 번째 항목 제거
-        }
-
-        // 새로운 상품을 추가
-        visitSet.add(productName);
-
-        // 변경된 최근 방문 기록을 다시 SharedPreferences에 저장
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putStringSet("visit_list", visitSet);
-        editor.apply();
-
-        // 변경된 최근 방문 기록을 리스트뷰에 업데이트
-        recentVisitList.clear();
-        recentVisitList.addAll(visitSet);
-        adapter.notifyDataSetChanged();
-    }
-
     private void logout() {
         // SharedPreferences에서 로그인 상태와 자동 로그인 설정을 초기화
         SharedPreferences prefs = getActivity().getSharedPreferences("team_project_preferences", Context.MODE_PRIVATE);
