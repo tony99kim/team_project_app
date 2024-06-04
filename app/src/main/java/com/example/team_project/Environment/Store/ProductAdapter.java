@@ -1,7 +1,6 @@
 package com.example.team_project.Environment.Store;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +15,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.team_project.Profile.ProfileFragment;
 import com.example.team_project.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -24,9 +24,7 @@ import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
@@ -90,8 +88,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 // 상품 상세 페이지로 이동
                 ProductDetailFragment productDetailFragment = ProductDetailFragment.newInstance(product);
                 replaceFragment(productDetailFragment);
+
                 // 최근 방문 목록에 추가
-                addRecentVisit(product.getTitle());
+                Fragment currentFragment = ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                if (currentFragment instanceof ProfileFragment) {
+                    ((ProfileFragment) currentFragment).addRecentVisit(product.getTitle());
+                } else {
+                    Log.d("ProductAdapter", "ProfileFragment is not found");
+                }
             }
         });
     }
@@ -128,23 +132,5 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 .addToBackStack(null)
                 .commit();
     }
-    // 최근 방문 목록에 추가하는 메서드
-    private void addRecentVisit(String productName) {
-        // SharedPreferences에서 최근 방문 기록 가져오기
-        SharedPreferences sharedPreferences = context.getSharedPreferences("recent_visit", Context.MODE_PRIVATE);
-        Set<String> visitSet = sharedPreferences.getStringSet("visit_list", new HashSet<>());
 
-        // 최대 5개까지만 저장하도록
-        if (visitSet.size() >= 5) {
-            visitSet.remove(visitSet.iterator().next()); // 첫 번째 항목 제거
-        }
-
-        // 새로운 상품을 추가
-        visitSet.add(productName);
-
-        // 변경된 최근 방문 기록을 다시 SharedPreferences에 저장
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putStringSet("visit_list", visitSet);
-        editor.apply();
-    }
 }

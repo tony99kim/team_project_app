@@ -4,11 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +30,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 public class ProfileFragment extends Fragment {
 
     private TextView usernameTextView, environmentPointsTextView;
@@ -38,6 +45,10 @@ public class ProfileFragment extends Fragment {
     private FirebaseAuth mAuth;
     private StorageReference storageRef;
 
+    private ListView recentVisitListView;
+    private ArrayAdapter<String> adapter;
+    private ArrayList<String> recentVisitList;
+
 
     @Nullable
     @Override
@@ -47,6 +58,15 @@ public class ProfileFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         sharedPreferences = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         storageRef = FirebaseStorage.getInstance().getReference();
+
+        recentVisitListView = view.findViewById(R.id.recentVisitListView);
+
+        recentVisitList = loadRecentVisits();
+        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, recentVisitList);
+        recentVisitListView.setAdapter(adapter);
+
+
+
 
         profileImageView = view.findViewById(R.id.profileImageView);
         usernameTextView = view.findViewById(R.id.usernameTextView);
@@ -58,6 +78,7 @@ public class ProfileFragment extends Fragment {
         editButton = view.findViewById(R.id.editButton);
         toolbar = view.findViewById(R.id.toolbar);
         environmentPointsTextView = view.findViewById(R.id.environmentPointsTextView);
+
 
         setUsername();
         setProfileImageFromFirebase();
@@ -78,13 +99,7 @@ public class ProfileFragment extends Fragment {
                 logout();
             }
         });
-        // 최근 방문 버튼 클릭 리스너 설정
-        recentVisitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openRecentVisitFragment();
-            }
-        });
+
         // 공지사항 버튼 클릭 리스너 설정
         noticeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +131,28 @@ public class ProfileFragment extends Fragment {
 
         return view;
     }
+    private ArrayList<String> loadRecentVisits() {
+        Set<String> set = sharedPreferences.getStringSet("recentVisitSet", new LinkedHashSet<>());
+        if (set == null) {
+            set = new LinkedHashSet<>();
+        }
+        return new ArrayList<>(set);
+    }
+
+    private void saveRecentVisits() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Set<String> set = new LinkedHashSet<>(recentVisitList);
+        editor.putStringSet("recentVisitSet", set);
+        editor.apply();
+    }
+
+    public void addRecentVisit(String visit) {
+        Log.d("ProfileFragment", "Adding visit: " + visit);
+        recentVisitList.remove(visit); // 기존에 있는 항목 제거
+        recentVisitList.add(0, visit); // 리스트의 맨 앞에 추가
+        adapter.notifyDataSetChanged();
+        saveRecentVisits();
+    }
     private void logout() {
         // SharedPreferences에서 로그인 상태와 자동 로그인 설정을 초기화
         SharedPreferences prefs = getActivity().getSharedPreferences("team_project_preferences", Context.MODE_PRIVATE);
@@ -130,20 +167,7 @@ public class ProfileFragment extends Fragment {
         startActivity(intent);
         getActivity().finish();
     }
-    // 최근 방문 프래그먼트 객체 생성
-    private void openRecentVisitFragment() {
-        RecentVisitFragment fragment = new RecentVisitFragment();
-        // 현재 액티비티가 AppCompatActivity 인지 확인
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        // 현재 액티비티가 AppCompatActivity 인 경우에만 프래그먼트 트랜잭션 수행
-        if (activity != null) {
-            // 프래그먼트 트랜잭션을 사용하여 최근 방문 프래그먼트를 화면에 표시
-            activity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment)// R.id.fragment_container는 프래그먼트를 표시할 레이아웃의 ID입니다.
-                    .addToBackStack(null) // 백 스택에 프래그먼트를 추가하여 뒤로 가기 기능을 지원합니다.
-                    .commit();
-        }
-    }
+
 
     private void openNoticeFragment() {
         NoticeFragment fragment = new NoticeFragment();
@@ -253,6 +277,8 @@ public class ProfileFragment extends Fragment {
         String savedUsername = sharedPreferences.getString("username", "사용자 이름");
         usernameTextView.setText(savedUsername);
     }
+
+
 }
 
 
