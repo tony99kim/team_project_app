@@ -129,15 +129,15 @@
         android:layout_below="@id/recentVisitButton"
         android:layout_marginTop="16dp">
 
-        <!-- 최근 방문 리스트뷰 -->
         <ListView
             android:id="@+id/recentVisitListView"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="wrap_content"
             android:layout_below="@id/recentVisitButton"
-            android:layout_marginTop="0dp"
+            android:layout_marginTop="16dp"
             android:divider="@null"
-            android:dividerHeight="0dp" />
+            android:dividerHeight="0dp"
+            android:nestedScrollingEnabled="true" />
         <!-- 관심상품 버튼 -->
         <Button
             android:id="@+id/wishlistButton"
