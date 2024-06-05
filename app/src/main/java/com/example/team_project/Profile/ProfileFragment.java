@@ -332,7 +332,7 @@ public class ProfileFragment extends Fragment {
                 })
                 .addOnFailureListener(e -> {
                     // 프로필 사진이 없을 경우
-                    Toast.makeText(getActivity(), "프로필 사진을 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT).show();
                 });
     }
 
