@@ -13,12 +13,11 @@ import androidx.fragment.app.Fragment;
 
 import com.example.team_project.R;
 
-public class NoticeFragment extends Fragment {
-
+public class WishpostFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile_notice, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile_wishpost, container, false);
 
         // 툴바 설정
         Toolbar toolbar = view.findViewById(R.id.toolbar);
@@ -26,7 +25,7 @@ public class NoticeFragment extends Fragment {
         if (activity !=null) {
             activity.setSupportActionBar(toolbar);
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            activity.getSupportActionBar().setTitle("공지사항");
+            activity.getSupportActionBar().setTitle("관심게시물");
         }
 
         return view;

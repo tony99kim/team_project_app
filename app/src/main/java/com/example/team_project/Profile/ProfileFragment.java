@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,6 +23,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
+import com.example.team_project.Environment.Store.Product;
+import com.example.team_project.Environment.Store.ProductDetailFragment;
 import com.example.team_project.LoginActivity;
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,7 +41,7 @@ public class ProfileFragment extends Fragment {
 
     private TextView usernameTextView, environmentPointsTextView;
     private ImageView profileImageView;
-    private Button editButton, recentVisitButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
+    private Button wishpostButton, wishlistButton, editButton, recentVisitButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
     private androidx.appcompat.widget.Toolbar toolbar;
 
     private SharedPreferences sharedPreferences;
@@ -65,6 +68,15 @@ public class ProfileFragment extends Fragment {
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, recentVisitList);
         recentVisitListView.setAdapter(adapter);
 
+        // 아이템 클릭 리스너 설정
+        recentVisitListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String productName = recentVisitList.get(position);
+                openProductDetailFragment(productName);
+            }
+        });
+
 
 
 
@@ -76,6 +88,8 @@ public class ProfileFragment extends Fragment {
         logoutButton = view.findViewById(R.id.logoutButton);
         withdrawButton = view.findViewById(R.id.withdrawButton);
         editButton = view.findViewById(R.id.editButton);
+        wishlistButton = view.findViewById(R.id.wishlistButton);
+        wishpostButton = view.findViewById(R.id.wishpostButton);
         toolbar = view.findViewById(R.id.toolbar);
         environmentPointsTextView = view.findViewById(R.id.environmentPointsTextView);
 
@@ -128,8 +142,37 @@ public class ProfileFragment extends Fragment {
                 openEditButtonFragment();
             }
         });
+        // 관심상품 버튼 클릭 리스너 설정
+        wishlistButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openWishlistFragment();
+            }
+        });
+        wishpostButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openWishpostFragment();
+            }
+        });
+
 
         return view;
+    }
+    private void openProductDetailFragment(String productName) {
+        Product product = findProductByName(productName);
+
+        ProductDetailFragment productDetailFragment = ProductDetailFragment.newInstance(product);
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, productDetailFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    private Product findProductByName(String productName) {
+        // 실제로는 데이터베이스나 API에서 해당 이름의 상품을 검색해야 합니다.
+        // 여기서는 단순히 예제를 위해 새로운 Product 객체를 반환합니다.
+        return new Product("productId", "userId", productName, "10000", "상품 설명");
     }
     private ArrayList<String> loadRecentVisits() {
         Set<String> set = sharedPreferences.getStringSet("recentVisitSet", new LinkedHashSet<>());
@@ -148,8 +191,8 @@ public class ProfileFragment extends Fragment {
 
     public void addRecentVisit(String visit) {
         Log.d("ProfileFragment", "Adding visit: " + visit);
-        recentVisitList.remove(visit); // 기존에 있는 항목 제거
-        recentVisitList.add(0, visit); // 리스트의 맨 앞에 추가
+        // 리스트의 맨 앞에 추가
+        recentVisitList.add(0, visit);
         adapter.notifyDataSetChanged();
         saveRecentVisits();
     }
@@ -193,6 +236,26 @@ public class ProfileFragment extends Fragment {
 
     private void openWithdrawFragment() {
         WithdrawFragment fragment = new WithdrawFragment();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            activity.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
+    }
+    private void openWishlistFragment() {
+        WishlistFragment fragment = new WishlistFragment();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            activity.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
+    }
+    private void openWishpostFragment() {
+        WishpostFragment fragment = new WishpostFragment();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             activity.getSupportFragmentManager().beginTransaction()

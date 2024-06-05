@@ -20,7 +20,7 @@ public class CustomerServiceFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile_customer_service_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile_customer_service, container, false);
 
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         AppCompatActivity activity = (AppCompatActivity) getActivity();

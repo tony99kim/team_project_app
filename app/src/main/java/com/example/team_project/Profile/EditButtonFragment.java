@@ -48,7 +48,7 @@ public class EditButtonFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile_edit_button_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile_edit_button, container, false);
 
         // FirebaseAuth, FirebaseFirestore, FirebaseStorage 인스턴스 생성
         mAuth = FirebaseAuth.getInstance();
