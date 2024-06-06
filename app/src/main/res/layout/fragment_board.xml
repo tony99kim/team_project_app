@@ -50,21 +50,11 @@
             android:id="@+id/event_board_textview"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="이벤트"
+            android:text="이벤트 캘린더"
             android:textColor="@color/black"
             android:textSize="20dp"
             android:layout_marginEnd="8dp"
             android:clickable="true" />
-
-        <TextView
-            android:id="@+id/volunteer_board_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="봉사"
-            android:textColor="@color/black"
-            android:textSize="20dp"
-            android:clickable="true" />
-
 
     </LinearLayout>
 

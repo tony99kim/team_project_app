@@ -31,26 +31,14 @@
             android:layout_height="wrap_content"
             android:text="자유게시판" />
 
-        <CheckBox
-            android:id="@+id/board_event_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="이벤트" />
-
-        <CheckBox
-            android:id="@+id/board_volunteer_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="봉사" />
-
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
         android:layout_below="@id/recentVisitListView"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:background="@android:color/darker_gray" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -60,9 +48,9 @@
 
         <ImageView
             android:id="@+id/imageViewAttachment"
-            android:background="@drawable/layout_background"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:background="@drawable/layout_background"
             android:scaleType="centerCrop" />
 
         <Space
@@ -80,9 +68,9 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
         android:layout_below="@id/recentVisitListView"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:background="@android:color/darker_gray" />
 
     <EditText
         android:id="@+id/editTextTitle"
@@ -100,9 +88,9 @@
 
     <Button
         android:id="@+id/buttonPost"
-        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:text="게시하기" />
 
 </LinearLayout>

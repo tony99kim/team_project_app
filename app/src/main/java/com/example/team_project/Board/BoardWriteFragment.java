@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,7 +26,8 @@ public class BoardWriteFragment extends Fragment {
     private static final int PICK_IMAGE_REQUEST = 1;
 
     private Button postButton, board_post_pic_button;
-    private CheckBox board_free_checkbox, board_news_checkbox, board_event_checkbox, board_volunteer_checkbox;
+    private CheckBox board_free_checkbox, board_news_checkbox;
+    private EditText editTextTitle, editTextContent;
 
     @Nullable
     @Override
@@ -40,7 +42,6 @@ public class BoardWriteFragment extends Fragment {
             activity.getSupportActionBar().setTitle("글쓰기");
         }
 
-
         board_post_pic_button = view.findViewById(R.id.board_post_pic_button);
         board_post_pic_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,64 +50,39 @@ public class BoardWriteFragment extends Fragment {
             }
         });
 
-
-
-
         postButton = view.findViewById(R.id.buttonPost);
         postButton.setOnClickListener(v -> {
             // 버튼을 클릭했을 때의 작업을 처리합니다.
-            // 다음 fragment로 전환하고 3초 후에 이전 fragment로 이동하도록 설정합니다.
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, new BoardPostCompleteFragment());
-            transaction.addToBackStack(null);
-            transaction.commit();
-
-            // 3초 후에 이전 fragment로 이동하는 작업을 합니다.
-            new Handler().postDelayed(() -> {
-                // 여기서는 BoardFragment로 이동합니다.
-                FragmentTransaction newTransaction = getParentFragmentManager().beginTransaction();
-                newTransaction.replace(R.id.fragment_container, new BoardFragment());
-                newTransaction.addToBackStack(null);
-                newTransaction.commit();
-            }, 2000); // 2초 후 게시판 페이지로 이동
+            validateAndProceed();
         });
 
         // 체크박스 초기화 및 이벤트 리스너 설정
         board_news_checkbox = view.findViewById(R.id.board_news_checkbox);
         board_free_checkbox = view.findViewById(R.id.board_free_checkbox);
-        board_event_checkbox = view.findViewById(R.id.board_event_checkbox);
-        board_volunteer_checkbox = view.findViewById(R.id.board_volunteer_checkbox);
 
         board_news_checkbox.setOnCheckedChangeListener(this::onNewsCheckboxClicked);
         board_free_checkbox.setOnCheckedChangeListener(this::onFreeCheckboxClicked);
-        board_event_checkbox.setOnCheckedChangeListener(this::onEventCheckboxClicked);
-        board_volunteer_checkbox.setOnCheckedChangeListener(this::onVolunteerCheckboxClicked);
+
+        editTextTitle = view.findViewById(R.id.editTextTitle);
+        editTextContent = view.findViewById(R.id.editTextContent);
 
         return view;
     }
 
     public void onNewsCheckboxClicked(View view, boolean isChecked) {
-        checkMultipleCategories(board_news_checkbox, board_free_checkbox, board_event_checkbox, board_volunteer_checkbox, isChecked);
+        checkMultipleCategories(board_news_checkbox, board_free_checkbox, isChecked);
     }
 
     public void onFreeCheckboxClicked(View view, boolean isChecked) {
-        checkMultipleCategories(board_free_checkbox, board_news_checkbox, board_event_checkbox, board_volunteer_checkbox, isChecked);
+        checkMultipleCategories(board_free_checkbox, board_news_checkbox, isChecked);
     }
 
-    public void onEventCheckboxClicked(View view, boolean isChecked) {
-        checkMultipleCategories(board_event_checkbox, board_news_checkbox, board_free_checkbox, board_volunteer_checkbox, isChecked);
-    }
-
-    public void onVolunteerCheckboxClicked(View view, boolean isChecked) {
-        checkMultipleCategories(board_volunteer_checkbox, board_news_checkbox, board_free_checkbox, board_event_checkbox, isChecked);
-    }
-
-    private void checkMultipleCategories(CheckBox checkBox1, CheckBox checkBox2, CheckBox checkBox3, CheckBox checkBox4, boolean isChecked) {
+    private void checkMultipleCategories(CheckBox checkBox1, CheckBox checkBox2, boolean isChecked) {
         // 체크박스 상태 확인
         boolean categoryChecked = isChecked;
 
         // 다른 체크박스의 상태 확인
-        boolean otherCategoryChecked = checkBox2.isChecked() || checkBox3.isChecked() || checkBox4.isChecked();
+        boolean otherCategoryChecked = checkBox2.isChecked();
 
         if (categoryChecked && otherCategoryChecked) {
             // 경고 메시지 표시
@@ -116,6 +92,40 @@ public class BoardWriteFragment extends Fragment {
         }
     }
 
+    private void validateAndProceed() {
+        boolean isCheckBoxChecked = board_news_checkbox.isChecked() || board_free_checkbox.isChecked();
+        String title = editTextTitle.getText().toString().trim();
+        String content = editTextContent.getText().toString().trim();
+
+        if (!isCheckBoxChecked) {
+            Toast.makeText(getContext(), "하나 이상의 체크박스를 선택해주세요.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (title.isEmpty()) {
+            Toast.makeText(getContext(), "제목을 입력해주세요.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (content.isEmpty()) {
+            Toast.makeText(getContext(), "내용을 입력해주세요.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 모든 조건이 충족되면 다음 fragment로 이동
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, new BoardPostCompleteFragment());
+        transaction.addToBackStack(null);
+        transaction.commit();
+
+        // 2초 후에 이전 fragment로 이동하는 작업을 합니다.
+        new Handler().postDelayed(() -> {
+            FragmentTransaction newTransaction = getParentFragmentManager().beginTransaction();
+            newTransaction.replace(R.id.fragment_container, new BoardFragment());
+            newTransaction.addToBackStack(null);
+            newTransaction.commit();
+        }, 2000); // 2초 후 게시판 페이지로 이동
+    }
 
     private void openFileChooser() {
         Intent intent = new Intent();

@@ -40,7 +40,6 @@ public class BoardFragment extends Fragment {
         TextView newsTextView = view.findViewById(R.id.news_board_textview);
         TextView freeTextView = view.findViewById(R.id.free_board_textview);
         TextView eventTextView = view.findViewById(R.id.event_board_textview);
-        TextView volunteerTextView = view.findViewById(R.id.volunteer_board_textview);
 
         TextView myPostTextView = view.findViewById(R.id.board_my_post_list_textview);
         TextView myCommentPostTextView = view.findViewById(R.id.board_my_comment_post_list_textview);
@@ -53,7 +52,6 @@ public class BoardFragment extends Fragment {
                 newsTextView.setTypeface(Typeface.DEFAULT_BOLD);
                 freeTextView.setTypeface(Typeface.DEFAULT);
                 eventTextView.setTypeface(Typeface.DEFAULT);
-                volunteerTextView.setTypeface(Typeface.DEFAULT);
                 viewPager.setCurrentItem(0);
             }
         });
@@ -64,7 +62,6 @@ public class BoardFragment extends Fragment {
                 freeTextView.setTypeface(Typeface.DEFAULT_BOLD);
                 newsTextView.setTypeface(Typeface.DEFAULT);
                 eventTextView.setTypeface(Typeface.DEFAULT);
-                volunteerTextView.setTypeface(Typeface.DEFAULT);
                 viewPager.setCurrentItem(1);
             }
         });
@@ -75,19 +72,7 @@ public class BoardFragment extends Fragment {
                 eventTextView.setTypeface(Typeface.DEFAULT_BOLD);
                 newsTextView.setTypeface(Typeface.DEFAULT);
                 freeTextView.setTypeface(Typeface.DEFAULT);
-                volunteerTextView.setTypeface(Typeface.DEFAULT);
                 viewPager.setCurrentItem(2);
-            }
-        });
-
-        volunteerTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                volunteerTextView.setTypeface(Typeface.DEFAULT_BOLD);
-                newsTextView.setTypeface(Typeface.DEFAULT);
-                freeTextView.setTypeface(Typeface.DEFAULT);
-                eventTextView.setTypeface(Typeface.DEFAULT);
-                viewPager.setCurrentItem(3);
             }
         });
 

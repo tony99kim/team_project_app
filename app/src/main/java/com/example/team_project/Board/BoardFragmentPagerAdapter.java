@@ -8,10 +8,9 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.example.team_project.Board.BoardKategorie.BoardEventFragment;
 import com.example.team_project.Board.BoardKategorie.BoardFreeFragment;
 import com.example.team_project.Board.BoardKategorie.BoardNewsFragment;
-import com.example.team_project.Board.BoardKategorie.BoardVolunteerFragment;
 
 public class BoardFragmentPagerAdapter extends FragmentStateAdapter {
-    private static final int NUM_PAGES = 4; // 페이지 수
+    private static final int NUM_PAGES = 3; // 페이지 수
 
     public BoardFragmentPagerAdapter(FragmentActivity fragmentActivity) {
         super(fragmentActivity);
@@ -26,8 +25,6 @@ public class BoardFragmentPagerAdapter extends FragmentStateAdapter {
                 return new BoardFreeFragment(); // 두 번째 탭의 프래그먼트
             case 2:
                 return new BoardEventFragment(); // 세 번째 탭의 프래그먼트
-            case 3:
-                return new BoardVolunteerFragment(); // 네 번째 탭의 프래그먼트
             default:
                 return null;
         }
