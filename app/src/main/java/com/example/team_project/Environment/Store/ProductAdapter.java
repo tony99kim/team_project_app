@@ -54,32 +54,20 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         String directoryPath = "ProductImages/" + product.getProductId();
         StorageReference directoryReference = FirebaseStorage.getInstance().getReference().child(directoryPath);
 
-        directoryReference.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
-            @Override
-            public void onSuccess(ListResult listResult) {
-                if (!listResult.getItems().isEmpty()) {
-                    StorageReference firstFileRef = listResult.getItems().get(0);
-                    firstFileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            Glide.with(context)
-                                    .load(uri)
-                                    .into(holder.productImageView);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.e("ProductAdapter", "첫 번째 이미지 로드 실패", e);
-                        }
-                    });
-                }
+        directoryReference.listAll().addOnSuccessListener(listResult -> {
+            if (!listResult.getItems().isEmpty()) {
+                StorageReference firstFileRef = listResult.getItems().get(0);
+                firstFileRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    if (uri != null && context != null && holder.productImageView != null) {
+                        Glide.with(context)
+                                .load(uri)
+                                .into(holder.productImageView);
+                    }
+                }).addOnFailureListener(e -> Log.e("ProductAdapter", "첫 번째 이미지 로드 실패", e));
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e("ProductAdapter", "파일 목록 가져오기 실패", e);
-            }
-        });
+        }).addOnFailureListener(e -> Log.e("ProductAdapter", "파일 목록 가져오기 실패", e)
+        );
+
 
         // 상품 클릭 이벤트 리스너 설정
         holder.itemView.setOnClickListener(new View.OnClickListener() {
