@@ -4,28 +4,92 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
-import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.team_project.R;
-import com.example.team_project.Toolbar.LocationSettingsFragment;
-import com.example.team_project.Toolbar.NotificationsFragment;
-import com.example.team_project.Toolbar.SearchFragment;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PointFragment extends Fragment {
+
+    private List<PointItem> pointItems = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private PointAdapter adapter;
+
+
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_environment_point, container, false);
 
+        recyclerView = view.findViewById(R.id.pointListRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        adapter = new PointAdapter(pointItems);
+        recyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(v -> {
+            int position = recyclerView.getChildAdapterPosition(v);
+            PointItem selectedItem = pointItems.get(position);
+            // 선택된 아이템을 사용하여 필요한 작업 수행
+            replaceFragment(new PointAuthenticationFragment());
+        });
+
+
+        loadImagesFromFirebaseStorage();
+
         return view;
     }
 
 
+    private void loadImagesFromFirebaseStorage() {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference().child("AuthenticationIconImages");
+
+        // 기존 리스트를 비워줍니다.
+        pointItems.clear();
+
+        storageRef.listAll().addOnSuccessListener(listResult -> {
+            List<PointItem> tempItems = new ArrayList<>();
+            for (StorageReference item : listResult.getItems()) {
+                item.getDownloadUrl().addOnSuccessListener(uri -> {
+                    PointItem pointItem = new PointItem(item.getName(), uri.toString());
+                    tempItems.add(pointItem);
+                    // 모든 이미지를 다 불러왔을 때 리스트를 갱신합니다.
+                    if (tempItems.size() == listResult.getItems().size()) {
+                        pointItems.addAll(tempItems);
+                        adapter.notifyDataSetChanged();
+                    }
+                }).addOnFailureListener(exception -> {
+                    // 에러 처리
+                });
+            }
+        }).addOnFailureListener(exception -> {
+            // 에러 처리
+        });
+    }
+
+    private void replaceFragment(Fragment fragment) {
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(
+                R.anim.slide_in_right,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.slide_out_right
+        );
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
 }
