@@ -16,7 +16,8 @@
         android:background="?attr/colorPrimary"
         app:navigationIcon="?attr/homeAsUpIndicator"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:title=" "/>
 
     <ScrollView
         android:layout_width="match_parent"

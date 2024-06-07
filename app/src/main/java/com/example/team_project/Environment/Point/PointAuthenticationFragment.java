@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -54,6 +55,15 @@ public class PointAuthenticationFragment extends Fragment {
 
         // Firebase 초기화
         storageReference = FirebaseStorage.getInstance().getReference("PointAuthenticationImages");
+
+        // 툴바 설정
+        Toolbar toolbar = view.findViewById(R.id.toolbar_point_authentication);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        // 툴바에 뒤로가기 버튼 추가
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+        // 뒤로가기 버튼 클릭 이벤트 처리
+        toolbar.setNavigationOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
 
         // 뷰 초기화
         etAuthenticationDescription = view.findViewById(R.id.etAuthenticationDescription);
