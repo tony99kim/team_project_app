@@ -53,7 +53,7 @@
         android:layout_toLeftOf="@id/btn_check_inquiry"
         android:layout_toEndOf="@id/btn_inquire"
         android:layout_toRightOf="@id/btn_inquire"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <!-- 문의 내용 입력 -->
     <EditText
@@ -70,7 +70,7 @@
         android:layout_toLeftOf="@id/btn_check_inquiry"
         android:layout_toEndOf="@id/btn_inquire"
         android:layout_toRightOf="@id/btn_inquire"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <!-- 문의 접수 버튼 -->
     <com.google.android.material.button.MaterialButton
@@ -81,6 +81,6 @@
         android:text="문의 접수"
         android:layout_below="@id/et_inquiry_content"
         android:layout_centerHorizontal="true"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
 </RelativeLayout>
