@@ -41,7 +41,7 @@ public class ProfileFragment extends Fragment {
 
     private TextView usernameTextView, environmentPointsTextView;
     private ImageView profileImageView;
-    private Button wishpostButton, wishlistButton, editButton, recentVisitButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
+    private Button payrecharge, wishpostButton, wishlistButton, editButton, recentVisitButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
     private androidx.appcompat.widget.Toolbar toolbar;
 
     private SharedPreferences sharedPreferences;
@@ -84,6 +84,7 @@ public class ProfileFragment extends Fragment {
         usernameTextView = view.findViewById(R.id.usernameTextView);
         recentVisitButton = view.findViewById(R.id.recentVisitButton);
         noticeButton = view.findViewById(R.id.noticeButton);
+        payrecharge = view.findViewById(R.id.payrecharge);
         customerServiceButton = view.findViewById(R.id.customerServiceButton);
         logoutButton = view.findViewById(R.id.logoutButton);
         withdrawButton = view.findViewById(R.id.withdrawButton);
@@ -104,13 +105,21 @@ public class ProfileFragment extends Fragment {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
-            activity.getSupportActionBar().setTitle("마이 페이지");
+            activity.getSupportActionBar().setTitle("고객센터");
         }
         // 로그아웃 버튼 클릭 리스너 설정
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 logout();
+            }
+        });
+
+        // 페이충전 버튼 클릭 리스너 설정
+        payrecharge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openPayrechargeFragment();
             }
         });
 
@@ -214,6 +223,16 @@ public class ProfileFragment extends Fragment {
 
     private void openNoticeFragment() {
         NoticeFragment fragment = new NoticeFragment();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            activity.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
+    }
+    private void openPayrechargeFragment() {
+        PayrechargeFragment fragment = new PayrechargeFragment();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             activity.getSupportFragmentManager().beginTransaction()

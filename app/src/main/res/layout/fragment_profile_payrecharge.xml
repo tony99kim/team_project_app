@@ -13,14 +13,13 @@
         android:elevation="4dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
-    <!-- 문의하기 버튼 -->
-    <Button
-        android:id="@+id/btn_inquiry"
+
+    <!-- 내용 -->
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="문의하기"
+        android:text="페이충전"
         android:layout_below="@id/toolbar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp" />
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
