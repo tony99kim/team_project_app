@@ -26,12 +26,9 @@ public class InquiryFragment extends Fragment {
 
     private FirebaseFirestore db;
     private View rootView;
-    private MaterialButton btnInquire;
-    private MaterialButton btnCheckInquiry;
     private EditText etInquiryTitle;
     private EditText etInquiryContent;
     private MaterialButton btnSubmitInquiry;
-    private boolean isInquiryMode = true; // 초기 상태는 문의하기 모드
 
     @Nullable
     @Override
@@ -39,73 +36,33 @@ public class InquiryFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_profile_customerservice_inquiry, container, false);
 
         Toolbar toolbar = rootView.findViewById(R.id.toolbar);
-        AppCompatActivity activity = (AppCompatActivity) requireActivity();
-        activity.setSupportActionBar(toolbar);
-        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        activity.getSupportActionBar().setTitle("문의");
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            activity.setSupportActionBar(toolbar);
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            activity.getSupportActionBar().setTitle("문의하기");
+        }
 
+        // Firebase Firestore 인스턴스 초기화
         db = FirebaseFirestore.getInstance();
-        btnInquire = rootView.findViewById(R.id.btn_inquire);
-        btnCheckInquiry = rootView.findViewById(R.id.btn_check_inquiry);
+
+        // 버튼과 입력 필드 초기화
         etInquiryTitle = rootView.findViewById(R.id.et_inquiry_title);
         etInquiryContent = rootView.findViewById(R.id.et_inquiry_content);
         btnSubmitInquiry = rootView.findViewById(R.id.btn_submit_inquiry);
 
-        // 초기 상태에서는 문의하기 UI가 보이도록 설정
-        switchToInquiryMode();
-
-        btnInquire.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isInquiryMode) {
-                    isInquiryMode = true;
-                    switchToInquiryMode();
-                }
-            }
-        });
-
-        btnCheckInquiry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isInquiryMode) {
-                    isInquiryMode = false;
-                    switchToInquiryHistoryMode();
-                }
-            }
-        });
-
+        // 문의 접수 버튼 클릭 리스너
         btnSubmitInquiry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isInquiryMode) {
-                    showConfirmationDialog();
-                }
+                showConfirmationDialog();
             }
         });
 
         return rootView;
     }
 
-    private void switchToInquiryMode() {
-        etInquiryTitle.setVisibility(View.VISIBLE);
-        etInquiryContent.setVisibility(View.VISIBLE);
-        btnSubmitInquiry.setVisibility(View.VISIBLE);
-
-        // 문의 내역 확인 UI 요소 숨기기
-        btnCheckInquiry.setVisibility(View.VISIBLE);
-
-    }
-
-    private void switchToInquiryHistoryMode() {
-        etInquiryTitle.setVisibility(View.GONE);
-        etInquiryContent.setVisibility(View.GONE);
-        btnSubmitInquiry.setVisibility(View.GONE);
-
-        // 문의하기 UI 요소 숨기기
-        btnCheckInquiry.setVisibility(View.VISIBLE);
-
-    }
-
+    // 경고 메시지를 보여주는 메서드
     private void showConfirmationDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("문의 접수");
@@ -113,10 +70,12 @@ public class InquiryFragment extends Fragment {
         builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                // 예를 선택한 경우, 문의를 Firebase Firestore에 저장
                 String title = etInquiryTitle.getText().toString().trim();
                 String content = etInquiryContent.getText().toString().trim();
 
                 if (!title.isEmpty() && !content.isEmpty()) {
+                    // Firestore에 문의 데이터 추가
                     addInquiryToFirestore(title, content);
                 } else {
                     Toast.makeText(requireContext(), "제목과 내용을 입력해주세요.", Toast.LENGTH_SHORT).show();
@@ -126,23 +85,32 @@ public class InquiryFragment extends Fragment {
         builder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                // 아무런 동작 없이 다이얼로그를 닫습니다.
                 dialog.dismiss();
             }
         });
         builder.show();
     }
 
+    // Firebase Firestore에 문의 데이터 추가
     private void addInquiryToFirestore(String title, String content) {
+        // 콜렉션과 문서 생성
         Map<String, Object> inquiry = new HashMap<>();
         inquiry.put("title", title);
         inquiry.put("content", content);
 
+        // Firestore에 데이터 추가
         db.collection("inquiries")
                 .add(inquiry)
                 .addOnSuccessListener(documentReference -> {
+                    // 성공적으로 추가된 경우
                     Toast.makeText(requireContext(), "문의가 성공적으로 접수되었습니다.", Toast.LENGTH_SHORT).show();
+                    // 추가 후 필요한 작업 수행 (예: 입력 필드 초기화 등)
+                    etInquiryTitle.setText("");
+                    etInquiryContent.setText("");
                 })
                 .addOnFailureListener(e -> {
+                    // 실패한 경우
                     Toast.makeText(requireContext(), "문의 접수 중 오류가 발생하였습니다.", Toast.LENGTH_SHORT).show();
                 });
     }

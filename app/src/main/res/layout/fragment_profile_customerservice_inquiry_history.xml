@@ -14,10 +14,9 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <!-- 문의하기로 돌아가기 버튼 -->
+    <!-- 문의 내역 확인 버튼 -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_back_to_inquiry"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="문의하기로 돌아가기"
