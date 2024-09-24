@@ -74,12 +74,7 @@ public class PointAuthenticationFragment extends Fragment {
 
         // 제목 설정
         if (pointItem != null) {
-            int index = getPointItemIndex(pointItem); // 포인트 아이템의 인덱스 가져오기
-            if (index >= 0 && index < PointItem.getFixedTitles().length) {
-                tvAuthenticationTitle.setText(PointItem.getFixedTitles()[index]); // 고정된 제목을 설정
-            } else {
-                tvAuthenticationTitle.setText("제목을 찾을 수 없습니다."); // 디버깅을 위한 기본 제목
-            }
+            tvAuthenticationTitle.setText(pointItem.getTitle()); // 고정된 제목을 설정
         } else {
             tvAuthenticationTitle.setText("포인트 아이템이 없습니다."); // 디버깅을 위한 기본 제목
         }
@@ -92,22 +87,17 @@ public class PointAuthenticationFragment extends Fragment {
             if (imageData != null) {
                 uploadPointAuthentication(imageData); // imageData가 null이 아닐 때만 업로드 호출
             } else {
-                Toast.makeText(getActivity(), "이미지를 선택해주세요.", Toast.LENGTH_SHORT).show();
+                showToast("이미지를 선택해주세요.");
             }
         });
 
         return view;
     }
 
-    // 포인트 아이템의 인덱스를 가져오는 메소드
-    private int getPointItemIndex(PointItem pointItem) {
-        // 고정된 제목 배열과 비교하여 인덱스 반환
-        for (int i = 0; i < PointItem.getFixedTitles().length; i++) {
-            if (PointItem.getFixedTitles()[i].equals(pointItem.getTitle())) {
-                return i;
-            }
+    private void showToast(String message) {
+        if (getActivity() != null) {
+            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         }
-        return -1; // 일치하는 제목이 없을 경우
     }
 
     private void openFileChooser() {
@@ -143,9 +133,10 @@ public class PointAuthenticationFragment extends Fragment {
             String userId = user.getUid(); // 사용자의 고유 ID 가져오기
             String title = pointItem.getTitle(); // 인증 제목 가져오기
             String status = "대기"; // 초기 상태는 "대기"
+            String description = "인증 설명"; // 설명 추가 (필요시 수정 가능)
 
             // 인증 항목 객체 생성
-            PointAuthentication pointAuthentication = new PointAuthentication(authenticationId, userId, title, status);
+            PointAuthentication pointAuthentication = new PointAuthentication(authenticationId, userId, title, status, description);
             db.collection("pointAuthentications").document(authenticationId).set(pointAuthentication)
                     .addOnSuccessListener(aVoid -> {
                         // 이미지 스토리지에 업로드
@@ -154,15 +145,17 @@ public class PointAuthenticationFragment extends Fragment {
                             StorageReference fileReference = storageReference.child(authenticationId + "/" + System.currentTimeMillis() + "." + getFileExtension(imageUri));
                             fileReference.putFile(imageUri).addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
-                                    Toast.makeText(getActivity(), "인증이 업로드되었습니다.", Toast.LENGTH_SHORT).show();
-                                    getActivity().getSupportFragmentManager().popBackStack();
+                                    showToast("인증이 업로드되었습니다.");
+                                    if (getActivity() != null) {
+                                        getActivity().getSupportFragmentManager().popBackStack();
+                                    }
                                 }
                             });
                         }
                     })
-                    .addOnFailureListener(e -> Toast.makeText(getActivity(), "인증 업로드에 실패했습니다.", Toast.LENGTH_SHORT).show());
+                    .addOnFailureListener(e -> showToast("인증 업로드에 실패했습니다."));
         } else {
-            Toast.makeText(getActivity(), "모든 정보를 입력해주세요.", Toast.LENGTH_SHORT).show();
+            showToast("모든 정보를 입력해주세요.");
         }
     }
 
