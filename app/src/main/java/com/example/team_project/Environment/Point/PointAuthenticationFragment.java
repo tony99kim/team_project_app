@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText; // EditText 추가
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +34,7 @@ public class PointAuthenticationFragment extends Fragment {
     private Button btnUploadPointAuthentication; // 인증 업로드 버튼
     private TextView tvImageCount; // 선택된 이미지 개수 표시 TextView
     private ImageView ivCameraIcon; // 카메라 아이콘
+    private EditText etAuthenticationDescription; // 인증 설명 입력 EditText 추가
 
     // Firebase 참조
     private StorageReference storageReference; // Firebase Storage 참조
@@ -71,6 +73,7 @@ public class PointAuthenticationFragment extends Fragment {
         btnUploadPointAuthentication = view.findViewById(R.id.btnAuthentication); // 인증 업로드 버튼
         tvImageCount = view.findViewById(R.id.tvImageCount); // 이미지 개수 표시 TextView
         ivCameraIcon = view.findViewById(R.id.ivCameraIcon); // 카메라 아이콘
+        etAuthenticationDescription = view.findViewById(R.id.etAuthenticationDescription); // 인증 설명 EditText
 
         // 제목 설정
         if (pointItem != null) {
@@ -133,7 +136,7 @@ public class PointAuthenticationFragment extends Fragment {
             String userId = user.getUid(); // 사용자의 고유 ID 가져오기
             String title = pointItem.getTitle(); // 인증 제목 가져오기
             String status = "대기"; // 초기 상태는 "대기"
-            String description = "인증 설명"; // 설명 추가 (필요시 수정 가능)
+            String description = etAuthenticationDescription.getText().toString(); // 사용자 입력 설명 가져오기
 
             // 인증 항목 객체 생성
             PointAuthentication pointAuthentication = new PointAuthentication(authenticationId, userId, title, status, description);
