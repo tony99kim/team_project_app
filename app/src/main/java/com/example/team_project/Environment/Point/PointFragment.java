@@ -17,6 +17,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class PointFragment extends Fragment {
@@ -24,9 +26,6 @@ public class PointFragment extends Fragment {
     private List<PointItem> pointItems = new ArrayList<>();
     private RecyclerView recyclerView;
     private PointAdapter adapter;
-
-
-
 
     @Nullable
     @Override
@@ -46,12 +45,10 @@ public class PointFragment extends Fragment {
             replaceFragment(new PointAuthenticationFragment());
         });
 
-
         loadImagesFromFirebaseStorage();
 
         return view;
     }
-
 
     private void loadImagesFromFirebaseStorage() {
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -62,13 +59,17 @@ public class PointFragment extends Fragment {
 
         storageRef.listAll().addOnSuccessListener(listResult -> {
             List<PointItem> tempItems = new ArrayList<>();
-            for (StorageReference item : listResult.getItems()) {
+            for (int i = 0; i < listResult.getItems().size(); i++) {
+                StorageReference item = listResult.getItems().get(i);
+                int finalI = i;
                 item.getDownloadUrl().addOnSuccessListener(uri -> {
-                    PointItem pointItem = new PointItem(item.getName(), uri.toString());
+                    // 인덱스를 사용하여 PointItem 생성
+                    PointItem pointItem = new PointItem(finalI, uri.toString(), "대기"); // 상태를 대기로 설정
                     tempItems.add(pointItem);
                     // 모든 이미지를 다 불러왔을 때 리스트를 갱신합니다.
                     if (tempItems.size() == listResult.getItems().size()) {
                         pointItems.addAll(tempItems);
+                        sortAndFilterItems(); // 정렬 및 필터링 메서드 호출
                         adapter.notifyDataSetChanged();
                     }
                 }).addOnFailureListener(exception -> {
@@ -78,6 +79,23 @@ public class PointFragment extends Fragment {
         }).addOnFailureListener(exception -> {
             // 에러 처리
         });
+    }
+
+    private void sortAndFilterItems() {
+        // 상태가 "대기"인 항목만 필터링하고 정렬합니다.
+        List<PointItem> filteredItems = new ArrayList<>();
+        for (PointItem item : pointItems) {
+            if ("대기".equals(item.getStatus())) {
+                filteredItems.add(item);
+            }
+        }
+
+        // 정렬 (여기서는 이름 기준으로 정렬)
+        Collections.sort(filteredItems, Comparator.comparing(PointItem::getTitle));
+
+        // 기존 리스트를 비워주고 필터링된 리스트로 업데이트
+        pointItems.clear();
+        pointItems.addAll(filteredItems);
     }
 
     private void replaceFragment(Fragment fragment) {

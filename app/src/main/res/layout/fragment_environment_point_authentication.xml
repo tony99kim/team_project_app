@@ -9,73 +9,82 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar_point_authentication"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:navigationIcon="?attr/homeAsUpIndicator"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:layout_constraintTop_toTopOf="parent"
-        app:title=" "/>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <LinearLayout
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_point_authentication"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title=" "/>
 
-            <FrameLayout
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginBottom="24dp"
-                android:background="@android:color/transparent"
-                android:foreground="?attr/selectableItemBackground">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <ImageView
-                    android:id="@+id/ivCameraIcon"
-                    android:layout_width="120dp"
-                    android:layout_height="85dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_camera"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:onClick="onRegisterProductClicked" />
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@android:color/transparent"
+                    android:foreground="?attr/selectableItemBackground">
 
+                    <ImageView
+                        android:id="@+id/ivCameraIcon"
+                        android:layout_width="120dp"
+                        android:layout_height="85dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_camera"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:onClick="onRegisterProductClicked" />
+
+                    <!-- 인증 제목 TextView 추가 -->
+                    <TextView
+                        android:id="@+id/tvAuthenticationTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top|center_horizontal"
+                        android:layout_marginTop="8dp"
+                        android:text="인증 제목"
+                        android:textAppearance="?attr/textAppearanceHeadline6"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/tvImageCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:layout_marginBottom="8dp"
+                        android:text="0/2"
+                        android:textAppearance="?attr/textAppearanceSubtitle1" />
+
+                </FrameLayout>
 
                 <TextView
-                    android:id="@+id/tvImageCount"
+                    android:id="@+id/tvDescriptionLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:layout_marginBottom="8dp"
-                    android:text="0/2"
-                    android:textAppearance="?attr/textAppearanceSubtitle1" />
+                    android:text="인증 설명" />
 
-            </FrameLayout>
+                <EditText
+                    android:id="@+id/etAuthenticationDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="24dp"
+                    android:hint="실천상황,소감 등을 작성하여 인증해주세요"/>
 
-            <!-- EditTexts for title, price, and product description with new ids -->
-
-            <TextView
-                android:id="@+id/tvDescriptionLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="인증 설명" />
-
-            <EditText
-                android:id="@+id/etAuthenticationDescription"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="24dp" />
-
-        </LinearLayout>
-    </ScrollView>
+            </LinearLayout>
+        </ScrollView>
 
         <Button
             android:id="@+id/btnAuthentication"

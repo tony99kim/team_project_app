@@ -5,14 +5,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.team_project.R;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
@@ -39,7 +39,9 @@ public class PointAdapter extends RecyclerView.Adapter<PointAdapter.PointViewHol
     @Override
     public void onBindViewHolder(@NonNull PointViewHolder holder, int position) {
         PointItem item = items.get(position);
-        holder.title.setText(item.getTitle());
+
+        // 고정된 제목 설정
+        holder.title.setText(item.getTitle()); // 이미 설정된 title 사용
 
         // 이미지 URL 가져오기
         String imageUrl = item.getImageUrl();
@@ -50,6 +52,16 @@ public class PointAdapter extends RecyclerView.Adapter<PointAdapter.PointViewHol
                 .apply(new RequestOptions().placeholder(R.mipmap.ic_launcher)) // 로딩 중 표시될 이미지
                 .error(R.mipmap.ic_launcher) // 로딩 실패 시 표시될 이미지
                 .into(holder.iconImageView); // 이미지를 설정할 ImageView
+
+        // 클릭 리스너
+        holder.itemView.setOnClickListener(v -> {
+            // 클릭 시 Fragment로 이동
+            PointAuthenticationFragment fragment = PointAuthenticationFragment.newInstance(item);
+            ((AppCompatActivity) holder.itemView.getContext()).getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment) // 적절한 프래그먼트 컨테이너 ID 사용
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 
     @Override
@@ -63,8 +75,8 @@ public class PointAdapter extends RecyclerView.Adapter<PointAdapter.PointViewHol
 
         public PointViewHolder(@NonNull View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.authenticationTitleTextView);
-            iconImageView = itemView.findViewById(R.id.authenticationIconImageView);
+            title = itemView.findViewById(R.id.authenticationTitleTextView); // 인증 제목 TextView ID
+            iconImageView = itemView.findViewById(R.id.authenticationIconImageView); // 인증 아이콘 ImageView ID
         }
     }
 }

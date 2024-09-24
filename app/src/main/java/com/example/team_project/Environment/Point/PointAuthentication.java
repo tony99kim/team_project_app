@@ -5,7 +5,7 @@ public class PointAuthentication {
     public String authenticationId, userId, authenticationDescription;
 
     // Firestore 데이터를 위한 빈 생성자
-    public PointAuthentication() {}
+    public PointAuthentication(String authenticationId, String userId, String title, String status) {}
 
     // 모든 필드를 초기화하는 생성자
     public PointAuthentication(String authenticationId, String userId, String authenticationDescription) {
