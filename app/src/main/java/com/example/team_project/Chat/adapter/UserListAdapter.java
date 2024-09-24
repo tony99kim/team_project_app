@@ -25,7 +25,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_user, parent, false);
+                .inflate(R.layout.fragment_chat_item_user, parent, false);
         return new ViewHolder(view);
     }
 

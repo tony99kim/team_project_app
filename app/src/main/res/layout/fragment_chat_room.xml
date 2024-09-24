@@ -35,7 +35,7 @@
             app:layout_constraintBottom_toTopOf="@id/edt_message"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:listitem="@layout/item_message" /> <!-- 메시지 아이템 레이아웃 예시 -->
+            tools:listitem="@layout/fragment_chat_item_message" /> <!-- 메시지 아이템 레이아웃 예시 -->
 
         <!-- 메시지 입력란 -->
         <EditText
