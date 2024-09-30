@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +23,8 @@ import com.bumptech.glide.Glide;
 import com.example.team_project.R;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -38,23 +41,19 @@ public class ProductDetailFragment extends Fragment {
     private String productId, userId, title, price, description;
     private ViewPager2 viewPager2;
     private TextView titleTextView, descriptionTextView, priceTextView;
-
+    private Button buttonFavorite; // 찜 버튼 추가
     private Toolbar priceToolBar;
 
-    public static ProductDetailFragment newInstance(String productId, String userId, String title, String price, String description) {
+    public static ProductDetailFragment newInstance(Product product) {
         ProductDetailFragment fragment = new ProductDetailFragment();
         Bundle args = new Bundle();
-        args.putString("productId", productId);
-        args.putString("userId", userId);
-        args.putString("title", title);
-        args.putString("price", price);
-        args.putString("description", description);
+        args.putString("productId", product.productId);
+        args.putString("userId", product.userId);
+        args.putString("title", product.title);
+        args.putString("price", product.price);
+        args.putString("description", product.description);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public static ProductDetailFragment newInstance(Product product) {
-        return newInstance(product.productId, product.userId, product.title, product.price, product.description);
     }
 
     @Override
@@ -79,6 +78,7 @@ public class ProductDetailFragment extends Fragment {
         descriptionTextView = view.findViewById(R.id.textView_product_description);
         priceToolBar = view.findViewById(R.id.toolbar_bottom);
         priceTextView = priceToolBar.findViewById(R.id.textView_product_price);
+        buttonFavorite = view.findViewById(R.id.button_favorite); // 찜 버튼 초기화
 
         titleTextView.setText(title);
         descriptionTextView.setText(description);
@@ -87,6 +87,8 @@ public class ProductDetailFragment extends Fragment {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
+
+        buttonFavorite.setOnClickListener(v -> addToWishlist()); // 찜 버튼 클릭 리스너 추가
 
         loadProductPrice(); // 가격 불러오기 함수 호출
         loadProductImages(); // 이미지 로드 함수 호출
@@ -149,6 +151,24 @@ public class ProductDetailFragment extends Fragment {
                 Toast.makeText(getContext(), "Error getting product: " + task.getException(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void addToWishlist() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("wishlists").document(userId).collection("products").document(productId)
+                    .set(new Product(productId, userId, title, price, description))
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(getContext(), "관심상품에 추가되었습니다.", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "관심상품 추가 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            Toast.makeText(getContext(), "로그인 후 찜할 수 있습니다.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private static class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewHolder> {

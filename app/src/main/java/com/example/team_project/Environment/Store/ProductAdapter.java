@@ -1,16 +1,13 @@
 package com.example.team_project.Environment.Store;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -27,14 +24,13 @@ import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
     private Context context;
     private List<Product> productList;
+
 
     // 생성자
     public ProductAdapter(Context context, ArrayList<Product> productList) {
@@ -69,27 +65,26 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                     }
                 }).addOnFailureListener(e -> Log.e("ProductAdapter", "첫 번째 이미지 로드 실패", e));
             }
-        }).addOnFailureListener(e -> Log.e("ProductAdapter", "파일 목록 가져오기 실패", e));
+        }).addOnFailureListener(e -> Log.e("ProductAdapter", "파일 목록 가져오기 실패", e)
+        );
+
 
         // 상품 클릭 이벤트 리스너 설정
-        holder.itemView.setOnClickListener(v -> {
-            // 상품 상세 페이지로 이동
-            ProductDetailFragment productDetailFragment = ProductDetailFragment.newInstance(product);
-            replaceFragment(productDetailFragment);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 상품 상세 페이지로 이동
+                ProductDetailFragment productDetailFragment = ProductDetailFragment.newInstance(product);
+                replaceFragment(productDetailFragment);
 
-            // 최근 방문 목록에 추가
-            Fragment currentFragment = ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-            if (currentFragment instanceof ProfileFragment) {
-                ((ProfileFragment) currentFragment).addRecentVisit(product.getTitle());
-            } else {
-                Log.d("ProductAdapter", "ProfileFragment is not found");
+                // 최근 방문 목록에 추가
+                Fragment currentFragment = ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                if (currentFragment instanceof ProfileFragment) {
+                    ((ProfileFragment) currentFragment).addRecentVisit(product.getTitle());
+                } else {
+                    Log.d("ProductAdapter", "ProfileFragment is not found");
+                }
             }
-        });
-
-        // 찜하기 버튼 클릭 리스너 설정
-        holder.favoriteButton.setOnClickListener(v -> {
-            addToWishlist(product);
-            Toast.makeText(context, "찜한 상품에 추가되었습니다.", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -102,14 +97,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         ImageView productImageView;
         TextView productTitleTextView;
         TextView productPriceTextView;
-        Button favoriteButton; // 찜하기 버튼 추가
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
             productImageView = itemView.findViewById(R.id.productImageView);
             productTitleTextView = itemView.findViewById(R.id.productTitleTextView);
             productPriceTextView = itemView.findViewById(R.id.productPriceTextView);
-            favoriteButton = itemView.findViewById(R.id.favoriteButton); // 찜하기 버튼 초기화
         }
     }
 
@@ -128,21 +121,4 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 .commit();
     }
 
-    private void addToWishlist(Product product) {
-        SharedPreferences prefs = context.getSharedPreferences("wishlist", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-
-        // 찜한 상품 목록을 추가하는 로직
-        Set<String> wishlistSet = prefs.getStringSet("wishlistItems", new HashSet<>());
-        wishlistSet.add(product.getTitle()); // 상품 제목을 저장
-
-        // 찜한 상품의 상세 정보 저장
-        Set<String> wishlistDetailSet = prefs.getStringSet("wishlistDetails", new HashSet<>());
-        String productDetails = product.getTitle() + " - " + product.getPrice() + " - " + product.getDescription();
-        wishlistDetailSet.add(productDetails); // 상품 제목, 가격, 설명을 저장
-
-        editor.putStringSet("wishlistItems", wishlistSet);
-        editor.putStringSet("wishlistDetails", wishlistDetailSet); // 상세 정보 저장
-        editor.apply();
-    }
 }
