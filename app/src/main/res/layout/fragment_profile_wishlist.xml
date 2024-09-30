@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -14,13 +12,21 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
+    <!-- RecyclerView 추가 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_wishlist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:padding="16dp" />
 
-    <!-- 내용 -->
+    <!-- 초기 메시지 -->
     <TextView
+        android:id="@+id/text_no_wishlist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="관심 표시한 상품이 없습니다."
         android:layout_below="@id/toolbar"
-        android:layout_centerHorizontal="true" />
-
+        android:layout_centerHorizontal="true"
+        android:visibility="gone" /> <!-- 기본적으로 숨김 -->
 </RelativeLayout>

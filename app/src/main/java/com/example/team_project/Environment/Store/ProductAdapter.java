@@ -31,7 +31,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     private Context context;
     private List<Product> productList;
 
-
     // 생성자
     public ProductAdapter(Context context, ArrayList<Product> productList) {
         this.context = context;
@@ -65,25 +64,20 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                     }
                 }).addOnFailureListener(e -> Log.e("ProductAdapter", "첫 번째 이미지 로드 실패", e));
             }
-        }).addOnFailureListener(e -> Log.e("ProductAdapter", "파일 목록 가져오기 실패", e)
-        );
-
+        }).addOnFailureListener(e -> Log.e("ProductAdapter", "파일 목록 가져오기 실패", e));
 
         // 상품 클릭 이벤트 리스너 설정
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 상품 상세 페이지로 이동
-                ProductDetailFragment productDetailFragment = ProductDetailFragment.newInstance(product);
-                replaceFragment(productDetailFragment);
+        holder.itemView.setOnClickListener(v -> {
+            // 상품 상세 페이지로 이동
+            ProductDetailFragment productDetailFragment = ProductDetailFragment.newInstance(product);
+            replaceFragment(productDetailFragment);
 
-                // 최근 방문 목록에 추가
-                Fragment currentFragment = ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-                if (currentFragment instanceof ProfileFragment) {
-                    ((ProfileFragment) currentFragment).addRecentVisit(product.getTitle());
-                } else {
-                    Log.d("ProductAdapter", "ProfileFragment is not found");
-                }
+            // 최근 방문 목록에 추가
+            Fragment currentFragment = ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            if (currentFragment instanceof ProfileFragment) {
+                ((ProfileFragment) currentFragment).addRecentVisit(product.getTitle());
+            } else {
+                Log.d("ProductAdapter", "ProfileFragment is not found");
             }
         });
     }
@@ -108,7 +102,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     // Fragment 교체를 위한 메서드
     private void replaceFragment(Fragment fragment) {
-        // context를 FragmentActivity로 캐스팅하여 getSupportFragmentManager()에 접근
         ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(
                         R.anim.slide_in_right,
@@ -120,5 +113,4 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 .addToBackStack(null)
                 .commit();
     }
-
 }
