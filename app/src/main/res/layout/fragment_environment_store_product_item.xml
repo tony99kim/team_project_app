@@ -32,4 +32,12 @@
             android:text="가격"
             android:textAppearance="?attr/textAppearanceListItemSecondary" />
     </LinearLayout>
+
+    <!-- 찜하기 버튼 추가 -->
+    <Button
+        android:id="@+id/favoriteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="찜하기"
+        android:layout_marginStart="8dp" />
 </LinearLayout>

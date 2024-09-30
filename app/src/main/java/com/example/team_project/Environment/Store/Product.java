@@ -26,4 +26,8 @@ public class Product {
     public String getPrice() {
         return price;
     }
+
+    public String getDescription() {
+        return description; // 수정된 부분
+    }
 }
