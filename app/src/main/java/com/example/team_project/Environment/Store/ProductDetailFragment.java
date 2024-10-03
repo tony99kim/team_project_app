@@ -1,5 +1,6 @@
 package com.example.team_project.Environment.Store;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,7 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
+import com.example.team_project.Chat.ChatData.Chat_ChatData;
 import com.example.team_project.R;
+import com.example.team_project.Chat.ActivityChat; // 채팅 액티비티 import
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +35,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -41,7 +45,7 @@ public class ProductDetailFragment extends Fragment {
     private String productId, userId, title, price, description;
     private ViewPager2 viewPager2;
     private TextView titleTextView, descriptionTextView, priceTextView;
-    private Button buttonFavorite; // 찜 버튼 추가
+    private Button buttonFavorite, buttonChat; // 찜 버튼 및 채팅 버튼 추가
     private Toolbar priceToolBar;
 
     public static ProductDetailFragment newInstance(Product product) {
@@ -79,6 +83,7 @@ public class ProductDetailFragment extends Fragment {
         priceToolBar = view.findViewById(R.id.toolbar_bottom);
         priceTextView = priceToolBar.findViewById(R.id.textView_product_price);
         buttonFavorite = view.findViewById(R.id.button_favorite); // 찜 버튼 초기화
+        buttonChat = view.findViewById(R.id.product_chat_button); // 채팅 버튼 초기화
 
         titleTextView.setText(title);
         descriptionTextView.setText(description);
@@ -89,6 +94,9 @@ public class ProductDetailFragment extends Fragment {
         toolbar.setNavigationOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
 
         buttonFavorite.setOnClickListener(v -> addToWishlist()); // 찜 버튼 클릭 리스너 추가
+
+        // 채팅 버튼 클릭 리스너 추가
+        buttonChat.setOnClickListener(v -> onStartChat());
 
         loadProductPrice(); // 가격 불러오기 함수 호출
         loadProductImages(); // 이미지 로드 함수 호출
@@ -169,6 +177,38 @@ public class ProductDetailFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), "로그인 후 찜할 수 있습니다.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void onStartChat() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String currentUserEmail = currentUser.getEmail();
+            String chatRoomId = currentUserEmail + "_" + userId; // 채팅방 ID 생성
+
+            // Chat_ChatData 객체 생성
+            Chat_ChatData chatData = new Chat_ChatData(chatRoomId, currentUserEmail, userId, "", new Date());
+
+            // Firestore에 채팅방 정보 저장
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("chatRooms").document(chatRoomId)
+                    .set(chatData)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(getContext(), "채팅방이 생성되었습니다.", Toast.LENGTH_SHORT).show();
+                        navigateToChatRoom(chatRoomId); // 채팅방으로 이동
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "채팅방 생성 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            Toast.makeText(getContext(), "로그인 후 채팅할 수 있습니다.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void navigateToChatRoom(String chatRoomId) {
+        Intent intent = new Intent(getActivity(), ActivityChat.class);
+        intent.putExtra("userEmail1", FirebaseAuth.getInstance().getCurrentUser().getEmail());
+        intent.putExtra("userEmail2", userId); // 상대방 이메일
+        startActivity(intent);
     }
 
     private static class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewHolder> {
