@@ -25,6 +25,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class PointAuthenticationFragment extends Fragment {
 
     private static final int PICK_IMAGE_REQUEST = 1; // 이미지 선택 요청 코드
@@ -137,9 +141,10 @@ public class PointAuthenticationFragment extends Fragment {
             String title = pointItem.getTitle(); // 인증 제목 가져오기
             String status = "대기"; // 초기 상태는 "대기"
             String description = etAuthenticationDescription.getText().toString(); // 사용자 입력 설명 가져오기
+            String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()); // 현재 날짜 및 시간 가져오기
 
             // 인증 항목 객체 생성
-            PointAuthentication pointAuthentication = new PointAuthentication(authenticationId, userId, title, status, description);
+            PointAuthentication pointAuthentication = new PointAuthentication(authenticationId, userId, title, status, description, timestamp);
             db.collection("pointAuthentications").document(authenticationId).set(pointAuthentication)
                     .addOnSuccessListener(aVoid -> {
                         // 이미지 스토리지에 업로드
