@@ -32,4 +32,6 @@
             android:text="가격"
             android:textAppearance="?attr/textAppearanceListItemSecondary" />
     </LinearLayout>
+
+
 </LinearLayout>
