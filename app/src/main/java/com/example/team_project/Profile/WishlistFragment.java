@@ -9,9 +9,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.team_project.Environment.Store.Product;
 import com.example.team_project.Environment.Store.ProductAdapter;
@@ -35,6 +37,19 @@ public class WishlistFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile_wishlist, container, false);
+
+        // 툴바 설정
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
+        // 뒤로가기 버튼 활성화
+        if (((AppCompatActivity) requireActivity()).getSupportActionBar() != null) {
+            ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            // 툴바 제목 설정
+            ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("관심상품목록");
+        }
+
+        // 뒤로가기 버튼 클릭 리스너
+        toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
 
         // RecyclerView 및 초기화
         wishlistRecyclerView = view.findViewById(R.id.recycler_view_wishlist);

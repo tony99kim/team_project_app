@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.team_project.Chat.adapter.MessageListAdapter;
-import com.example.team_project.Data.Chat;
-import com.example.team_project.Data.Message;
+import com.example.team_project.Chat.Data.Chat;
+import com.example.team_project.Chat.Data.Message;
 import com.example.team_project.R;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;

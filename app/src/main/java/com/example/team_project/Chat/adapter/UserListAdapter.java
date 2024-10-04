@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.team_project.Data.User;
+import com.example.team_project.Chat.Data.User;
 import com.example.team_project.R;
 
 import java.util.List;

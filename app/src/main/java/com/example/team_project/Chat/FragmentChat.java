@@ -24,8 +24,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.team_project.Chat.adapter.ChatListAdapter;
-import com.example.team_project.Data.Chat;
-import com.example.team_project.Data.User;
+import com.example.team_project.Chat.Data.Chat;
+import com.example.team_project.Chat.Data.User;
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
