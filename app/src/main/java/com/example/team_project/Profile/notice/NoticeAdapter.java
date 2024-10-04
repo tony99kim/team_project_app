@@ -1,4 +1,4 @@
-package com.example.team_project.Profile;
+package com.example.team_project.Profile.notice;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.team_project.R;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.NoticeViewHolder> {
 
@@ -29,7 +25,7 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.NoticeView
     @NonNull
     @Override
     public NoticeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_notice, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_profile_notice_item_notice, parent, false);
         return new NoticeViewHolder(view);
     }
 

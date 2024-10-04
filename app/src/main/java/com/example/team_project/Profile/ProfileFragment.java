@@ -26,6 +26,7 @@ import com.bumptech.glide.Glide;
 import com.example.team_project.Environment.Store.Product;
 import com.example.team_project.Environment.Store.ProductDetailFragment;
 import com.example.team_project.LoginActivity;
+import com.example.team_project.Profile.notice.NoticeFragment;
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
