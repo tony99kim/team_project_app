@@ -17,38 +17,14 @@
             android:minHeight="?attr/actionBarSize"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-        <!-- 제목 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="공지사항"
-            android:layout_below="@id/toolbar"
-            android:layout_centerHorizontal="true"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp" />
-
-        <!-- 공지사항 내용을 표시할 TextView 추가 -->
-        <TextView
-            android:id="@+id/noticeTextView"
+        <!-- RecyclerView 추가 -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/noticeRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/toolbar"
-            android:layout_marginTop="65dp"
-            android:padding="16dp"
-            android:textColor="@android:color/black"
-            android:textSize="16sp" />
-
-        <!-- 공지사항 이미지를 표시할 ImageView 추가 -->
-        <ImageView
-            android:id="@+id/noticeImageView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/noticeTextView"
             android:layout_marginTop="16dp"
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
-            android:visibility="gone"/> <!-- 초기에는 숨김 -->
+            android:padding="16dp" />
 
     </RelativeLayout>
 </ScrollView>
