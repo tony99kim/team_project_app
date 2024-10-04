@@ -17,6 +17,10 @@ import com.example.team_project.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class NoticeFragment extends Fragment {
 
     private FirebaseFirestore db; // Firestore 인스턴스
@@ -55,9 +59,20 @@ public class NoticeFragment extends Fragment {
                     if (task.isSuccessful()) {
                         StringBuilder notices = new StringBuilder();
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            String notice = document.getString("notice"); // 공지사항 필드 이름
-                            if (notice != null) {
-                                notices.append(notice).append("\n\n"); // 공지사항 추가
+                            String title = document.getString("title"); // 제목 필드 이름
+                            String content = document.getString("content"); // 내용 필드 이름
+                            Date createdAt = document.getDate("createdAt"); // 생성 날짜 필드 이름
+
+                            // 각 필드가 null이 아닐 때만 추가
+                            if (title != null && content != null && createdAt != null) {
+                                // 날짜 포맷 설정
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 a hh시 mm분 ss초", Locale.KOREA);
+                                String formattedDate = sdf.format(createdAt);
+
+                                // 공지사항 추가
+                                notices.append("제목: ").append(title).append("\n")
+                                        .append("내용: ").append(content).append("\n")
+                                        .append("작성일: ").append(formattedDate).append("\n\n");
                             }
                         }
                         noticeTextView.setText(notices.toString().trim()); // TextView에 공지사항 설정
@@ -67,3 +82,4 @@ public class NoticeFragment extends Fragment {
                 });
     }
 }
+
