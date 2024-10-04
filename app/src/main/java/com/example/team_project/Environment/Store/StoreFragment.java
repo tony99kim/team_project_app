@@ -1,23 +1,26 @@
 package com.example.team_project.Environment.Store;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.team_project.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
-import com.example.team_project.Environment.Store.Product;
-
-
 
 public class StoreFragment extends Fragment {
 
@@ -42,7 +45,12 @@ public class StoreFragment extends Fragment {
         // RecyclerView와 Adapter 초기화
         productsRecyclerView = view.findViewById(R.id.productListRecyclerView); // RecyclerView ID 확인 필요
         productList = new ArrayList<>();
-        productAdapter = new ProductAdapter(getContext(), productList);
+
+        // 사용자 ID 가져오기
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = user != null ? user.getUid() : null; // 사용자 ID 가져오기
+
+        productAdapter = new ProductAdapter(getContext(), productList, userId, false); // 사용자 ID 및 관심상품 여부 전달
         productsRecyclerView.setAdapter(productAdapter);
         productsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -68,6 +76,7 @@ public class StoreFragment extends Fragment {
                         productAdapter.notifyDataSetChanged(); // 데이터 변경 알림
                     } else {
                         // 에러 처리
+                        Log.e("StoreFragment", "제품 로드 실패: " + task.getException().getMessage());
                     }
                 });
     }
@@ -84,5 +93,4 @@ public class StoreFragment extends Fragment {
         transaction.addToBackStack(null);
         transaction.commit();
     }
-
 }

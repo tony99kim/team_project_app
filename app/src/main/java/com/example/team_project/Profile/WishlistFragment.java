@@ -40,7 +40,10 @@ public class WishlistFragment extends Fragment {
         wishlistRecyclerView = view.findViewById(R.id.recycler_view_wishlist);
         textNoWishlist = view.findViewById(R.id.text_no_wishlist);
         wishlist = new ArrayList<>();
-        productAdapter = new ProductAdapter(getContext(), wishlist);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = user != null ? user.getUid() : null; // 사용자 ID 가져오기
+        productAdapter = new ProductAdapter(getContext(), wishlist, userId, true); // 사용자 ID 및 관심상품 여부 전달
         wishlistRecyclerView.setAdapter(productAdapter);
         wishlistRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 

@@ -2,20 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
-
-    <TextView
-        android:id="@+id/productTitleTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/productPriceTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp" />
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/productImageView"
@@ -23,12 +10,22 @@
         android:layout_height="200dp"
         android:scaleType="centerCrop" />
 
-    <Button
-        android:id="@+id/button_remove"
+    <TextView
+        android:id="@+id/productTitleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="취소"
-        android:backgroundTint="?attr/colorPrimary"
-        android:textColor="@android:color/white"
-        android:layout_marginTop="8dp" />
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/productPriceTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="삭제" />
 </LinearLayout>
