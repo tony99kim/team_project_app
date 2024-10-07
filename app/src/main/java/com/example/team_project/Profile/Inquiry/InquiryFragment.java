@@ -1,4 +1,4 @@
-package com.example.team_project.Profile;
+package com.example.team_project.Profile.Inquiry;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,16 +20,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CustomerServiceFragment extends Fragment {
+public class InquiryFragment extends Fragment {
 
     private FirebaseFirestore db;
     private EditText etInquiryTitle, etInquiryContent;
-    private MaterialButton btnSubmitInquiry, btnCheckInquiry;
+    private MaterialButton btnSubmitInquiry;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile_customer_service, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile_customerservice_inquiry, container, false);
 
         // Firebase Firestore 초기화
         db = FirebaseFirestore.getInstance();
@@ -40,25 +40,20 @@ public class CustomerServiceFragment extends Fragment {
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            activity.getSupportActionBar().setTitle("고객 서비스");
+            activity.getSupportActionBar().setTitle("문의하기");
         }
 
         // 뷰 초기화
         etInquiryTitle = view.findViewById(R.id.et_inquiry_title);
         etInquiryContent = view.findViewById(R.id.et_inquiry_content);
         btnSubmitInquiry = view.findViewById(R.id.btn_submit_inquiry);
-        btnCheckInquiry = view.findViewById(R.id.btn_check_inquiry);
 
         // 문의 접수 버튼 클릭 리스너
         btnSubmitInquiry.setOnClickListener(v -> submitInquiry());
 
-        // 문의 내역 확인 버튼 클릭 리스너 추가
-        btnCheckInquiry.setOnClickListener(v -> openInquiryHistoryFragment());
-
         return view;
     }
 
-    // 문의 접수 메서드
     private void submitInquiry() {
         String title = etInquiryTitle.getText().toString().trim();
         String content = etInquiryContent.getText().toString().trim();
@@ -80,18 +75,6 @@ public class CustomerServiceFragment extends Fragment {
                     });
         } else {
             Toast.makeText(requireContext(), "제목과 내용을 입력해주세요.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    // InquiryHistoryFragment로 전환하는 메서드
-    private void openInquiryHistoryFragment() {
-        InquiryHistoryFragment fragment = new InquiryHistoryFragment();
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (activity != null) {
-            activity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment) // fragment_container는 실제 프래그먼트를 추가할 컨테이너 ID로 변경하세요.
-                    .addToBackStack(null) // 이전 프래그먼트로 돌아갈 수 있게 하기 위함
-                    .commit();
         }
     }
 }
