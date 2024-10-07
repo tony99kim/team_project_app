@@ -24,4 +24,12 @@ public class Product {
     public String getPrice() {
         return price;
     }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }

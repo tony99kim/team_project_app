@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <!-- 툴 바 -->
     <androidx.appcompat.widget.Toolbar
@@ -14,30 +12,6 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <!-- 문의하기 버튼 -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_inquire"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="문의하기"
-        android:layout_below="@id/toolbar"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"/>
-
-    <!-- 문의내역확인 버튼 -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_check_inquiry"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="문의내역확인"
-        android:layout_below="@id/toolbar"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"/>
-
     <!-- 문의 제목 입력 -->
     <EditText
         android:id="@+id/et_inquiry_title"
@@ -46,14 +20,11 @@
         android:hint="문의 제목"
         android:inputType="text"
         android:textSize="18sp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="24dp"
-        android:layout_below="@id/btn_inquire"
-        android:layout_toStartOf="@id/btn_check_inquiry"
-        android:layout_toLeftOf="@id/btn_check_inquiry"
-        android:layout_toEndOf="@id/btn_inquire"
-        android:layout_toRightOf="@id/btn_inquire"
-        android:visibility="visible" />
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_below="@id/toolbar"
+        android:minHeight="48dp" />
 
     <!-- 문의 내용 입력 -->
     <EditText
@@ -61,16 +32,39 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="문의 내용"
-        android:inputType="text"
+        android:inputType="textMultiLine"
         android:textSize="18sp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="24dp"
-        android:layout_below="@id/et_inquiry_title"
-        android:layout_toStartOf="@id/btn_check_inquiry"
-        android:layout_toLeftOf="@id/btn_check_inquiry"
-        android:layout_toEndOf="@id/btn_inquire"
-        android:layout_toRightOf="@id/btn_inquire"
-        android:visibility="visible" />
+        android:layout_margin="16dp"
+        android:minHeight="48dp"
+    android:layout_below="@id/et_inquiry_title" />
+
+    <!-- 이미지 선택 및 카운트 표시 -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp"
+        android:layout_below="@id/et_inquiry_content"
+        android:background="@android:color/transparent"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/ivCameraIcon"
+            android:layout_width="120dp"
+            android:layout_height="85dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_camera"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
+            android:id="@+id/tvImageCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:text="0/3"
+            android:textAppearance="?attr/textAppearanceSubtitle1" />
+    </FrameLayout>
 
     <!-- 문의 접수 버튼 -->
     <com.google.android.material.button.MaterialButton
@@ -78,9 +72,8 @@
         style="@style/Widget.MaterialComponents.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="문의 접수"
-        android:layout_below="@id/et_inquiry_content"
-        android:layout_centerHorizontal="true"
-        android:visibility="visible" />
-
+        android:text="문의접수"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>

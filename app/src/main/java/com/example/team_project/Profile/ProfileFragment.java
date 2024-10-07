@@ -20,12 +20,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.example.team_project.Environment.Store.Product;
 import com.example.team_project.Environment.Store.ProductDetailFragment;
 import com.example.team_project.LoginActivity;
+import com.example.team_project.Profile.CustomerService.CustomerServiceFragment;
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -52,7 +54,6 @@ public class ProfileFragment extends Fragment {
     private ArrayAdapter<String> adapter;
     private ArrayList<String> recentVisitList;
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -63,28 +64,22 @@ public class ProfileFragment extends Fragment {
         storageRef = FirebaseStorage.getInstance().getReference();
 
         recentVisitListView = view.findViewById(R.id.recentVisitListView);
-
         recentVisitList = loadRecentVisits();
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, recentVisitList);
         recentVisitListView.setAdapter(adapter);
 
         // 아이템 클릭 리스너 설정
-        recentVisitListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String productName = recentVisitList.get(position);
-                openProductDetailFragment(productName);
-            }
+        recentVisitListView.setOnItemClickListener((parent, view1, position, id) -> {
+            String productName = recentVisitList.get(position);
+            openProductDetailFragment(productName);
         });
 
-
-
-
+        // UI 요소 초기화
         profileImageView = view.findViewById(R.id.profileImageView);
         usernameTextView = view.findViewById(R.id.usernameTextView);
-        recentVisitButton = view.findViewById(R.id.recentVisitButton);
-        noticeButton = view.findViewById(R.id.noticeButton);
+        environmentPointsTextView = view.findViewById(R.id.environmentPointsTextView);
         payrecharge = view.findViewById(R.id.payrecharge);
+        noticeButton = view.findViewById(R.id.noticeButton);
         customerServiceButton = view.findViewById(R.id.customerServiceButton);
         logoutButton = view.findViewById(R.id.logoutButton);
         withdrawButton = view.findViewById(R.id.withdrawButton);
@@ -92,8 +87,6 @@ public class ProfileFragment extends Fragment {
         wishlistButton = view.findViewById(R.id.wishlistButton);
         wishpostButton = view.findViewById(R.id.wishpostButton);
         toolbar = view.findViewById(R.id.toolbar);
-        environmentPointsTextView = view.findViewById(R.id.environmentPointsTextView);
-
 
         setUsername();
         setProfileImageFromFirebase();
@@ -105,90 +98,35 @@ public class ProfileFragment extends Fragment {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
-            activity.getSupportActionBar().setTitle("고객센터");
+            activity.getSupportActionBar().setTitle("프로필");
         }
-        // 로그아웃 버튼 클릭 리스너 설정
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logout();
-            }
-        });
 
-        // 페이충전 버튼 클릭 리스너 설정
-        payrecharge.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openPayrechargeFragment();
-            }
-        });
-
-        // 공지사항 버튼 클릭 리스너 설정
-        noticeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openNoticeFragment();
-            }
-        });
-        // 고객센터 버튼 클릭 리스너 설정
-        customerServiceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openCustomerServiceFragment();
-            }
-        });
-        // 회원탈퇴 버튼 클릭 리스너 설정
-        withdrawButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openWithdrawFragment();
-            }
-        });
-        // 수정하기 버튼 클릭 리스너 설정
-        editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openEditButtonFragment();
-            }
-        });
-        // 관심상품 버튼 클릭 리스너 설정
-        wishlistButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openWishlistFragment();
-            }
-        });
-        wishpostButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openWishpostFragment();
-            }
-        });
-
+        // 각 버튼 클릭 리스너 설정
+        logoutButton.setOnClickListener(v -> logout());
+        payrecharge.setOnClickListener(v -> openFragment(new PayrechargeFragment()));
+        noticeButton.setOnClickListener(v -> openFragment(new NoticeFragment()));
+        customerServiceButton.setOnClickListener(v -> openFragment(new CustomerServiceFragment())); // 변경된 부분
+        withdrawButton.setOnClickListener(v -> openFragment(new WithdrawFragment()));
+        editButton.setOnClickListener(v -> openFragment(new EditButtonFragment()));
+        wishlistButton.setOnClickListener(v -> openFragment(new WishlistFragment()));
+        wishpostButton.setOnClickListener(v -> openFragment(new WishpostFragment()));
 
         return view;
     }
+
     private void openProductDetailFragment(String productName) {
         Product product = findProductByName(productName);
-
         ProductDetailFragment productDetailFragment = ProductDetailFragment.newInstance(product);
-        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, productDetailFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+        openFragment(productDetailFragment);
     }
 
     private Product findProductByName(String productName) {
-        // 실제로는 데이터베이스나 API에서 해당 이름의 상품을 검색해야 합니다.
-        // 여기서는 단순히 예제를 위해 새로운 Product 객체를 반환합니다.
         return new Product("productId", "userId", productName, "10000", "상품 설명");
     }
+
     private ArrayList<String> loadRecentVisits() {
         Set<String> set = sharedPreferences.getStringSet("recentVisitSet", new LinkedHashSet<>());
-        if (set == null) {
-            set = new LinkedHashSet<>();
-        }
-        return new ArrayList<>(set);
+        return new ArrayList<>(set != null ? set : new LinkedHashSet<>());
     }
 
     private void saveRecentVisits() {
@@ -200,19 +138,17 @@ public class ProfileFragment extends Fragment {
 
     public void addRecentVisit(String visit) {
         Log.d("ProfileFragment", "Adding visit: " + visit);
-        // 리스트의 맨 앞에 추가
         recentVisitList.add(0, visit);
         adapter.notifyDataSetChanged();
         saveRecentVisits();
     }
+
     private void logout() {
-        // SharedPreferences에서 로그인 상태와 자동 로그인 설정을 초기화
         SharedPreferences prefs = getActivity().getSharedPreferences("team_project_preferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("autoLogin", false);
         editor.apply();
-        // 로그인 액티비티로 이동
         mAuth.signOut();
 
         Intent intent = new Intent(getActivity(), LoginActivity.class);
@@ -220,94 +156,19 @@ public class ProfileFragment extends Fragment {
         getActivity().finish();
     }
 
-
-    private void openNoticeFragment() {
-        NoticeFragment fragment = new NoticeFragment();
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (activity != null) {
-            activity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
-    private void openPayrechargeFragment() {
-        PayrechargeFragment fragment = new PayrechargeFragment();
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (activity != null) {
-            activity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
-
-    private void openCustomerServiceFragment() {
-        CustomerServiceFragment fragment = new CustomerServiceFragment();
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (activity != null) {
-            activity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
-
-    private void openWithdrawFragment() {
-        WithdrawFragment fragment = new WithdrawFragment();
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (activity != null) {
-            activity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
-    private void openWishlistFragment() {
-        WishlistFragment fragment = new WishlistFragment();
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (activity != null) {
-            activity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
-    private void openWishpostFragment() {
-        WishpostFragment fragment = new WishpostFragment();
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (activity != null) {
-            activity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
-
-    private void openEditButtonFragment() {
-        EditButtonFragment fragment = new EditButtonFragment();
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (activity != null) {
-            activity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
+    private void openFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getParentFragmentManager();
+        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE); // 백 스택 초기화
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null); // 백 스택에 추가하여 뒤로가기 가능
+        transaction.commit();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         setUsernameFromFirebase(); // Firebase에서 닉네임을 가져와서 설정
-    }
-    // 사용자 환경페이 레이아웃 클릭 이벤트
-    public void onUserPayLayoutClicked(View view) {
-        // PayFragment로 전환
-        PayFragment payFragment = new PayFragment();
-        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, new PayFragment());
-        transaction.addToBackStack(null); // 뒤로가기 버튼을 눌렀을 때 이전 상태로 돌아갈 수 있도록 스택에 추가
-        transaction.commit();
     }
 
     private void setUsernameFromFirebase() {
@@ -331,27 +192,21 @@ public class ProfileFragment extends Fragment {
                 })
                 .addOnFailureListener(e -> Toast.makeText(getActivity(), "닉네임을 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show());
     }
-    private void setProfileImageFromFirebase() {
-        // 현재 사용자의 UID 가져오기
-        String userId = mAuth.getCurrentUser().getUid();
 
-        // Firestore에서 사용자의 프로필 사진 가져오기
+    private void setProfileImageFromFirebase() {
+        String userId = mAuth.getCurrentUser().getUid();
         StorageReference profileImageRef = storageRef.child("profileImages/" + userId + ".jpg");
         profileImageRef.getDownloadUrl()
                 .addOnSuccessListener(uri -> {
-                    // 프로필 사진 URL을 가져옴
                     String profileImageUrl = uri.toString();
-
-                    // 프로필 사진을 설정
                     Glide.with(requireContext())
                             .load(profileImageUrl)
-                            .placeholder(R.drawable.ic_profile) // 기본 이미지 설정
-                            .error(R.drawable.ic_profile) // 에러 시 이미지 설정
+                            .placeholder(R.drawable.ic_profile)
+                            .error(R.drawable.ic_profile)
                             .into(profileImageView);
                 })
                 .addOnFailureListener(e -> {
-                    // 프로필 사진이 없을 경우
-                    // Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT).show();
+                    // 프로필 사진이 없을 경우 처리
                 });
     }
 
@@ -359,8 +214,4 @@ public class ProfileFragment extends Fragment {
         String savedUsername = sharedPreferences.getString("username", "사용자 이름");
         usernameTextView.setText(savedUsername);
     }
-
-
 }
-
-

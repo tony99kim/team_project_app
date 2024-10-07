@@ -24,12 +24,11 @@ import com.bumptech.glide.Glide;
 import com.example.team_project.Chat.ChatData.Chat_ChatData;
 import com.example.team_project.R;
 import com.example.team_project.Chat.ActivityChat; // 채팅 액티비티 import
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -37,25 +36,23 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class ProductDetailFragment extends Fragment {
 
     private String productId, userId, title, price, description;
     private ViewPager2 viewPager2;
-    private TextView titleTextView, descriptionTextView, priceTextView;
-    private Button buttonFavorite, buttonChat; // 찜 버튼 및 채팅 버튼 추가
+    private TextView titleTextView, descriptionTextView, priceTextView, sellerNameTextView;
+    private Button buttonFavorite, buttonChat;
     private Toolbar priceToolBar;
 
     public static ProductDetailFragment newInstance(Product product) {
         ProductDetailFragment fragment = new ProductDetailFragment();
         Bundle args = new Bundle();
-        args.putString("productId", product.productId);
-        args.putString("userId", product.userId);
-        args.putString("title", product.title);
-        args.putString("price", product.price);
-        args.putString("description", product.description);
+        args.putString("productId", product.getProductId());
+        args.putString("userId", product.getUserId());
+        args.putString("title", product.getTitle());
+        args.putString("price", product.getPrice());
+        args.putString("description", product.getDescription());
         fragment.setArguments(args);
         return fragment;
     }
@@ -77,31 +74,54 @@ public class ProductDetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_environment_store_productdetail, container, false);
 
-        viewPager2 = view.findViewById(R.id.viewPager_images);
-        titleTextView = view.findViewById(R.id.textView_product_title);
-        descriptionTextView = view.findViewById(R.id.textView_product_description);
-        priceToolBar = view.findViewById(R.id.toolbar_bottom);
-        priceTextView = priceToolBar.findViewById(R.id.textView_product_price);
-        buttonFavorite = view.findViewById(R.id.button_favorite); // 찜 버튼 초기화
-        buttonChat = view.findViewById(R.id.product_chat_button); // 채팅 버튼 초기화
-
-        titleTextView.setText(title);
-        descriptionTextView.setText(description);
-
+        // 툴바 설정
         Toolbar toolbar = view.findViewById(R.id.toolbar_product_detail);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
 
-        buttonFavorite.setOnClickListener(v -> addToWishlist()); // 찜 버튼 클릭 리스너 추가
+        // 뷰 초기화
+        viewPager2 = view.findViewById(R.id.viewPager_images);
+        titleTextView = view.findViewById(R.id.textView_product_title);
+        descriptionTextView = view.findViewById(R.id.textView_product_description);
+        priceTextView = view.findViewById(R.id.textView_product_price);
+        sellerNameTextView = view.findViewById(R.id.textView_seller_name);
+        buttonFavorite = view.findViewById(R.id.button_favorite);
+        buttonChat = view.findViewById(R.id.product_chat_button);
 
-        // 채팅 버튼 클릭 리스너 추가
+        // 데이터 설정
+        titleTextView.setText(title);
+        descriptionTextView.setText(description);
+        priceTextView.setText(price);
+
+        // 이벤트 설정
+        buttonFavorite.setOnClickListener(v -> addToWishlist());
         buttonChat.setOnClickListener(v -> onStartChat());
 
-        loadProductPrice(); // 가격 불러오기 함수 호출
-        loadProductImages(); // 이미지 로드 함수 호출
+        loadProductPrice();
+        loadProductImages();
+        loadSellerName(); // 판매자 이름 불러오기 함수 호출
 
         return view;
+    }
+
+    private void loadSellerName() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("users").document(userId);
+
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    String sellerName = document.getString("name");
+                    sellerNameTextView.setText(sellerName);
+                } else {
+                    Log.d("ProductDetailFragment", "No such document");
+                }
+            } else {
+                Log.d("ProductDetailFragment", "get failed with ", task.getException());
+            }
+        });
     }
 
     private void loadProductImages() {
@@ -109,29 +129,16 @@ public class ProductDetailFragment extends Fragment {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(directoryPath);
 
         storageRef.listAll().addOnSuccessListener(listResult -> {
-            List<Task<Uri>> tasks = new ArrayList<>();
+            List<String> imageUrls = new ArrayList<>();
             for (StorageReference item : listResult.getItems()) {
-                Task<Uri> downloadTask = item.getDownloadUrl();
-                tasks.add(downloadTask);
+                item.getDownloadUrl().addOnSuccessListener(uri -> {
+                    imageUrls.add(uri.toString());
+                    if (imageUrls.size() == listResult.getItems().size()) {
+                        setupViewPager(imageUrls);
+                    }
+                });
             }
-
-            // 모든 다운로드 URL Task가 완료될 때까지 기다림
-            Task<List<Uri>> allTasks = Tasks.whenAllSuccess(tasks);
-            allTasks.addOnSuccessListener(uris -> {
-                List<String> imageUrls = uris.stream()
-                        .filter(Objects::nonNull)
-                        .map(Uri::toString)
-                        .collect(Collectors.toList());
-
-                if (!imageUrls.isEmpty()) {
-                    setupViewPager(imageUrls);
-                }
-            }).addOnFailureListener(exception -> {
-                Log.e("ProductDetailFragment", "Error getting all download URLs", exception);
-            });
-        }).addOnFailureListener(exception -> {
-            Log.e("ProductDetailFragment", "Error listing items in storage", exception);
-        });
+        }).addOnFailureListener(e -> Log.e("ProductDetailFragment", "Failed to list images", e));
     }
 
     private void setupViewPager(List<String> imageUrls) {
@@ -146,17 +153,13 @@ public class ProductDetailFragment extends Fragment {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
-                    String fetchedPrice = document.getString("price");
-                    if (fetchedPrice != null) {
-                        priceTextView.setText(fetchedPrice);
-                    } else {
-                        Toast.makeText(getContext(), "Price not found", Toast.LENGTH_SHORT).show();
-                    }
+                    String price = document.getString("price");
+                    priceTextView.setText(price);
                 } else {
-                    Toast.makeText(getContext(), "Product not found", Toast.LENGTH_SHORT).show();
+                    Log.d("ProductDetailFragment", "No such document");
                 }
             } else {
-                Toast.makeText(getContext(), "Error getting product: " + task.getException(), Toast.LENGTH_SHORT).show();
+                Log.d("ProductDetailFragment", "get failed with ", task.getException());
             }
         });
     }
@@ -164,50 +167,42 @@ public class ProductDetailFragment extends Fragment {
     private void addToWishlist() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            String userId = user.getUid();
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("wishlists").document(userId).collection("products").document(productId)
-                    .set(new Product(productId, userId, title, price, description))
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(getContext(), "관심상품에 추가되었습니다.", Toast.LENGTH_SHORT).show();
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(getContext(), "관심상품 추가 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        } else {
-            Toast.makeText(getContext(), "로그인 후 찜할 수 있습니다.", Toast.LENGTH_SHORT).show();
+            DocumentReference wishlistRef = db.collection("wishlists").document(user.getUid());
+
+            wishlistRef.update("products", FieldValue.arrayUnion(productId))
+                    .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "Added to wishlist", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e -> Log.e("ProductDetailFragment", "Error adding to wishlist", e));
         }
     }
 
     private void onStartChat() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
-            String currentUserEmail = currentUser.getEmail();
-            String chatRoomId = currentUserEmail + "_" + userId; // 채팅방 ID 생성
-
-            // Chat_ChatData 객체 생성
-            Chat_ChatData chatData = new Chat_ChatData(chatRoomId, currentUserEmail, userId, "", new Date());
-
-            // Firestore에 채팅방 정보 저장
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("chatRooms").document(chatRoomId)
-                    .set(chatData)
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(getContext(), "채팅방이 생성되었습니다.", Toast.LENGTH_SHORT).show();
-                        navigateToChatRoom(chatRoomId); // 채팅방으로 이동
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(getContext(), "채팅방 생성 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        } else {
-            Toast.makeText(getContext(), "로그인 후 채팅할 수 있습니다.", Toast.LENGTH_SHORT).show();
+            String currentUserId = currentUser.getUid();
+            String chatRoomId = currentUserId.compareTo(userId) < 0 ? currentUserId + "_" + userId : userId + "_" + currentUserId;
+
+            db.collection("chats").document(chatRoomId).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (!document.exists()) {
+                        Chat_ChatData newChat = new Chat_ChatData(chatRoomId, currentUserId, userId, sellerNameTextView.getText().toString(), new Date());
+                        db.collection("chats").document(chatRoomId).set(newChat);
+                    }
+                    navigateToChatRoom(chatRoomId, sellerNameTextView.getText().toString());
+                } else {
+                    Log.e("ProductDetailFragment", "Error getting chat document", task.getException());
+                }
+            });
         }
     }
 
-    private void navigateToChatRoom(String chatRoomId) {
+    private void navigateToChatRoom(String chatRoomId, String userName) {
         Intent intent = new Intent(getActivity(), ActivityChat.class);
         intent.putExtra("userEmail1", FirebaseAuth.getInstance().getCurrentUser().getEmail());
-        intent.putExtra("userEmail2", userId); // 상대방 이메일
+        intent.putExtra("userEmail2", userId);
+        intent.putExtra("chatRoomTitle", userName); // 채팅방 제목으로 판매자 이름 전달
         startActivity(intent);
     }
 
@@ -248,4 +243,3 @@ public class ProductDetailFragment extends Fragment {
         }
     }
 }
-
