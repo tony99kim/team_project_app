@@ -1,5 +1,5 @@
 package com.example.team_project.Chat;
-
+// 최종확인
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 
-public class ActivityChat extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
 
@@ -54,16 +54,11 @@ public class ActivityChat extends AppCompatActivity {
         String userEmail2 = getIntent().getStringExtra("userEmail2");
         user1 = getIntent().getStringExtra("user1");
         user2 = getIntent().getStringExtra("user2");
-        String chatRoomTitle = getIntent().getStringExtra("chatRoomTitle");
 
         String chatId = userEmail1.compareTo(userEmail2) < 0 ? userEmail1 + "_" + userEmail2 : userEmail2 + "_" + userEmail1;
 
         textTitle = findViewById(R.id.text_user);
-        if (chatRoomTitle != null) {
-            textTitle.setText(chatRoomTitle);
-        } else {
-            fetchChatRoomTitle(chatId);
-        }
+        textTitle.setText(user2);
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -102,17 +97,6 @@ public class ActivityChat extends AppCompatActivity {
 
         fetchChat(chatId, userEmail1, userEmail2);
         setupRealtimeMessageUpdates(chatId);
-    }
-
-    private void fetchChatRoomTitle(String chatId) {
-        db.collection("chats").document(chatId).get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                String title = documentSnapshot.getString("title");
-                if (title != null) {
-                    textTitle.setText(title);
-                }
-            }
-        }).addOnFailureListener(e -> Log.e("ChatActivity", "Error fetching chat room title: " + e.getMessage()));
     }
 
     private void fetchChat(String id, String email1, String email2) {

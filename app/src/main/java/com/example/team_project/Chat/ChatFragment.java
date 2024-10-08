@@ -34,7 +34,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
-public class FragmentChat extends Fragment {
+public class ChatFragment extends Fragment {
 
     private LinearLayout layout; // 뷰 참조를 유지
     private ArrayList<Chat> chats = new ArrayList<>(); // 채팅방 리스트
@@ -76,7 +76,7 @@ public class FragmentChat extends Fragment {
                 }
             }
 
-            Intent intent = new Intent(getContext(), ActivityChat.class);
+            Intent intent = new Intent(getContext(), ChatActivity.class);
             intent.putExtra("userEmail1", email);
             intent.putExtra("userEmail2", receiverEmail);
             intent.putExtra("user1", name);
@@ -97,7 +97,7 @@ public class FragmentChat extends Fragment {
     }
 
     private void showFragmentUser() {
-        FragmentUser fragmentUser = new FragmentUser();
+        UserFragment fragmentUser = new UserFragment();
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_container, fragmentUser);
@@ -215,7 +215,7 @@ public class FragmentChat extends Fragment {
     }
 
     private void enterChatRoom(String roomName) {
-        FragmentChat_room fragmentChatRoom = new FragmentChat_room();
+        ChatRoomFragment fragmentChatRoom = new ChatRoomFragment();
         Bundle args = new Bundle();
         args.putString("room_name", roomName);
         fragmentChatRoom.setArguments(args);

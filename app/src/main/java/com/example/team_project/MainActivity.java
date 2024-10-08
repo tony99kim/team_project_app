@@ -9,7 +9,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import com.example.team_project.Board.BoardFragment;
-import com.example.team_project.Chat.FragmentChat;
+import com.example.team_project.Chat.ChatFragment;
 import com.example.team_project.Environment.EnvironmentFragment;
 import com.example.team_project.Home.HomeFragment;
 import com.example.team_project.Profile.ProfileFragment;
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportFragmentManager().addOnBackStackChangedListener(() -> {
             Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-            if (currentFragment instanceof HomeFragment || currentFragment instanceof EnvironmentFragment || currentFragment instanceof BoardFragment || currentFragment instanceof FragmentChat || currentFragment instanceof ProfileFragment) {
+            if (currentFragment instanceof HomeFragment || currentFragment instanceof EnvironmentFragment || currentFragment instanceof BoardFragment || currentFragment instanceof ChatFragment || currentFragment instanceof ProfileFragment) {
                 showBottomNav();
             } else {
                 hideBottomNav();
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (itemId == R.id.navigation_board) {
                     selectedFragment = new BoardFragment();
                 } else if (itemId == R.id.navigation_chat) {
-                    selectedFragment = new FragmentChat();
+                    selectedFragment = new ChatFragment();
                 } else if (itemId == R.id.navigation_profile) {
                     selectedFragment = new ProfileFragment();
                 }

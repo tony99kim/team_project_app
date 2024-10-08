@@ -27,7 +27,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
-public class FragmentUser extends Fragment {
+public class UserFragment extends Fragment {
     private RecyclerView recyclerView;
     private UserListAdapter adapter;
     private ArrayList<User> users = new ArrayList<>(); // 사용자 목록
@@ -43,7 +43,7 @@ public class FragmentUser extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_chat_fragment_user, container, false);
+        View view = inflater.inflate(R.layout.fragment_chat_user, container, false);
 
         buttonBack = view.findViewById(R.id.btn_back);
         buttonBack.setOnClickListener(v -> {
@@ -55,7 +55,7 @@ public class FragmentUser extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new UserListAdapter(users, user -> {
-            Intent intent = new Intent(getContext(), ActivityChat.class);
+            Intent intent = new Intent(getContext(), ChatActivity.class);
             intent.putExtra("userEmail1", email);
             intent.putExtra("userEmail2", user.getEmail());
             intent.putExtra("user1", name);

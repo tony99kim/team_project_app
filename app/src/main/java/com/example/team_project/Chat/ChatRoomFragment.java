@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.team_project.R;
 
-public class FragmentChat_room extends Fragment {
+public class ChatRoomFragment extends Fragment {
 
     @Nullable
     @Override
