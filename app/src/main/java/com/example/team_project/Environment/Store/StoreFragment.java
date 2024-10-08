@@ -43,14 +43,14 @@ public class StoreFragment extends Fragment {
         });
 
         // RecyclerView와 Adapter 초기화
-        productsRecyclerView = view.findViewById(R.id.productListRecyclerView); // RecyclerView ID 확인 필요
+        productsRecyclerView = view.findViewById(R.id.productListRecyclerView);
         productList = new ArrayList<>();
 
         // 사용자 ID 가져오기
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String userId = user != null ? user.getUid() : null; // 사용자 ID 가져오기
+        String userId = user != null ? user.getUid() : null;
 
-        productAdapter = new ProductAdapter(getContext(), productList, userId, false); // 사용자 ID 및 관심상품 여부 전달
+        productAdapter = new ProductAdapter(getContext(), productList);
         productsRecyclerView.setAdapter(productAdapter);
         productsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -64,18 +64,17 @@ public class StoreFragment extends Fragment {
     }
 
     private void loadProductsFromFirestore() {
-        firestore.collection("products") // Firestore에서 "products" 컬렉션 참조
+        firestore.collection("products")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        productList.clear(); // 기존 목록을 클리어
+                        productList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            Product product = document.toObject(Product.class); // Document를 Product 객체로 변환
-                            productList.add(product); // 목록에 추가
+                            Product product = document.toObject(Product.class);
+                            productList.add(product);
                         }
-                        productAdapter.notifyDataSetChanged(); // 데이터 변경 알림
+                        productAdapter.notifyDataSetChanged();
                     } else {
-                        // 에러 처리
                         Log.e("StoreFragment", "제품 로드 실패: " + task.getException().getMessage());
                     }
                 });

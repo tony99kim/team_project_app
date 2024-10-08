@@ -1,4 +1,4 @@
-package com.example.team_project.Profile;
+package com.example.team_project.Profile.Wishlist;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
