@@ -23,7 +23,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.team_project.Chat.adapter.ChatListAdapter;
+import com.example.team_project.Chat.ChatAdapter.ChatListAdapter;
 import com.example.team_project.Chat.Data.Chat;
 import com.example.team_project.Chat.Data.User;
 import com.example.team_project.R;

@@ -1,4 +1,4 @@
-package com.example.team_project.Profile.notice;
+package com.example.team_project.Profile.Notice;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,8 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.team_project.Profile.notice.Notice;
-import com.example.team_project.Profile.notice.NoticeAdapter;
 import com.example.team_project.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;

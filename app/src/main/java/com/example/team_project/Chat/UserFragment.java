@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.team_project.Chat.adapter.UserListAdapter;
+import com.example.team_project.Chat.ChatAdapter.UserListAdapter;
 import com.example.team_project.Chat.Data.User;
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;

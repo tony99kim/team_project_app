@@ -1,4 +1,4 @@
-package com.example.team_project.Profile.notice;
+package com.example.team_project.Profile.Notice;
 
 import android.view.LayoutInflater;
 import android.view.View;

@@ -30,7 +30,7 @@ import com.example.team_project.Profile.CustomerService.CustomerServiceFragment;
 import com.example.team_project.Profile.Wishlist.WishlistFragment;
 import com.example.team_project.Profile.Wishlist.WishpostFragment;
 import com.example.team_project.Profile.Wishlist.WithdrawFragment;
-import com.example.team_project.Profile.notice.NoticeFragment;
+import com.example.team_project.Profile.Notice.NoticeFragment;
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;

@@ -1,4 +1,4 @@
-package com.example.team_project.Profile.notice;
+package com.example.team_project.Profile.Notice;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

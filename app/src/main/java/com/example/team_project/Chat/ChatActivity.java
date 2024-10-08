@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.team_project.Chat.adapter.MessageListAdapter;
+import com.example.team_project.Chat.ChatAdapter.MessageListAdapter;
 import com.example.team_project.Chat.Data.Chat;
 import com.example.team_project.Chat.Data.Message;
 import com.example.team_project.R;
