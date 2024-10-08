@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.team_project.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -65,7 +66,10 @@ public class CustomerServiceFragment extends Fragment {
     }
 
     private void loadInquiries() {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // 현재 사용자 ID 가져오기
+
         db.collection("inquiries")
+                .whereEqualTo("userId", userId) // 사용자 ID로 필터링
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

@@ -124,6 +124,7 @@ public class InquiryFragment extends Fragment {
             inquiry.put("content", content);
             inquiry.put("date", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date())); // 현재 날짜 및 시간 추가
             inquiry.put("status", "답변 대기"); // 상태 추가
+            inquiry.put("userId", user.getUid()); // 사용자 ID 추가
 
             // Firestore에 데이터 추가
             db.collection("inquiries")
