@@ -1,82 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:padding="16dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <EditText
-        android:id="@+id/etEmail"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_sign_up"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/email"
-        android:inputType="textEmailAddress"/>
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:popupTheme="?attr/actionBarPopupTheme"
+        app:title="회원가입"
+        app:titleTextColor="@color/white"/>
 
-    <EditText
-        android:id="@+id/etSignUpPassword"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/password"
-        android:inputType="textPassword"
-        android:layout_marginTop="8dp"/>
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize">
 
-    <EditText
-        android:id="@+id/etName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/name"
-        android:inputType="text"
-        android:layout_marginTop="8dp"/>
-
-    <EditText
-        android:id="@+id/etPhoneNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/phone_number"
-        android:inputType="phone"
-        android:layout_marginTop="8dp"/>
-
-    <!-- 생년월일 입력을 위한 EditText 추가 -->
-    <EditText
-        android:id="@+id/etBirthDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/birth_date"
-        android:focusable="false"
-        android:layout_marginTop="8dp"/>
-
-
-    <RadioGroup
-        android:id="@+id/rgGender"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp">
-        <RadioButton
-            android:id="@+id/rbMale"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/male" />
-        <RadioButton
-            android:id="@+id/rbFemale"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/female" />
-    </RadioGroup>
+            android:gravity="center"
+            android:padding="16dp">
 
-    <Button
-        android:id="@+id/btnSubmitSignUp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/sign_up"
-        android:layout_marginTop="16dp"/>
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress"/>
 
-    <Button
-        android:id="@+id/btnBackToLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/back_to_login" />
+            <EditText
+                android:id="@+id/etSignUpPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:layout_marginTop="8dp"/>
 
-</LinearLayout>
+            <EditText
+                android:id="@+id/etName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/name"
+                android:inputType="text"
+                android:layout_marginTop="8dp"/>
+
+            <EditText
+                android:id="@+id/etUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/username"
+                android:inputType="text"
+                android:layout_marginTop="8dp"/>
+
+            <EditText
+                android:id="@+id/etPhoneNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/phone_number"
+                android:inputType="phone"
+                android:layout_marginTop="8dp"/>
+
+            <EditText
+                android:id="@+id/etBirthDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/birth_date"
+                android:focusable="false"
+                android:layout_marginTop="8dp"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <EditText
+                    android:id="@+id/etAddress"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="주소" />
+
+                <Button
+                    android:id="@+id/btnSelectAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="주소지 선택"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/etDetailAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="상세주소"
+                android:layout_marginTop="8dp"/>
+
+            <RadioGroup
+                android:id="@+id/rgGender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+                <RadioButton
+                    android:id="@+id/rbMale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/male" />
+                <RadioButton
+                    android:id="@+id/rbFemale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/female" />
+            </RadioGroup>
+
+            <FrameLayout
+                android:id="@+id/frameLayoutProfilePhoto"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginBottom="24dp"
+                android:background="@android:color/transparent"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:id="@+id/imageViewProfile"
+                    android:layout_width="120dp"
+                    android:layout_height="85dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_camera"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="onUploadProfilePhotoClicked" />
+
+                <TextView
+                    android:id="@+id/tvImageCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginBottom="8dp"
+                    android:text="0/1"
+                    android:textAppearance="?attr/textAppearanceSubtitle1" />
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/btnSubmitSignUp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sign_up"
+                android:layout_marginTop="16dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
