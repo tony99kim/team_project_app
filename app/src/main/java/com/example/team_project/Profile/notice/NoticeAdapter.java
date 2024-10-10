@@ -7,6 +7,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -33,17 +35,18 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.NoticeView
     public void onBindViewHolder(@NonNull NoticeViewHolder holder, int position) {
         Notice notice = noticeList.get(position);
         holder.titleTextView.setText(notice.getTitle());
-        holder.contentTextView.setText(notice.getContent());
-        holder.dateTextView.setText(notice.getFormattedDate());
 
-        if (notice.getImageUrl() != null) {
-            holder.noticeImageView.setVisibility(View.VISIBLE);
-            Glide.with(holder.itemView.getContext())
-                    .load(notice.getImageUrl())
-                    .into(holder.noticeImageView);
-        } else {
-            holder.noticeImageView.setVisibility(View.GONE);
-        }
+        // 제목 클릭 이벤트 리스너 추가
+        holder.titleTextView.setOnClickListener(v -> {
+            Fragment detailFragment = NoticeDetailFragment.newInstance(notice.getContent(), notice.getImageUrl());
+            ((AppCompatActivity) holder.itemView.getContext()).getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, detailFragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        // 나머지 코드...
     }
 
     @Override

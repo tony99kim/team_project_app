@@ -15,7 +15,8 @@
         android:id="@+id/contentTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:visibility="gone" /> <!-- 내용은 숨김 -->
 
     <TextView
         android:id="@+id/dateTextView"
@@ -30,5 +31,4 @@
         android:layout_height="200dp"
         android:scaleType="fitCenter"
         android:visibility="gone" />
-
 </LinearLayout>
