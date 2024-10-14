@@ -26,21 +26,21 @@
 
 
     <!-- Chat room list -->
-<!--    <ScrollView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_weight="1">-->
+    <!--    <ScrollView-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:layout_weight="1">-->
 
-<!--        <LinearLayout-->
-<!--            android:id="@+id/linear_layout_chat_rooms"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="vertical">-->
+    <!--        <LinearLayout-->
+    <!--            android:id="@+id/linear_layout_chat_rooms"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:orientation="vertical">-->
 
-<!--            &lt;!&ndash; Add more chat room items here &ndash;&gt;-->
+    <!--            &lt;!&ndash; Add more chat room items here &ndash;&gt;-->
 
-<!--        </LinearLayout>-->
-<!--    </ScrollView>-->
+    <!--        </LinearLayout>-->
+    <!--    </ScrollView>-->
 
     <!-- Button to add new chat room -->
     <Button
