@@ -1,5 +1,5 @@
 package com.example.team_project.Chat;
-// 최종확인
+
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
@@ -12,9 +12,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.team_project.Chat.ChatAdapter.MessageListAdapter;
+import com.example.team_project.Chat.ChatAdapter.MessageListAdapter; // 경로 확인
 import com.example.team_project.Chat.Data.Chat;
 import com.example.team_project.Chat.Data.Message;
+import com.example.team_project.Chat.Data.User;
 import com.example.team_project.R;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -24,8 +25,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
+
+// ChatActivity 클래스 내용...
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -42,6 +46,7 @@ public class ChatActivity extends AppCompatActivity {
     private String user2;
 
     private ArrayList<Message> messages = new ArrayList<>();
+    private List<User> users = new ArrayList<>(); // 사용자 목록 선언
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,7 +67,7 @@ public class ChatActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new MessageListAdapter(userEmail1, messages));
+        recyclerView.setAdapter(new MessageListAdapter(userEmail1, messages, users)); // 수정된 부분: 사용자 목록 추가
 
         editInput = findViewById(R.id.edit_input);
         btnSend = findViewById(R.id.btn_send);
@@ -87,9 +92,7 @@ public class ChatActivity extends AppCompatActivity {
                 finish();
             });
 
-            builder.setNegativeButton("취소", (dialog, which) -> {
-                dialog.dismiss();
-            });
+            builder.setNegativeButton("취소", (dialog, which) -> dialog.dismiss());
 
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
@@ -97,28 +100,25 @@ public class ChatActivity extends AppCompatActivity {
 
         fetchChat(chatId, userEmail1, userEmail2);
         setupRealtimeMessageUpdates(chatId);
+        loadUsers(); // 사용자 목록을 불러오는 메서드 추가
     }
 
-    private void fetchChat(String id, String email1, String email2) {
+    private void loadUsers() {
         Executors.newSingleThreadExecutor().execute(() -> {
-            try {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("chats").document(id).get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        if (!task.getResult().exists()) {
-                            Chat newChat = new Chat(id, email1, email2, "", new Date());
-                            db.collection("chats").document(id).set(newChat);
-                            addInitialMessage(id);
-                        } else {
-                            loadMessages(id);
-                        }
-                    } else {
-                        Log.e("ChatActivity", "Error fetching chat: " + task.getException().getMessage());
+            db.collection("users").get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    for (DocumentSnapshot document : task.getResult()) {
+                        User user = document.toObject(User.class);
+                        users.add(user); // 사용자 목록에 추가
                     }
-                });
-            } catch (Exception e) {
-                Log.e("ChatActivity", "Error fetching chat: " + e.getMessage());
-            }
+                    // 메세지 어댑터에 사용자 목록 업데이트
+                    runOnUiThread(() -> {
+                        recyclerView.setAdapter(new MessageListAdapter(user1, messages, users));
+                    });
+                } else {
+                    Log.e("ChatActivity", "Error loading users: " + task.getException().getMessage());
+                }
+            });
         });
     }
 
@@ -146,6 +146,28 @@ public class ChatActivity extends AppCompatActivity {
                         Log.d("ChatActivity", "Current data: null");
                     }
                 });
+    }
+
+    private void fetchChat(String id, String email1, String email2) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                db.collection("chats").document(id).get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        if (!task.getResult().exists()) {
+                            Chat newChat = new Chat(id, email1, email2, "", new Date());
+                            db.collection("chats").document(id).set(newChat);
+                            addInitialMessage(id);
+                        } else {
+                            loadMessages(id);
+                        }
+                    } else {
+                        Log.e("ChatActivity", "Error fetching chat: " + task.getException().getMessage());
+                    }
+                });
+            } catch (Exception e) {
+                Log.e("ChatActivity", "Error fetching chat: " + e.getMessage());
+            }
+        });
     }
 
     private void addInitialMessage(String chatId) {
@@ -242,3 +264,4 @@ public class ChatActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Log.e("ChatActivity", "Error finding messages to delete", e));
     }
 }
+

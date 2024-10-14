@@ -31,7 +31,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_chat_item_chat, parent, false);
+                .inflate(R.layout.fragment_chat_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -39,10 +39,10 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     public void onBindViewHolder(ViewHolder holder, int position) {
         Chat chat = dataList.get(position);
         String otherUserEmail = chat.getUserEmail1().equals(userEmail) ? chat.getUserEmail2() : chat.getUserEmail1();
-        User otherUser = findUserByEmail(otherUserEmail);
+        String otherUserName = getUserNameByEmail(otherUserEmail);
 
-        if (otherUser != null) {
-            holder.textName.setText(otherUser.getName());
+        if (otherUserName != null) {
+            holder.textName.setText(otherUserName);
         }
         holder.textMessage.setText(chat.getLastMessage() != null ? chat.getLastMessage() : "");
 
@@ -50,12 +50,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         String time = dateFormat.format(chat.getUpdatedAt());
         holder.textTime.setText(time);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onStartChat(chat);
-            }
-        });
+        holder.itemView.setOnClickListener(v -> listener.onStartChat(chat));
     }
 
     @Override
@@ -67,13 +62,13 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         userEmail = email;
     }
 
-    private User findUserByEmail(String email) {
+    private String getUserNameByEmail(String email) {
         for (User user : users) {
             if (user.getEmail().equals(email)) {
-                return user;
+                return user.getName(); // 사용자 이름 반환
             }
         }
-        return null;
+        return email; // 사용자를 찾지 못한 경우 이메일 반환
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

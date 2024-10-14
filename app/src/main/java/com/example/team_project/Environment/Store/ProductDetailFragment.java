@@ -200,7 +200,7 @@ public class ProductDetailFragment extends Fragment {
     private void navigateToChatRoom(String chatRoomId, String userName) {
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         intent.putExtra("userEmail1", FirebaseAuth.getInstance().getCurrentUser().getEmail());
-        intent.putExtra("userEmail2", userId);
+        intent.putExtra("userEmail2", userName);
         intent.putExtra("chatRoomTitle", userName); // 채팅방 제목으로 판매자 이름 전달
         startActivity(intent);
     }
