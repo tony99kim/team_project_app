@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.team_project.Chat.ChatAdapter.MessageListAdapter; // 경로 확인
+import com.example.team_project.Chat.ChatAdapter.MessageListAdapter;
 import com.example.team_project.Chat.Data.Chat;
 import com.example.team_project.Chat.Data.Message;
 import com.example.team_project.Chat.Data.User;
@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 
-// ChatActivity 클래스 내용...
-
 public class ChatActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
@@ -46,7 +44,7 @@ public class ChatActivity extends AppCompatActivity {
     private String user2;
 
     private ArrayList<Message> messages = new ArrayList<>();
-    private List<User> users = new ArrayList<>(); // 사용자 목록 선언
+    private List<User> users = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,7 +65,7 @@ public class ChatActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new MessageListAdapter(userEmail1, messages, users)); // 수정된 부분: 사용자 목록 추가
+        recyclerView.setAdapter(new MessageListAdapter(userEmail1, messages, users));
 
         editInput = findViewById(R.id.edit_input);
         btnSend = findViewById(R.id.btn_send);
@@ -86,35 +84,30 @@ public class ChatActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("채팅 종료");
             builder.setMessage("채팅방을 나가시겠습니까?");
-
             builder.setPositiveButton("확인", (dialog, which) -> {
                 deleteChatAndMessages(chatId);
                 finish();
             });
-
             builder.setNegativeButton("취소", (dialog, which) -> dialog.dismiss());
-
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
         });
 
         fetchChat(chatId, userEmail1, userEmail2);
         setupRealtimeMessageUpdates(chatId);
-        loadUsers(); // 사용자 목록을 불러오는 메서드 추가
+        loadUsers();
     }
 
     private void loadUsers() {
         Executors.newSingleThreadExecutor().execute(() -> {
             db.collection("users").get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
+                    users.clear();
                     for (DocumentSnapshot document : task.getResult()) {
                         User user = document.toObject(User.class);
-                        users.add(user); // 사용자 목록에 추가
+                        users.add(user);
                     }
-                    // 메세지 어댑터에 사용자 목록 업데이트
-                    runOnUiThread(() -> {
-                        recyclerView.setAdapter(new MessageListAdapter(user1, messages, users));
-                    });
+                    runOnUiThread(() -> recyclerView.getAdapter().notifyDataSetChanged());
                 } else {
                     Log.e("ChatActivity", "Error loading users: " + task.getException().getMessage());
                 }
@@ -140,8 +133,11 @@ public class ChatActivity extends AppCompatActivity {
                         messages.clear();
                         messages.addAll(newMessages);
                         Collections.sort(messages, Comparator.comparing(Message::getCreatedAt));
-                        recyclerView.getAdapter().notifyDataSetChanged();
-                        recyclerView.scrollToPosition(messages.size() - 1);
+
+                        runOnUiThread(() -> {
+                            recyclerView.getAdapter().notifyDataSetChanged();
+                            recyclerView.scrollToPosition(messages.size() - 1);
+                        });
                     } else {
                         Log.d("ChatActivity", "Current data: null");
                     }
@@ -150,85 +146,78 @@ public class ChatActivity extends AppCompatActivity {
 
     private void fetchChat(String id, String email1, String email2) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            try {
-                db.collection("chats").document(id).get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        if (!task.getResult().exists()) {
-                            Chat newChat = new Chat(id, email1, email2, "", new Date());
-                            db.collection("chats").document(id).set(newChat);
-                            addInitialMessage(id);
-                        } else {
-                            loadMessages(id);
-                        }
+            db.collection("chats").document(id).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    if (!task.getResult().exists()) {
+                        Chat newChat = new Chat(id, email1, email2, "", new Date());
+                        db.collection("chats").document(id).set(newChat);
+                        addInitialMessage(id);
                     } else {
-                        Log.e("ChatActivity", "Error fetching chat: " + task.getException().getMessage());
+                        loadMessages(id);
                     }
-                });
-            } catch (Exception e) {
-                Log.e("ChatActivity", "Error fetching chat: " + e.getMessage());
-            }
+                } else {
+                    Log.e("ChatActivity", "Error fetching chat: " + task.getException().getMessage());
+                }
+            });
         });
     }
 
     private void addInitialMessage(String chatId) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            try {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일(E)", Locale.KOREAN);
-                String currentDate = dateFormat.format(new Date());
-                Message initialMessage = new Message(chatId, "system", currentDate, new Date());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일(E)", Locale.KOREAN);
+            String currentDate = dateFormat.format(new Date());
+            Message initialMessage = new Message(chatId, "system", currentDate, new Date());
 
-                db.collection("messages").add(initialMessage).addOnSuccessListener(documentReference -> {
-                    messages.add(initialMessage);
-                    runOnUiThread(() -> {
-                        recyclerView.getAdapter().notifyDataSetChanged();
-                        recyclerView.scrollToPosition(messages.size() - 1);
-                    });
-
-                    db.collection("chats").document(chatId)
-                            .update("lastMessage", "채팅방이 열렸습니다.", "updatedAt", new Date());
-                }).addOnFailureListener(e -> {
-                    Log.e("ChatActivity", "addInitialMessage: Error adding initial message: " + e.getMessage());
+            db.collection("messages").add(initialMessage).addOnSuccessListener(documentReference -> {
+                messages.add(initialMessage);
+                runOnUiThread(() -> {
+                    recyclerView.getAdapter().notifyDataSetChanged();
+                    recyclerView.scrollToPosition(messages.size() - 1);
                 });
-            } catch (Exception e) {
-                Log.e("ChatActivity", "addInitialMessage: " + e.getMessage());
-            }
+                db.collection("chats").document(chatId)
+                        .update("lastMessage", "채팅방이 열렸습니다.", "updatedAt", new Date());
+            }).addOnFailureListener(e -> {
+                Log.e("ChatActivity", "addInitialMessage: Error adding initial message: " + e.getMessage());
+            });
         });
     }
 
     private void loadMessages(String chatId) {
-        Executors.newSingleThreadExecutor().execute(() -> db.collection("messages")
-                .whereEqualTo("chatId", chatId)
-                .orderBy("createdAt")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    ArrayList<Message> loadedMessages = new ArrayList<>();
-                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                        loadedMessages.add(document.toObject(Message.class));
-                    }
-                    Collections.sort(loadedMessages, Comparator.comparing(Message::getCreatedAt));
-                    messages.clear();
-                    messages.addAll(loadedMessages);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            db.collection("messages")
+                    .whereEqualTo("chatId", chatId)
+                    .orderBy("createdAt")
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        ArrayList<Message> loadedMessages = new ArrayList<>();
+                        for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                            loadedMessages.add(document.toObject(Message.class));
+                        }
+                        Collections.sort(loadedMessages, Comparator.comparing(Message::getCreatedAt));
+                        messages.clear();
+                        messages.addAll(loadedMessages);
 
-                    runOnUiThread(() -> {
-                        recyclerView.getAdapter().notifyDataSetChanged();
-                        recyclerView.scrollToPosition(messages.size() - 1);
+                        runOnUiThread(() -> {
+                            recyclerView.getAdapter().notifyDataSetChanged();
+                            recyclerView.scrollToPosition(messages.size() - 1);
+                        });
+                    }).addOnFailureListener(e -> {
+                        Log.e("ChatActivity", "loadMessages: " + e.getMessage());
                     });
-                }).addOnFailureListener(e -> {
-                    Log.e("ChatActivity", "loadMessages: " + e.getMessage());
-                }));
+        });
     }
 
     private void sendMessage(String chatId, String email, String content) {
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 Message newMessage = new Message(chatId, email, content, new Date());
-                db.collection("messages").add(newMessage).addOnSuccessListener(documentReference -> {
-                    messages.add(newMessage);
-                    runOnUiThread(() -> {
-                        recyclerView.getAdapter().notifyDataSetChanged();
-                        recyclerView.scrollToPosition(messages.size() - 1);
-                    });
+                messages.add(newMessage);
+                runOnUiThread(() -> {
+                    recyclerView.getAdapter().notifyDataSetChanged();
+                    recyclerView.scrollToPosition(messages.size() - 1);
+                });
 
+                db.collection("messages").add(newMessage).addOnSuccessListener(documentReference -> {
                     db.collection("chats").document(chatId)
                             .update("lastMessage", content, "updatedAt", new Date());
                 }).addOnFailureListener(e -> {
@@ -243,13 +232,11 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void deleteChatAndMessages(String chatId) {
-        // chats 컬렉션에서 채팅방 삭제
         db.collection("chats").document(chatId)
                 .delete()
                 .addOnSuccessListener(aVoid -> Log.d("ChatActivity", "Chat successfully deleted!"))
                 .addOnFailureListener(e -> Log.e("ChatActivity", "Error deleting chat", e));
 
-        // messages 컬렉션에서 해당 채팅방의 모든 메시지 삭제
         db.collection("messages")
                 .whereEqualTo("chatId", chatId)
                 .get()
