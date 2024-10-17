@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.team_project.Chat.Data.Message;
+import com.example.team_project.Chat.Data.User;
 import com.example.team_project.R;
 
 import java.util.List;
@@ -17,10 +18,12 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 
     private String email;
     private List<Message> dataList;
+    private List<User> users;
 
-    public MessageListAdapter(String email, List<Message> dataList) {
+    public MessageListAdapter(String email, List<Message> dataList, List<User> users) {
         this.email = email;
         this.dataList = dataList;
+        this.users = users;
     }
 
     @Override
@@ -36,21 +39,31 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 
         if ("system".equals(message.getSender())) {
             holder.textSystemMessage.setText(message.getContent());
+            holder.textSystemMessage.setVisibility(View.VISIBLE);
             holder.textSenderMessage.setVisibility(View.GONE);
             holder.layoutReceiver.setVisibility(View.GONE);
-            holder.textSystemMessage.setVisibility(View.VISIBLE);
         } else if (email.equals(message.getSender())) {
             holder.textSenderMessage.setText(message.getContent());
             holder.textSenderMessage.setVisibility(View.VISIBLE);
             holder.layoutReceiver.setVisibility(View.GONE);
             holder.textSystemMessage.setVisibility(View.GONE);
         } else {
-            holder.textReceiver.setText(message.getSender());
+            String senderName = getUserNameByEmail(message.getSender());
+            holder.textReceiver.setText(senderName);
             holder.textReceiverMessage.setText(message.getContent());
             holder.textSenderMessage.setVisibility(View.GONE);
             holder.layoutReceiver.setVisibility(View.VISIBLE);
             holder.textSystemMessage.setVisibility(View.GONE);
         }
+    }
+
+    private String getUserNameByEmail(String email) {
+        for (User user : users) {
+            if (user.getEmail().equals(email)) {
+                return user.getName();
+            }
+        }
+        return email;
     }
 
     @Override
@@ -75,3 +88,4 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         }
     }
 }
+

@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
-import com.example.team_project.Chat.ChatData.Chat_ChatData;
+import com.example.team_project.Chat.Data.Chat;
 import com.example.team_project.R;
 import com.example.team_project.Chat.ChatActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -186,7 +186,7 @@ public class ProductDetailFragment extends Fragment {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (!document.exists()) {
-                        Chat_ChatData newChat = new Chat_ChatData(chatRoomId, currentUserId, userId, sellerNameTextView.getText().toString(), new Date());
+                        Chat newChat = new Chat(chatRoomId, currentUserId, userId, sellerNameTextView.getText().toString(), new Date());
                         db.collection("chats").document(chatRoomId).set(newChat);
                     }
                     navigateToChatRoom(chatRoomId, sellerNameTextView.getText().toString());
@@ -200,7 +200,7 @@ public class ProductDetailFragment extends Fragment {
     private void navigateToChatRoom(String chatRoomId, String userName) {
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         intent.putExtra("userEmail1", FirebaseAuth.getInstance().getCurrentUser().getEmail());
-        intent.putExtra("userEmail2", userId);
+        intent.putExtra("userEmail2", userName);
         intent.putExtra("chatRoomTitle", userName); // 채팅방 제목으로 판매자 이름 전달
         startActivity(intent);
     }

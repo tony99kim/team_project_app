@@ -33,4 +33,7 @@ public class Notice {
     public String getImageUrl() {
         return imageUrl;
     }
+
+    public Object getCreatedAt() { return createdAt;
+    }
 }
