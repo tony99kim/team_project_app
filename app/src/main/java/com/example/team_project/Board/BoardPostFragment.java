@@ -18,9 +18,9 @@ public class BoardPostFragment extends Fragment  {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_board_post, container, false);
+        View view = inflater.inflate(R.layout.fragment_board_postdetail, container, false);
 
-        Toolbar toolbar = view.findViewById(R.id.board_toolbar);
+        Toolbar toolbar = view.findViewById(R.id.toolbar_post_detail);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
             activity.setSupportActionBar(toolbar);

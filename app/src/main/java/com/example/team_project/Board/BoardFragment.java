@@ -8,162 +8,88 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
-import com.example.team_project.Board.BoardWriteFragment;
-import com.example.team_project.Home.HomeSettingsFragment;
-import com.example.team_project.R;
-import com.example.team_project.Toolbar.NotificationsFragment;
-import com.example.team_project.Toolbar.SearchFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.team_project.R;
+import com.example.team_project.Board.BoardKategorie.Post;
+import com.example.team_project.Board.BoardKategorie.PostAdapter;
+import com.example.team_project.Board.BoardKategorie.PostRegistrationFragment;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
 
 public class BoardFragment extends Fragment {
     private ViewPager2 viewPager;
-    private Button boardwriteButton;
-    private androidx.appcompat.widget.Toolbar board_toolbar;
+    private Button boardWriteButton;
+    private androidx.appcompat.widget.Toolbar boardToolbar;
+    private RecyclerView postsRecyclerView;
+    private PostAdapter postAdapter;
+    private ArrayList<Post> postList;
+    private FirebaseFirestore firestore;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_board, container, false);
 
-        viewPager = view.findViewById(R.id.board_view_pager);
-        BoardFragmentPagerAdapter adapter = new BoardFragmentPagerAdapter(getActivity());
-        viewPager.setAdapter(adapter);
+        // ViewPager 설정
+        //viewPager = view.findViewById(R.id.board_view_pager);
+        //BoardFragmentPagerAdapter adapter = new BoardFragmentPagerAdapter(getActivity());
+        // viewPager.setAdapter(adapter);
 
-        TextView newsTextView = view.findViewById(R.id.news_board_textview);
-        TextView freeTextView = view.findViewById(R.id.free_board_textview);
-        TextView eventTextView = view.findViewById(R.id.event_board_textview);
+        // RecyclerView 설정
+        postsRecyclerView = view.findViewById(R.id.postListRecyclerView); // RecyclerView ID 확인 필요
+        postList = new ArrayList<>();
+        postAdapter = new PostAdapter(getContext(), postList);
+        postsRecyclerView.setAdapter(postAdapter);
+        postsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        TextView myPostTextView = view.findViewById(R.id.board_my_post_list_textview);
-        TextView myCommentPostTextView = view.findViewById(R.id.board_my_comment_post_list_textview);
-        TextView myFavoritesPostTextView = view.findViewById(R.id.board_my_favorites_post_list_textview);
+        // Firestore 인스턴스 초기화
+        firestore = FirebaseFirestore.getInstance();
 
-        // 각 TextView의 클릭 이벤트 처리
-        newsTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                newsTextView.setTypeface(Typeface.DEFAULT_BOLD);
-                freeTextView.setTypeface(Typeface.DEFAULT);
-                eventTextView.setTypeface(Typeface.DEFAULT);
-                viewPager.setCurrentItem(0);
-            }
-        });
+        // 게시물 데이터 로드
+        loadPostsFromFirestore();
 
-        freeTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                freeTextView.setTypeface(Typeface.DEFAULT_BOLD);
-                newsTextView.setTypeface(Typeface.DEFAULT);
-                eventTextView.setTypeface(Typeface.DEFAULT);
-                viewPager.setCurrentItem(1);
-            }
-        });
-
-        eventTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                eventTextView.setTypeface(Typeface.DEFAULT_BOLD);
-                newsTextView.setTypeface(Typeface.DEFAULT);
-                freeTextView.setTypeface(Typeface.DEFAULT);
-                viewPager.setCurrentItem(2);
-            }
-        });
-
-
-
-        // 사용자 맞춤 카테고리
-
-        myPostTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 내가 쓴 글 Fragment로 이동하는 코드
-                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, new BoardMyPostFragment());
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-
-        myCommentPostTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 댓글 단 글 Fragment로 이동하는 코드
-                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, new BoardMyCommentFragment());
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-
-        myFavoritesPostTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 즐겨찾기 한 글 Fragment로 이동하는 코드
-                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, new BoardMyFavoritesFragment());
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
-
-
-
-
-
-
-
-
-
-        // 게시판 작성 버튼 클릭 이벤트 처리
-        boardwriteButton = view.findViewById(R.id.boardwriteButton);
-        boardwriteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openBoardWriteFragment();
-            }
+        // 게시물 등록 버튼 초기화 및 클릭 이벤트 설정
+        boardWriteButton = view.findViewById(R.id.boardWriteButton);
+        boardWriteButton.setText("게시물 쓰기");
+        boardWriteButton.setOnClickListener(v -> {
+            // 게시물 등록 페이지로 이동
+            replaceFragment(new PostRegistrationFragment());
         });
 
         // 툴바 설정
-        board_toolbar = view.findViewById(R.id.board_toolbar);
-        // 툴바 타이틀 설정
-        board_toolbar.setTitle("게시판");
-        board_toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
-        // 툴바 메뉴 설정
-        board_toolbar.setOnMenuItemClickListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.action_search) {
-                replaceFragment(new SearchFragment());
-                return true;
-            } else if (id == R.id.action_notifications) {
-                replaceFragment(new NotificationsFragment());
-                return true;
-            }
-            return false;
-        });
+        boardToolbar = view.findViewById(R.id.board_toolbar);
+        if (getActivity() instanceof AppCompatActivity) {
+            ((AppCompatActivity) getActivity()).setSupportActionBar(boardToolbar);
+            boardToolbar.setTitle("게시판");
+            boardToolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        }
 
         return view;
     }
 
-    private void openBoardWriteFragment() {
-        BoardWriteFragment fragment = new BoardWriteFragment();
-
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-
-        if (activity != null) {
-            activity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
+    private void loadPostsFromFirestore() {
+        firestore.collection("posts") // Firestore에서 "posts" 컬렉션 참조
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        postList.clear(); // 기존 목록을 클리어
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Post post = document.toObject(Post.class); // Document를 Post 객체로 변환
+                            postList.add(post); // 목록에 추가
+                        }
+                        postAdapter.notifyDataSetChanged(); // 데이터 변경 알림
+                    } else {
+                        // 에러 처리
+                    }
+                });
     }
-
 
     private void replaceFragment(Fragment fragment) {
         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
