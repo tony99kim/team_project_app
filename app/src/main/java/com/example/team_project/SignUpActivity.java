@@ -183,9 +183,9 @@ public class SignUpActivity extends AppCompatActivity {
 
     private static class User {
         public String name, username, email, phone, gender, birthDate, address, detailAddress, signUpDate;
-        public int environmentalPoint; // 환경 포인트 필드 추가
+        public int environmentPoint; // 환경 포인트 필드 추가
 
-        public User(String name, String username, String email, String phone, String gender, String birthDate, String address, String detailAddress, String signUpDate, int environmentalPoint) {
+        public User(String name, String username, String email, String phone, String gender, String birthDate, String address, String detailAddress, String signUpDate, int environmentPoint) {
             this.name = name;
             this.username = username;
             this.email = email;
@@ -195,7 +195,7 @@ public class SignUpActivity extends AppCompatActivity {
             this.address = address;
             this.detailAddress = detailAddress;
             this.signUpDate = signUpDate;
-            this.environmentalPoint = environmentalPoint; // 포인트 초기화
+            this.environmentPoint = environmentPoint; // 포인트 초기화
         }
     }
 }

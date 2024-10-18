@@ -99,7 +99,7 @@ public class ProfileFragment extends Fragment {
 
         setUsername();
         setProfileImageFromFirebase();
-        loadEnvironmentalPoints();
+        loadenvironmentPoints();
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
@@ -234,16 +234,16 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    private void loadEnvironmentalPoints() {
+    private void loadenvironmentPoints() {
         DocumentReference docRef = db.collection("users").document(userId);
 
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
-                Long environmentalPoint = documentSnapshot.getLong("environmentalPoint");
+                Long environmentPoint = documentSnapshot.getLong("environmentPoint");
 
-                if (environmentalPoint != null) {
+                if (environmentPoint != null) {
                     // "환경 포인트"라는 레이블 아래에 실제 포인트 값을 표시
-                    tvEnvironmentPoints.setText(String.valueOf(environmentalPoint));
+                    tvEnvironmentPoints.setText(String.valueOf(environmentPoint));
                 } else {
                     tvEnvironmentPoints.setText("0"); // 기본값
                 }

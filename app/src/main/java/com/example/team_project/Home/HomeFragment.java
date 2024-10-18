@@ -60,7 +60,7 @@ public class HomeFragment extends Fragment {
         settingsButton.setOnClickListener(v -> replaceFragment(new HomeSettingsFragment()));
 
         // Firestore에서 환경 포인트 값 가져오기
-        loadEnvironmentalPoints();
+        loadenvironmentPoints();
 
         return view;
     }
@@ -72,7 +72,7 @@ public class HomeFragment extends Fragment {
         updateLayoutBasedOnSettings();
     }
 
-    private void loadEnvironmentalPoints() {
+    private void loadenvironmentPoints() {
         DocumentReference docRef = db.collection("users").document(userId);
 
         registration = docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -85,11 +85,11 @@ public class HomeFragment extends Fragment {
                 }
                 if (snapshot != null && snapshot.exists()) {
                     // 환경 포인트 값 가져오기
-                    Long environmentalPoint = snapshot.getLong("environmentalPoint");
+                    Long environmentPoint = snapshot.getLong("environmentPoint");
 
                     // null 체크
-                    if (environmentalPoint != null) {
-                        tvEnvironmentPoints.setText(String.valueOf(environmentalPoint)); // 환경 포인트 표시
+                    if (environmentPoint != null) {
+                        tvEnvironmentPoints.setText(String.valueOf(environmentPoint)); // 환경 포인트 표시
                     } else {
                         tvEnvironmentPoints.setText("0"); // 환경 포인트가 없을 경우 기본값으로 0 표시
                     }
