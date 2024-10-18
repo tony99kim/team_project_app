@@ -6,16 +6,32 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
 import com.example.team_project.R;
 import com.example.team_project.Toolbar.NotificationsFragment;
 import com.example.team_project.Toolbar.SearchFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 public class HomeFragment extends Fragment {
+
+    private TextView tvEnvironmentPoints;
+    private FirebaseFirestore db;
+    private String userId;
+    private ListenerRegistration registration;
 
     @Nullable
     @Override
@@ -23,8 +39,11 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-
         Button settingsButton = view.findViewById(R.id.btn_home_settings);
+        tvEnvironmentPoints = view.findViewById(R.id.tvEnvironmentPoints); // 환경 포인트 TextView 초기화
+
+        db = FirebaseFirestore.getInstance();
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // 현재 사용자 ID 가져오기
 
         toolbar.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
@@ -40,6 +59,9 @@ public class HomeFragment extends Fragment {
 
         settingsButton.setOnClickListener(v -> replaceFragment(new HomeSettingsFragment()));
 
+        // Firestore에서 환경 포인트 값 가져오기
+        loadEnvironmentalPoints();
+
         return view;
     }
 
@@ -49,6 +71,35 @@ public class HomeFragment extends Fragment {
         // 설정 변경 반영
         updateLayoutBasedOnSettings();
     }
+
+    private void loadEnvironmentalPoints() {
+        DocumentReference docRef = db.collection("users").document(userId);
+
+        registration = docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    // 오류 처리
+                    Toast.makeText(getContext(), "Firestore 오류: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (snapshot != null && snapshot.exists()) {
+                    // 환경 포인트 값 가져오기
+                    Long environmentalPoint = snapshot.getLong("environmentalPoint");
+
+                    // null 체크
+                    if (environmentalPoint != null) {
+                        tvEnvironmentPoints.setText(String.valueOf(environmentalPoint)); // 환경 포인트 표시
+                    } else {
+                        tvEnvironmentPoints.setText("0"); // 환경 포인트가 없을 경우 기본값으로 0 표시
+                    }
+                } else {
+                    tvEnvironmentPoints.setText("0"); // 문서가 없을 경우 기본값으로 0 표시
+                }
+            }
+        });
+    }
+
 
     private void updateLayoutBasedOnSettings() {
         SharedPreferences sharedPref = getActivity().getSharedPreferences("HomeSettingsPrefs", getContext().MODE_PRIVATE);
@@ -65,7 +116,6 @@ public class HomeFragment extends Fragment {
         eventsSection.setVisibility(showEvents ? View.VISIBLE : View.GONE);
     }
 
-
     private void replaceFragment(Fragment fragment) {
         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
         transaction.setCustomAnimations(
@@ -77,5 +127,14 @@ public class HomeFragment extends Fragment {
         transaction.replace(R.id.fragment_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // 리스너 해제
+        if (registration != null) {
+            registration.remove();
+        }
     }
 }

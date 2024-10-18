@@ -79,37 +79,17 @@ public class SignUpActivity extends AppCompatActivity {
         imageViewProfile = findViewById(R.id.imageViewProfile);
         textViewImageCount = findViewById(R.id.tvImageCount);
 
-        editTextBirthDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog();
-            }
-        });
+        editTextBirthDate.setOnClickListener(v -> showDatePickerDialog());
 
-        frameLayoutProfilePhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openFileChooser();
-            }
-        });
+        frameLayoutProfilePhoto.setOnClickListener(v -> openFileChooser());
 
-        btnSelectAddress.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openAddressPicker();
-            }
-        });
+        btnSelectAddress.setOnClickListener(v -> openAddressPicker());
 
-        buttonRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                registerUser();
-            }
-        });
+        buttonRegister.setOnClickListener(v -> registerUser());
     }
 
     public void onUploadProfilePhotoClicked(View view) {
-        openFileChooser();
+        openFileChooser(); // 사진 선택을 위한 메서드 호출
     }
 
     private void showDatePickerDialog() {
@@ -119,12 +99,9 @@ public class SignUpActivity extends AppCompatActivity {
         int day = c.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        String date = year + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
-                        editTextBirthDate.setText(date);
-                    }
+                (view, year1, monthOfYear, dayOfMonth) -> {
+                    String date = year1 + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
+                    editTextBirthDate.setText(date);
                 }, year, month, day);
         datePickerDialog.show();
     }
@@ -172,32 +149,26 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            User user = new User(name, username, email, phone, gender, birthDate, address, detailAddress, signUpDate);
-                            db.collection("users").document(mAuth.getCurrentUser().getUid()).set(user)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                if (profileImageUri != null) {
-                                                    uploadProfileImage(mAuth.getCurrentUser().getUid());
-                                                }
-                                                Toast.makeText(SignUpActivity.this, "회원가입 성공", Toast.LENGTH_LONG).show();
-                                                finish();
-                                            } else {
-                                                Toast.makeText(SignUpActivity.this, "회원 정보 등록 실패", Toast.LENGTH_LONG).show();
-                                            }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        User user = new User(name, username, email, phone, gender, birthDate, address, detailAddress, signUpDate, 0); // 환경 포인트 0으로 초기화
+                        db.collection("users").document(mAuth.getCurrentUser().getUid()).set(user)
+                                .addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        if (profileImageUri != null) {
+                                            uploadProfileImage(mAuth.getCurrentUser().getUid());
                                         }
-                                    });
+                                        Toast.makeText(SignUpActivity.this, "회원가입 성공", Toast.LENGTH_LONG).show();
+                                        finish();
+                                    } else {
+                                        Toast.makeText(SignUpActivity.this, "회원 정보 등록 실패", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                    } else {
+                        if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                            Toast.makeText(SignUpActivity.this, "이미 사용중인 아이디(이메일)입니다.", Toast.LENGTH_LONG).show();
                         } else {
-                            if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                Toast.makeText(SignUpActivity.this, "이미 사용중인 아이디(이메일)입니다.", Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(SignUpActivity.this, "회원가입에 실패하였습니다.", Toast.LENGTH_LONG).show();
-                            }
+                            Toast.makeText(SignUpActivity.this, "회원가입에 실패하였습니다.", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -212,8 +183,9 @@ public class SignUpActivity extends AppCompatActivity {
 
     private static class User {
         public String name, username, email, phone, gender, birthDate, address, detailAddress, signUpDate;
+        public int environmentalPoint; // 환경 포인트 필드 추가
 
-        public User(String name, String username, String email, String phone, String gender, String birthDate, String address, String detailAddress, String signUpDate) {
+        public User(String name, String username, String email, String phone, String gender, String birthDate, String address, String detailAddress, String signUpDate, int environmentalPoint) {
             this.name = name;
             this.username = username;
             this.email = email;
@@ -223,6 +195,7 @@ public class SignUpActivity extends AppCompatActivity {
             this.address = address;
             this.detailAddress = detailAddress;
             this.signUpDate = signUpDate;
+            this.environmentalPoint = environmentalPoint; // 포인트 초기화
         }
     }
 }

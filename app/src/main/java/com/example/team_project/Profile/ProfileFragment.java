@@ -34,6 +34,7 @@ import com.example.team_project.Profile.notice.NoticeFragment;
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -44,7 +45,7 @@ import java.util.Set;
 
 public class ProfileFragment extends Fragment {
 
-    private TextView usernameTextView, environmentPointsTextView;
+    private TextView usernameTextView, environmentPointsTextView,tvEnvironmentPoints;
     private ImageView profileImageView;
     private Button payrecharge, wishpostButton, wishlistButton, editButton, recentVisitButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
     private androidx.appcompat.widget.Toolbar toolbar;
@@ -52,6 +53,8 @@ public class ProfileFragment extends Fragment {
     private SharedPreferences sharedPreferences;
     private FirebaseAuth mAuth;
     private StorageReference storageRef;
+    private FirebaseFirestore db;
+    private String userId;
 
     private ListView recentVisitListView;
     private ArrayAdapter<String> adapter;
@@ -65,6 +68,8 @@ public class ProfileFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         sharedPreferences = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         storageRef = FirebaseStorage.getInstance().getReference();
+        db = FirebaseFirestore.getInstance();
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         recentVisitListView = view.findViewById(R.id.recentVisitListView);
         recentVisitList = loadRecentVisits();
@@ -81,6 +86,7 @@ public class ProfileFragment extends Fragment {
         profileImageView = view.findViewById(R.id.profileImageView);
         usernameTextView = view.findViewById(R.id.usernameTextView);
         environmentPointsTextView = view.findViewById(R.id.environmentPointsTextView);
+        tvEnvironmentPoints = view.findViewById(R.id.tvEnvironmentPoints);
         payrecharge = view.findViewById(R.id.payrecharge);
         noticeButton = view.findViewById(R.id.noticeButton);
         customerServiceButton = view.findViewById(R.id.customerServiceButton);
@@ -93,10 +99,7 @@ public class ProfileFragment extends Fragment {
 
         setUsername();
         setProfileImageFromFirebase();
-
-        // 사용자의 환경 포인트 설정 (예시로 1000이라고 가정)
-        int environmentPoints = 1000;
-        environmentPointsTextView.setText("환경 포인트: " + environmentPoints);
+        loadEnvironmentalPoints();
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
@@ -108,13 +111,16 @@ public class ProfileFragment extends Fragment {
         logoutButton.setOnClickListener(v -> logout());
         payrecharge.setOnClickListener(v -> openFragment(new PayrechargeFragment()));
         noticeButton.setOnClickListener(v -> openFragment(new NoticeFragment()));
-        customerServiceButton.setOnClickListener(v -> openFragment(new CustomerServiceFragment())); // 변경된 부분
+        customerServiceButton.setOnClickListener(v -> openFragment(new CustomerServiceFragment()));
         withdrawButton.setOnClickListener(v -> openFragment(new WithdrawFragment()));
         editButton.setOnClickListener(v -> openFragment(new EditButtonFragment()));
         wishlistButton.setOnClickListener(v -> openFragment(new WishlistFragment()));
         wishpostButton.setOnClickListener(v -> openFragment(new WishpostFragment()));
 
         return view;
+    }
+
+    private void setUsername() {
     }
 
     private void openProductDetailFragment(String productName) {
@@ -198,23 +204,55 @@ public class ProfileFragment extends Fragment {
 
     private void setProfileImageFromFirebase() {
         String userId = mAuth.getCurrentUser().getUid();
-        StorageReference profileImageRef = storageRef.child("profileImages/" + userId + ".jpg");
-        profileImageRef.getDownloadUrl()
-                .addOnSuccessListener(uri -> {
+        StorageReference profileImageRef = storageRef.child("profileImage/" + userId + "/"); // 폴더 경로만 설정
+
+        profileImageRef.listAll().addOnSuccessListener(listResult -> {
+            if (listResult.getItems().size() > 0) {
+                // 첫 번째 이미지 가져오기
+                StorageReference firstImageRef = listResult.getItems().get(0);
+                firstImageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     String profileImageUrl = uri.toString();
                     Glide.with(requireContext())
                             .load(profileImageUrl)
                             .placeholder(R.drawable.ic_profile)
                             .error(R.drawable.ic_profile)
                             .into(profileImageView);
-                })
-                .addOnFailureListener(e -> {
-                    // 프로필 사진이 없을 경우 처리
+                }).addOnFailureListener(e -> {
+                    // 이미지 URL 가져오기 실패 시
+                    profileImageView.setImageDrawable(null); // 이미지 제거
+                    Toast.makeText(getActivity(), "프로필 사진을 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
                 });
+            } else {
+                // 이미지가 없는 경우 처리
+                profileImageView.setImageDrawable(null); // 이미지 제거
+                Toast.makeText(getActivity(), "프로필 사진이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(e -> {
+            // 폴더 목록 가져오기 실패 시
+            profileImageView.setImageDrawable(null); // 이미지 제거
+            Toast.makeText(getActivity(), "프로필 사진 폴더를 가져오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+        });
     }
 
-    private void setUsername() {
-        String savedUsername = sharedPreferences.getString("username", "사용자 이름");
-        usernameTextView.setText(savedUsername);
+    private void loadEnvironmentalPoints() {
+        DocumentReference docRef = db.collection("users").document(userId);
+
+        docRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Long environmentalPoint = documentSnapshot.getLong("environmentalPoint");
+
+                if (environmentalPoint != null) {
+                    // "환경 포인트"라는 레이블 아래에 실제 포인트 값을 표시
+                    tvEnvironmentPoints.setText(String.valueOf(environmentalPoint));
+                } else {
+                    tvEnvironmentPoints.setText("0"); // 기본값
+                }
+            } else {
+                tvEnvironmentPoints.setText("0"); // 기본값
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(getContext(), "환경 포인트를 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
+        });
     }
+
 }
