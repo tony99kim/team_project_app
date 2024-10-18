@@ -169,11 +169,17 @@ public class ProductDetailFragment extends Fragment {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             DocumentReference wishlistRef = db.collection("wishlists").document(user.getUid());
 
-            wishlistRef.update("products", FieldValue.arrayUnion(productId))
+            // 상품 객체를 Firestore에 추가
+            Product product = new Product(productId, userId, title, price, description);
+            wishlistRef.collection("products").document(productId)
+                    .set(product)
                     .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "위시리스트에 추가되었습니다", Toast.LENGTH_SHORT).show())
                     .addOnFailureListener(e -> Log.e("ProductDetailFragment", "위시리스트 추가 실패", e));
+        } else {
+            Toast.makeText(getContext(), "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     private void onStartChat() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
