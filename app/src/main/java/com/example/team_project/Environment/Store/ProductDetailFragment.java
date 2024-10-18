@@ -23,18 +23,21 @@ import com.bumptech.glide.Glide;
 import com.example.team_project.Chat.Data.Chat;
 import com.example.team_project.R;
 import com.example.team_project.Chat.ChatActivity;
+import com.example.team_project.Chat.Data.Message;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.Executors;
 
 public class ProductDetailFragment extends Fragment {
 
@@ -43,6 +46,7 @@ public class ProductDetailFragment extends Fragment {
     private TextView titleTextView, descriptionTextView, priceTextView, sellerNameTextView;
     private Button buttonFavorite, buttonChat;
     private Toolbar priceToolBar;
+    private FirebaseFirestore db; // Firestore 인스턴스 선언
 
     public static ProductDetailFragment newInstance(Product product) {
         ProductDetailFragment fragment = new ProductDetailFragment();
@@ -59,6 +63,7 @@ public class ProductDetailFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        db = FirebaseFirestore.getInstance(); // Firestore 인스턴스 초기화
         if (getArguments() != null) {
             productId = getArguments().getString("productId");
             userId = getArguments().getString("userId");
@@ -105,15 +110,14 @@ public class ProductDetailFragment extends Fragment {
     }
 
     private void loadSellerName() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userRef = db.collection("users").document(userId);
 
         userRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
-                    String sellerName = document.getString("name");
-                    sellerNameTextView.setText(sellerName);
+                    String sellerEmail = document.getString("email"); // 이메일 필드로 변경
+                    sellerNameTextView.setText(sellerEmail);
                 } else {
                     Log.d("ProductDetailFragment", "문서가 존재하지 않습니다");
                 }
@@ -145,7 +149,6 @@ public class ProductDetailFragment extends Fragment {
     }
 
     private void loadProductPrice() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference productRef = db.collection("products").document(productId);
 
         productRef.get().addOnCompleteListener(task -> {
@@ -166,44 +169,92 @@ public class ProductDetailFragment extends Fragment {
     private void addToWishlist() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
             DocumentReference wishlistRef = db.collection("wishlists").document(user.getUid());
 
-            wishlistRef.update("products", FieldValue.arrayUnion(productId))
+            // 상품 객체를 Firestore에 추가
+            Product product = new Product(productId, userId, title, price, description);
+            wishlistRef.collection("products").document(productId)
+                    .set(product)
                     .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "위시리스트에 추가되었습니다", Toast.LENGTH_SHORT).show())
                     .addOnFailureListener(e -> Log.e("ProductDetailFragment", "위시리스트 추가 실패", e));
+        } else {
+            Toast.makeText(getContext(), "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void onStartChat() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            String currentUserId = currentUser.getUid();
-            String chatRoomId = currentUserId.compareTo(userId) < 0 ? currentUserId + "_" + userId : userId + "_" + currentUserId;
+            String currentUserEmail = currentUser.getEmail();
+            String sellerEmail = sellerNameTextView.getText().toString(); // 판매자 이메일 가져오기
 
-            db.collection("chats").document(chatRoomId).get().addOnCompleteListener(task -> {
+            // Firestore에서 판매자 이름 가져오기
+            db.collection("users").document(userId).get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
-                    if (!document.exists()) {
-                        Chat newChat = new Chat(chatRoomId, currentUserId, userId, sellerNameTextView.getText().toString(), new Date());
-                        db.collection("chats").document(chatRoomId).set(newChat);
+                    if (document.exists()) {
+                        String sellerName = document.getString("name"); // 판매자 이름 필드 가져오기
+
+                        // chatRoomId를 이메일 형식으로 설정
+                        String chatRoomId = currentUserEmail + "_" + sellerEmail;
+
+                        db.collection("chats").document(chatRoomId).get().addOnCompleteListener(chatTask -> {
+                            if (chatTask.isSuccessful()) {
+                                DocumentSnapshot chatDocument = chatTask.getResult();
+                                if (!chatDocument.exists()) {
+                                    // 새로운 채팅 생성
+                                    Chat newChat = new Chat(chatRoomId, currentUserEmail, sellerEmail, "", new Date());
+                                    db.collection("chats").document(chatRoomId).set(newChat)
+                                            .addOnSuccessListener(aVoid -> addInitialMessage(chatRoomId))
+                                            .addOnFailureListener(e -> Log.e("ProductDetailFragment", "채팅 생성 실패: ", e));
+                                }
+                                // 채팅방으로 이동, 여기서 이름을 전달
+                                navigateToChatRoom(chatRoomId, sellerName);
+                            } else {
+                                Log.e("ProductDetailFragment", "채팅 문서 가져오기 실패", chatTask.getException());
+                            }
+                        });
                     }
-                    navigateToChatRoom(chatRoomId, sellerNameTextView.getText().toString());
                 } else {
-                    Log.e("ProductDetailFragment", "채팅 문서 가져오기 실패", task.getException());
+                    Log.e("ProductDetailFragment", "판매자 정보 가져오기 실패", task.getException());
                 }
             });
         }
+    }
+
+    private void addInitialMessage(String chatId) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            // 현재 날짜를 "yyyy년 MM월 dd일(E)" 형식으로 포맷합니다.
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일(E)", Locale.KOREAN);
+            String currentDate = dateFormat.format(new Date());
+
+            // 초기 메시지 객체를 생성합니다.
+            Message initialMessage = new Message(chatId, "system", currentDate, new Date());
+
+            // Firestore에 초기 메시지를 추가합니다.
+            db.collection("messages").add(initialMessage).addOnSuccessListener(documentReference -> {
+                Log.d("ProductDetailFragment", "초기 메시지 추가 성공");
+                // 채팅방의 마지막 메시지 및 업데이트 시간을 설정합니다.
+                db.collection("chats").document(chatId)
+                        .update("lastMessage", "채팅방이 열렸습니다.", "updatedAt", new Date());
+            }).addOnFailureListener(e -> {
+                Log.e("ProductDetailFragment", "초기 메시지 추가 실패: ", e);
+            });
+        });
     }
 
     private void navigateToChatRoom(String chatRoomId, String userName) {
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         intent.putExtra("userEmail1", FirebaseAuth.getInstance().getCurrentUser().getEmail());
         intent.putExtra("userEmail2", userName);
+
+        // 판매자 이름을 추가로 전달
+        intent.putExtra("user2", userName); // 판매자 이름 전달
+
         intent.putExtra("chatRoomTitle", userName); // 채팅방 제목으로 판매자 이름 전달
         startActivity(intent);
     }
+
 
     private static class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewHolder> {
         private final List<String> imageUrls;
