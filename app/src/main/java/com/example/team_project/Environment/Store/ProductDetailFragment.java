@@ -188,22 +188,35 @@ public class ProductDetailFragment extends Fragment {
             String currentUserEmail = currentUser.getEmail();
             String sellerEmail = sellerNameTextView.getText().toString(); // 판매자 이메일 가져오기
 
-            // chatRoomId를 이메일 형식으로 설정
-            String chatRoomId = currentUserEmail + "_" + sellerEmail;
-
-            db.collection("chats").document(chatRoomId).get().addOnCompleteListener(task -> {
+            // Firestore에서 판매자 이름 가져오기
+            db.collection("users").document(userId).get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
-                    if (!document.exists()) {
-                        // 새로운 채팅 생성
-                        Chat newChat = new Chat(chatRoomId, currentUserEmail, sellerEmail, "", new Date());
-                        db.collection("chats").document(chatRoomId).set(newChat)
-                                .addOnSuccessListener(aVoid -> addInitialMessage(chatRoomId))
-                                .addOnFailureListener(e -> Log.e("ProductDetailFragment", "채팅 생성 실패: ", e));
+                    if (document.exists()) {
+                        String sellerName = document.getString("name"); // 판매자 이름 필드 가져오기
+
+                        // chatRoomId를 이메일 형식으로 설정
+                        String chatRoomId = currentUserEmail + "_" + sellerEmail;
+
+                        db.collection("chats").document(chatRoomId).get().addOnCompleteListener(chatTask -> {
+                            if (chatTask.isSuccessful()) {
+                                DocumentSnapshot chatDocument = chatTask.getResult();
+                                if (!chatDocument.exists()) {
+                                    // 새로운 채팅 생성
+                                    Chat newChat = new Chat(chatRoomId, currentUserEmail, sellerEmail, "", new Date());
+                                    db.collection("chats").document(chatRoomId).set(newChat)
+                                            .addOnSuccessListener(aVoid -> addInitialMessage(chatRoomId))
+                                            .addOnFailureListener(e -> Log.e("ProductDetailFragment", "채팅 생성 실패: ", e));
+                                }
+                                // 채팅방으로 이동, 여기서 이름을 전달
+                                navigateToChatRoom(chatRoomId, sellerName);
+                            } else {
+                                Log.e("ProductDetailFragment", "채팅 문서 가져오기 실패", chatTask.getException());
+                            }
+                        });
                     }
-                    navigateToChatRoom(chatRoomId, sellerEmail);
                 } else {
-                    Log.e("ProductDetailFragment", "채팅 문서 가져오기 실패", task.getException());
+                    Log.e("ProductDetailFragment", "판매자 정보 가져오기 실패", task.getException());
                 }
             });
         }
@@ -234,9 +247,14 @@ public class ProductDetailFragment extends Fragment {
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         intent.putExtra("userEmail1", FirebaseAuth.getInstance().getCurrentUser().getEmail());
         intent.putExtra("userEmail2", userName);
+
+        // 판매자 이름을 추가로 전달
+        intent.putExtra("user2", userName); // 판매자 이름 전달
+
         intent.putExtra("chatRoomTitle", userName); // 채팅방 제목으로 판매자 이름 전달
         startActivity(intent);
     }
+
 
     private static class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewHolder> {
         private final List<String> imageUrls;

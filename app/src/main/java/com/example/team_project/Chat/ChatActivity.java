@@ -55,13 +55,15 @@ public class ChatActivity extends AppCompatActivity {
 
         String userEmail1 = getIntent().getStringExtra("userEmail1");
         String userEmail2 = getIntent().getStringExtra("userEmail2");
-        user1 = getIntent().getStringExtra("user1");
-        user2 = getIntent().getStringExtra("user2");
+
+        // user2는 판매자 이름으로 Intent에서 받아옴
+        user2 = getIntent().getStringExtra("user2"); // 전달받은 판매자 이름
 
         String chatId = userEmail1.compareTo(userEmail2) < 0 ? userEmail1 + "_" + userEmail2 : userEmail2 + "_" + userEmail1;
 
         textTitle = findViewById(R.id.text_user);
-        textTitle.setText(user2);
+        textTitle.setText(user2); // 상단에 판매자 이름 설정
+
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
