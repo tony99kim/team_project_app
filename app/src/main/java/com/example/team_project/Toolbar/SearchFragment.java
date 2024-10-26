@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -12,6 +14,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,11 +36,21 @@ public class SearchFragment extends Fragment {
     private ArrayList<Product> productList;
     private FirebaseFirestore firestore;
     private ProgressBar progressBar;
+    private Toolbar toolbar;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_toobar_search, container, false);
+
+        // Toolbar 설정
+        // Toolbar 설정
+        toolbar = view.findViewById(R.id.toolbar);
+        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
+        setHasOptionsMenu(true);
+        toolbar.setNavigationIcon(R.drawable.ic_back_black); // 뒤로가기 아이콘
+        toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed()); // 뒤로가기 버튼 클릭 시 동작
+        toolbar.setTitle("");
 
         searchEditText = view.findViewById(R.id.searchEditText);
         searchResultsRecyclerView = view.findViewById(R.id.searchResultsRecyclerView);
@@ -69,7 +83,7 @@ public class SearchFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         firestore.collection("products")
                 .whereGreaterThanOrEqualTo("title", query)
-                .whereLessThanOrEqualTo("title", query + "\uf8ff") // to ensure we get all similar titles
+                .whereLessThanOrEqualTo("title", query + "\uf8ff") // 유사한 제목을 모두 얻기 위해
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -84,5 +98,11 @@ public class SearchFragment extends Fragment {
                     }
                     progressBar.setVisibility(View.GONE);
                 });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_home_toolbar, menu); // 메뉴 리소스 추가
+        super.onCreateOptionsMenu(menu, inflater);
     }
 }
