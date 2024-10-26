@@ -1,45 +1,88 @@
 package com.example.team_project.Toolbar;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.team_project.R;
+import com.example.team_project.Environment.Store.Product;
+import com.example.team_project.Environment.Store.ProductAdapter;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
 
 public class SearchFragment extends Fragment {
 
-    private Toolbar toolbarSearch;
+    private EditText searchEditText;
+    private RecyclerView searchResultsRecyclerView;
+    private ProductAdapter productAdapter;
+    private ArrayList<Product> productList;
+    private FirebaseFirestore firestore;
+    private ProgressBar progressBar;
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_toolbar_search, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
+
+        searchEditText = view.findViewById(R.id.searchEditText);
+        searchResultsRecyclerView = view.findViewById(R.id.searchResultsRecyclerView);
+        progressBar = view.findViewById(R.id.progressBar);
+
+        productList = new ArrayList<>();
+        productAdapter = new ProductAdapter(getContext(), productList);
+        searchResultsRecyclerView.setAdapter(productAdapter);
+        searchResultsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        firestore = FirebaseFirestore.getInstance();
+
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                searchProducts(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        return view;
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        toolbarSearch = view.findViewById(R.id.toolbar_search);
-
-        // 액티비티의 액션바(툴바)로 설정
-        if (getActivity() instanceof AppCompatActivity) {
-            ((AppCompatActivity) getActivity()).setSupportActionBar(toolbarSearch);
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-
-        toolbarSearch.setNavigationOnClickListener(v -> {
-            // Fragment 스택에서 현재 Fragment를 제거하여 이전 화면으로 돌아감
-            if (getFragmentManager() != null) {
-                getFragmentManager().popBackStack();
-            }
-        });
+    private void searchProducts(String query) {
+        progressBar.setVisibility(View.VISIBLE);
+        firestore.collection("products")
+                .whereGreaterThanOrEqualTo("title", query)
+                .whereLessThanOrEqualTo("title", query + "\uf8ff") // to ensure we get all similar titles
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        productList.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Product product = document.toObject(Product.class);
+                            productList.add(product);
+                        }
+                        productAdapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(getContext(), "검색 실패: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                    progressBar.setVisibility(View.GONE);
+                });
     }
 }
