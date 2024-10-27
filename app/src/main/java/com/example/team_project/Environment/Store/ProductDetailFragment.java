@@ -198,6 +198,7 @@ public class ProductDetailFragment extends Fragment {
                         // chatRoomId를 이메일 형식으로 설정
                         String chatRoomId = currentUserEmail + "_" + sellerEmail;
 
+                        // 채팅 문서 가져오기
                         db.collection("chats").document(chatRoomId).get().addOnCompleteListener(chatTask -> {
                             if (chatTask.isSuccessful()) {
                                 DocumentSnapshot chatDocument = chatTask.getResult();
@@ -209,11 +210,13 @@ public class ProductDetailFragment extends Fragment {
                                             .addOnFailureListener(e -> Log.e("ProductDetailFragment", "채팅 생성 실패: ", e));
                                 }
                                 // 채팅방으로 이동, 여기서 이름을 전달
-                                navigateToChatRoom(chatRoomId, sellerName);
+                                navigateToChatRoom(chatRoomId, sellerEmail);
                             } else {
                                 Log.e("ProductDetailFragment", "채팅 문서 가져오기 실패", chatTask.getException());
                             }
                         });
+                    } else {
+                        Log.e("ProductDetailFragment", "판매자 정보가 존재하지 않습니다.");
                     }
                 } else {
                     Log.e("ProductDetailFragment", "판매자 정보 가져오기 실패", task.getException());
@@ -221,6 +224,7 @@ public class ProductDetailFragment extends Fragment {
             });
         }
     }
+
 
     private void addInitialMessage(String chatId) {
         Executors.newSingleThreadExecutor().execute(() -> {
