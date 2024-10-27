@@ -28,6 +28,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -36,10 +37,14 @@ import java.util.List;
 
 public class PostDetailFragment extends Fragment {
 
-    private String postId, postName, postTitle, postContent, userId;
+    private String postId; // Firestore 문서 ID
+    private String postName; // 게시물 작성자 이름
+    private String postTitle; // 게시물 제목
+    private String postContent; // 게시물 내용
+    private String userId; // 현재 사용자 ID
 
     private ViewPager2 viewPager2;
-    private TextView titleTextView, contentTextView, posterNameTextView;
+    private TextView titleTextView, contentTextView, posterNameTextView, viewsTextView;
     private Toolbar toolbar;
 
     public static PostDetailFragment newInstance(String postId, String postName, String postTitle, String postContent) {
@@ -54,15 +59,14 @@ public class PostDetailFragment extends Fragment {
     }
 
     public static PostDetailFragment newInstance(Post post) {
-        String postId = post.getImageUrls() != null && !post.getImageUrls().isEmpty() ? post.getImageUrls().get(0) : null;
-        return newInstance(postId, post.getName(), post.getTitle(), post.getContent());
+        return newInstance(post.getPostId(), post.getName(), post.getTitle(), post.getContent());
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            postId = getArguments().getString("postId");
+            postId = getArguments().getString("postId"); // Firestore 문서 ID
             postName = getArguments().getString("postName");
             postTitle = getArguments().getString("postTitle");
             postContent = getArguments().getString("postContent");
@@ -73,6 +77,9 @@ public class PostDetailFragment extends Fragment {
         if (currentUser != null) {
             userId = currentUser.getUid();
         }
+
+        // 조회수 증가
+        incrementViewCount();
     }
 
     @Nullable
@@ -81,7 +88,7 @@ public class PostDetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_board_postdetail, container, false);
 
         // 툴바 설정
-        toolbar = view.findViewById(R.id.toolbar_post_detail);
+        Toolbar toolbar = view.findViewById(R.id.toolbar_post_detail);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
@@ -91,6 +98,7 @@ public class PostDetailFragment extends Fragment {
         titleTextView = view.findViewById(R.id.textView_post_title);
         contentTextView = view.findViewById(R.id.textView_post_content);
         posterNameTextView = view.findViewById(R.id.textView_poster_name);
+        viewsTextView = view.findViewById(R.id.textView_post_views); // 조회수 TextView 초기화
 
         // 데이터 설정
         titleTextView.setText(postTitle);
@@ -122,7 +130,7 @@ public class PostDetailFragment extends Fragment {
     }
 
     private void loadPostImages() {
-        String directoryPath = "PostImages/" + postId;
+        String directoryPath = "PostImages/" + postId; // Firestore 문서 ID를 사용하여 이미지 경로 설정
         StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(directoryPath);
 
         storageRef.listAll().addOnSuccessListener(listResult -> {
@@ -145,6 +153,41 @@ public class PostDetailFragment extends Fragment {
         } else {
             Log.d("PostDetailFragment", "이미지 URL 목록이 비어 있습니다");
         }
+    }
+
+    // 조회수 증가 메서드
+    private void incrementViewCount() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference postRef = db.collection("posts").document(postId); // Firestore 문서 ID 사용
+
+        db.runTransaction((Transaction.Function<Void>) transaction -> {
+                    DocumentSnapshot snapshot = transaction.get(postRef);
+                    long newViewCount = snapshot.getLong("viewCount") != null ? snapshot.getLong("viewCount") + 1 : 1;
+                    transaction.update(postRef, "viewCount", newViewCount);
+                    return null;
+                }).addOnSuccessListener(aVoid -> {
+                    Log.d("PostDetailFragment", "조회수 증가 성공");
+                    // 조회수 업데이트
+                    updateViewCount();
+                })
+                .addOnFailureListener(e -> Log.e("PostDetailFragment", "조회수 증가 실패", e));
+    }
+
+    // 조회수 가져오기 및 TextView에 설정
+    private void updateViewCount() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference postRef = db.collection("posts").document(postId);
+
+        postRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                long viewCount = documentSnapshot.getLong("viewCount");
+                viewsTextView.setText("조회수: " + viewCount);
+            } else {
+                Log.d("PostDetailFragment", "문서가 존재하지 않습니다");
+            }
+        }).addOnFailureListener(e -> {
+            Log.e("PostDetailFragment", "조회수 가져오기 실패", e);
+        });
     }
 
     private static class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewHolder> {
