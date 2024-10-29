@@ -19,6 +19,8 @@ import com.example.team_project.R;
 import com.example.team_project.Board.BoardKategorie.Post;
 import com.example.team_project.Board.BoardKategorie.PostAdapter;
 import com.example.team_project.Board.BoardKategorie.PostRegistrationFragment;
+import com.example.team_project.Toolbar.NotificationsFragment;
+import com.example.team_project.Toolbar.SearchFragment;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -63,13 +65,24 @@ public class BoardFragment extends Fragment {
             replaceFragment(new PostRegistrationFragment());
         });
 
-        // 툴바 설정
+
+
         boardToolbar = view.findViewById(R.id.board_toolbar);
-        if (getActivity() instanceof AppCompatActivity) {
-            ((AppCompatActivity) getActivity()).setSupportActionBar(boardToolbar);
-            boardToolbar.setTitle("게시판");
-            boardToolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
-        }
+        // 툴바 타이틀 설정
+        boardToolbar.setTitle("게시판");
+        boardToolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        // 툴바 메뉴 설정
+        boardToolbar.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.action_search) {
+                replaceFragment(new SearchFragment());
+                return true;
+            } else if (id == R.id.action_notifications) {
+                replaceFragment(new NotificationsFragment());
+                return true;
+            }
+            return false;
+        });
 
         return view;
     }
