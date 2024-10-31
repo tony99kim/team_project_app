@@ -116,8 +116,8 @@ public class ProductDetailFragment extends Fragment {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
-                    String sellerEmail = document.getString("email"); // 이메일 필드로 변경
-                    sellerNameTextView.setText(sellerEmail);
+                    String sellerName = document.getString("name"); // 이름 필드로 변경
+                    sellerNameTextView.setText(sellerName);
                 } else {
                     Log.d("ProductDetailFragment", "문서가 존재하지 않습니다");
                 }
@@ -186,14 +186,13 @@ public class ProductDetailFragment extends Fragment {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             String currentUserEmail = currentUser.getEmail();
-            String sellerEmail = sellerNameTextView.getText().toString(); // 판매자 이메일 가져오기
 
             // Firestore에서 판매자 이름 가져오기
             db.collection("users").document(userId).get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        String sellerName = document.getString("name"); // 판매자 이름 필드 가져오기
+                        String sellerEmail = document.getString("email"); // 판매자 이메일 가져오기
 
                         // chatRoomId를 이메일 형식으로 설정
                         String chatRoomId = currentUserEmail + "_" + sellerEmail;
@@ -206,10 +205,10 @@ public class ProductDetailFragment extends Fragment {
                                     // 새로운 채팅 생성
                                     Chat newChat = new Chat(chatRoomId, currentUserEmail, sellerEmail, "", new Date());
                                     db.collection("chats").document(chatRoomId).set(newChat)
-                                            .addOnSuccessListener(aVoid -> addInitialMessage(chatRoomId))
+                                            .addOnSuccessListener(aVoid -> addInitialMessage(chatRoomId, currentUserEmail, sellerEmail))
                                             .addOnFailureListener(e -> Log.e("ProductDetailFragment", "채팅 생성 실패: ", e));
                                 }
-                                // 채팅방으로 이동, 여기서 이름을 전달
+                                // 채팅방으로 이동
                                 navigateToChatRoom(chatRoomId, sellerEmail);
                             } else {
                                 Log.e("ProductDetailFragment", "채팅 문서 가져오기 실패", chatTask.getException());
@@ -226,7 +225,8 @@ public class ProductDetailFragment extends Fragment {
     }
 
 
-    private void addInitialMessage(String chatId) {
+
+    private void addInitialMessage(String chatId, String currentUserEmail, String sellerEmail) {
         Executors.newSingleThreadExecutor().execute(() -> {
             // 현재 날짜를 "yyyy년 MM월 dd일(E)" 형식으로 포맷합니다.
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일(E)", Locale.KOREAN);
@@ -246,6 +246,7 @@ public class ProductDetailFragment extends Fragment {
             });
         });
     }
+
 
     private void navigateToChatRoom(String chatRoomId, String userName) {
         Intent intent = new Intent(getActivity(), ChatActivity.class);

@@ -58,15 +58,12 @@ public class ChatActivity extends AppCompatActivity {
         user1 = getIntent().getStringExtra("user1");
         user2 = getIntent().getStringExtra("user2");
 
-        // user2는 판매자 이름으로 Intent에서 받아옴
-        user2 = getIntent().getStringExtra("user2"); // 전달받은 판매자 이름
+        // 상대방 이메일로 사용자 이름 가져오기
+        fetchUserName(userEmail2);
 
         String chatId = userEmail1.compareTo(userEmail2) < 0 ? userEmail1 + "_" + userEmail2 : userEmail2 + "_" + userEmail1;
 
         textTitle = findViewById(R.id.text_user);
-        textTitle.setText(user2); // 상단에 판매자 이름 설정
-
-
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new MessageListAdapter(userEmail1, messages, users));
@@ -101,6 +98,7 @@ public class ChatActivity extends AppCompatActivity {
         setupRealtimeMessageUpdates(chatId);
         loadUsers();
     }
+
 
     private void loadUsers() {
         Executors.newSingleThreadExecutor().execute(() -> {
@@ -254,5 +252,18 @@ public class ChatActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Log.e("ChatActivity", "Error finding messages to delete", e));
     }
+
+    private void fetchUserName(String userEmail) {
+        db.collection("users").whereEqualTo("email", userEmail).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                String userName = document.getString("name"); // users 컬렉션의 name 필드 가져오기
+                textTitle.setText(userName); // 상단에 판매자 이름 설정
+            } else {
+                Log.e("ChatActivity", "Error fetching user name: " + task.getException());
+            }
+        });
+    }
+
 }
 
