@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,7 +34,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 public class PostDetailFragment extends Fragment {
 
@@ -98,7 +102,7 @@ public class PostDetailFragment extends Fragment {
         titleTextView = view.findViewById(R.id.textView_post_title);
         contentTextView = view.findViewById(R.id.textView_post_content);
         posterNameTextView = view.findViewById(R.id.textView_poster_name);
-        viewsTextView = view.findViewById(R.id.textView_post_views); // 조회수 TextView 초기화
+        viewsTextView = view.findViewById(R.id.textView_post_views);
 
         // 데이터 설정
         titleTextView.setText(postTitle);
@@ -107,7 +111,30 @@ public class PostDetailFragment extends Fragment {
         loadPostImages();
         loadPosterName();
 
+        // 북마크 버튼 클릭 리스너 추가
+        ImageView bookmarkButton = view.findViewById(R.id.button_bookmark);
+        bookmarkButton.setOnClickListener(v -> bookmarkPost());
+
         return view;
+    }
+
+    private void bookmarkPost() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> bookmarkData = new HashMap<>();
+        bookmarkData.put("postId", postId);
+        bookmarkData.put("title", postTitle);
+        bookmarkData.put("content", postContent);
+        bookmarkData.put("posterName", postName);
+
+        // 사용자 ID로 북마크 컬렉션에 추가
+        db.collection("users").document(userId).collection("bookmarks").document(postId)
+                .set(bookmarkData)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("PostDetailFragment", "북마크 추가 성공");
+                    // 북마크 추가 성공 시 Toast 메시지 표시
+                    Toast.makeText(getContext(), "관심 게시물에 추가되었습니다.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> Log.e("PostDetailFragment", "북마크 추가 실패", e));
     }
 
     private void loadPosterName() {
@@ -154,6 +181,7 @@ public class PostDetailFragment extends Fragment {
             Log.d("PostDetailFragment", "이미지 URL 목록이 비어 있습니다");
         }
     }
+
 
     // 조회수 증가 메서드
     private void incrementViewCount() {
