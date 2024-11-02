@@ -111,23 +111,40 @@
                 android:id="@+id/environmentPointsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="end"
                 android:orientation="horizontal"
                 android:layout_marginTop="8dp"
                 android:layout_below="@id/environmentLayout">
 
-            <TextView
-                android:id="@+id/tvEnvironmentPoints"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textSize="16sp"
-                android:textColor="@color/black"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp" />
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/tvAccountBalance"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:gravity="start" />
 
-        <!-- 페이 충전 및 환전 버튼을 수평으로 배치 -->
+                <TextView
+                    android:id="@+id/tvEnvironmentPoints"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:gravity="end" />
+            </LinearLayout>
+
+
+
+
+
+            <!-- 페이 충전 및 환전 버튼을 수평으로 배치 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

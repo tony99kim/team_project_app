@@ -45,7 +45,7 @@ import java.util.Set;
 
 public class ProfileFragment extends Fragment {
 
-    private TextView usernameTextView, environmentPointsTextView,tvEnvironmentPoints;
+    private TextView usernameTextView, environmentPointsTextView, tvEnvironmentPoints, tvAccountBalance;
     private ImageView profileImageView;
     private Button payrecharge, wishpostButton, wishlistButton, editButton, recentVisitButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
     private androidx.appcompat.widget.Toolbar toolbar;
@@ -87,6 +87,7 @@ public class ProfileFragment extends Fragment {
         usernameTextView = view.findViewById(R.id.usernameTextView);
         environmentPointsTextView = view.findViewById(R.id.environmentPointsTextView);
         tvEnvironmentPoints = view.findViewById(R.id.tvEnvironmentPoints);
+        tvAccountBalance = view.findViewById(R.id.tvAccountBalance);
         payrecharge = view.findViewById(R.id.payrecharge);
         noticeButton = view.findViewById(R.id.noticeButton);
         customerServiceButton = view.findViewById(R.id.customerServiceButton);
@@ -100,6 +101,7 @@ public class ProfileFragment extends Fragment {
         setUsername();
         setProfileImageFromFirebase();
         loadenvironmentPoints();
+        loadAccountBalance();
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
@@ -255,4 +257,24 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    private void loadAccountBalance() {
+        DocumentReference docRef = db.collection("users").document(userId);
+
+        docRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Long accountBalance = documentSnapshot.getLong("accountBalance");
+
+                if (accountBalance != null) {
+                    // "계좌 잔액"이라는 레이블 아래에 실제 잔액 값을 표시
+                    tvAccountBalance.setText(String.valueOf(accountBalance));
+                } else {
+                    tvAccountBalance.setText("0"); // 기본값
+                }
+            } else {
+                tvAccountBalance.setText("0"); // 기본값
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(getContext(), "계좌 잔액을 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
+        });
+    }
 }

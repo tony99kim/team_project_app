@@ -88,10 +88,6 @@ public class SignUpActivity extends AppCompatActivity {
         buttonRegister.setOnClickListener(v -> registerUser());
     }
 
-    public void onUploadProfilePhotoClicked(View view) {
-        openFileChooser(); // 사진 선택을 위한 메서드 호출
-    }
-
     private void showDatePickerDialog() {
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
@@ -151,7 +147,7 @@ public class SignUpActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        User user = new User(name, username, email, phone, gender, birthDate, address, detailAddress, signUpDate, 0); // 환경 포인트 0으로 초기화
+                        User user = new User(name, username, email, phone, gender, birthDate, address, detailAddress, signUpDate, 0, 0); // 포인트와 잔액을 0으로 초기화
                         db.collection("users").document(mAuth.getCurrentUser().getUid()).set(user)
                                 .addOnCompleteListener(task1 -> {
                                     if (task1.isSuccessful()) {
@@ -184,8 +180,9 @@ public class SignUpActivity extends AppCompatActivity {
     private static class User {
         public String name, username, email, phone, gender, birthDate, address, detailAddress, signUpDate;
         public int environmentPoint; // 환경 포인트 필드 추가
+        public int accountBalance; // 환경 페이 계좌 잔액 필드 추가
 
-        public User(String name, String username, String email, String phone, String gender, String birthDate, String address, String detailAddress, String signUpDate, int environmentPoint) {
+        public User(String name, String username, String email, String phone, String gender, String birthDate, String address, String detailAddress, String signUpDate, int environmentPoint, int accountBalance) {
             this.name = name;
             this.username = username;
             this.email = email;
@@ -196,6 +193,7 @@ public class SignUpActivity extends AppCompatActivity {
             this.detailAddress = detailAddress;
             this.signUpDate = signUpDate;
             this.environmentPoint = environmentPoint; // 포인트 초기화
+            this.accountBalance = accountBalance; // 잔액 초기화
         }
     }
 }
