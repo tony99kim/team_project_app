@@ -7,11 +7,11 @@ public class PointItem {
 
     // 고정된 제목 배열
     private static String[] fixedTitles = {
+            "대중교통 이용하기",
             "분리수거하기",
             "불 끄고다니기",
-            "텀블러 사용하기",
             "사용하지 않는 전기제품 코드 뽑기",
-            "탄소를 줄이는 활동 자유롭게 실천하기"
+            "텀블러 사용하기"
     };
 
     public PointItem(int index, String imageUrl, String status) {
