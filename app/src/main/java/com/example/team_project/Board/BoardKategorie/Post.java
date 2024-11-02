@@ -1,3 +1,4 @@
+
 package com.example.team_project.Board.BoardKategorie;
 
 import java.util.List;
@@ -6,7 +7,8 @@ public class Post {
     private String postId; // 게시물 ID (Firestore 문서 ID)
     private String title; // 게시물 제목
     private String content; // 게시물 내용
-    private String name; // 작성자 이름
+    private String authorId; // 작성자 ID
+    private String authorName; // 작성자 이름
     private List<String> imageUrls; // 이미지 URL 목록
     private long viewCount; // 조회수
 
@@ -15,11 +17,12 @@ public class Post {
     }
 
     // 매개변수를 받는 생성자
-    public Post(String postId, String title, String content, String name, List<String> imageUrls, long viewCount) {
+    public Post(String postId, String title, String content, String authorId, String authorName, List<String> imageUrls, long viewCount) {
         this.postId = postId; // Firestore 문서 ID로 설정
         this.title = title;
         this.content = content;
-        this.name = name;
+        this.authorId = authorId;
+        this.authorName = authorName; // 작성자 이름 설정
         this.imageUrls = imageUrls;
         this.viewCount = viewCount; // 조회수 초기화
     }
@@ -37,8 +40,12 @@ public class Post {
         return content; // 게시물 내용 반환
     }
 
-    public String getName() {
-        return name; // 작성자 이름 반환
+    public String getAuthorId() {
+        return authorId; // 작성자 ID 반환
+    }
+
+    public String getAuthorName() {
+        return authorName; // 작성자 이름 반환
     }
 
     public List<String> getImageUrls() {
@@ -62,8 +69,12 @@ public class Post {
         this.content = content; // 게시물 내용 설정
     }
 
-    public void setName(String name) {
-        this.name = name; // 작성자 이름 설정
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId; // 작성자 ID 설정
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName; // 작성자 이름 설정
     }
 
     public void setImageUrls(List<String> imageUrls) {

@@ -15,8 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.team_project.R;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -51,42 +49,40 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.postTitleTextView.setText(post.getTitle());
         holder.postContentTextView.setText(post.getContent());
 
-        // Firebase에서 사용자 이름 가져오기
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            String userId = user.getUid(); // 현재 로그인한 사용자의 UID를 가져옴
+        // Firestore에서 작성자 이름 가져오기
+        String authorId = post.getAuthorId();
+        if (authorId != null) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            DocumentReference docRef = db.collection("users").document(userId);
+            DocumentReference docRef = db.collection("users").document(authorId);
             docRef.get().addOnSuccessListener(documentSnapshot -> {
                 if (documentSnapshot.exists()) {
-                    String userName = documentSnapshot.getString("name");
-                    holder.nameTextView.setText(userName); // nameTextView에 사용자 이름 설정
+                    String authorName = documentSnapshot.getString("name");
+                    holder.nameTextView.setText(authorName != null ? authorName : "Unknown User");
                 } else {
-                    holder.nameTextView.setText("Unknown User"); // 이름을 찾을 수 없을 때 기본값 설정
+                    holder.nameTextView.setText("Unknown User");
                 }
             }).addOnFailureListener(e -> {
-                Log.e("PostAdapter", "Failed to fetch user name", e);
-                holder.nameTextView.setText("Unknown User"); // 오류 발생 시 기본값 설정
+                Log.e("PostAdapter", "Failed to fetch author name", e);
+                holder.nameTextView.setText("Unknown User");
             });
+        } else {
+            holder.nameTextView.setText("Unknown User");
         }
 
         // 게시물 이미지 경로 설정
-        List<String> imageUrls = post.getImageUrls(); // 이미지 URL 리스트 가져오기
+        List<String> imageUrls = post.getImageUrls();
         if (imageUrls != null && !imageUrls.isEmpty()) {
-            // 첫 번째 이미지 URL 사용
             String imageUrl = imageUrls.get(0);
             Glide.with(context)
-                    .load(imageUrl) // URL을 사용하여 이미지 로드
+                    .load(imageUrl)
                     .into(holder.postImageView);
         } else {
-            // 기본 이미지 또는 빈 상태 설정
-            holder.postImageView.setImageResource(R.drawable.tree_image); // 기본 이미지
+            holder.postImageView.setImageResource(R.drawable.tree_image);
         }
 
         // 게시물 클릭 이벤트 리스너 설정
         holder.itemView.setOnClickListener(v -> {
-            // 게시물 상세 페이지로 이동
-            PostDetailFragment postDetailFragment = PostDetailFragment.newInstance(post); // 게시물 객체를 전달
+            PostDetailFragment postDetailFragment = PostDetailFragment.newInstance(post);
             replaceFragment(postDetailFragment);
         });
     }

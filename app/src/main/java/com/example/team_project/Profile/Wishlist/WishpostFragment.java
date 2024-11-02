@@ -85,7 +85,8 @@ public class WishpostFragment extends Fragment {
                                             List<String> imageUrls = (List<String>) postTask.getResult().get("imageUrls");
 
                                             // Post 객체 생성
-                                            Post post = new Post(postId, title, content, document.getString("posterName"), imageUrls != null ? imageUrls : new ArrayList<>(), 0);
+                                            Post post = new Post(postId, title, content, "", document.getString("posterName"), imageUrls != null ? imageUrls : new ArrayList<>(), 0);
+
                                             addBookmarkView(post);
                                             hasBookmarks.set(true); // AtomicBoolean의 값을 true로 설정
                                         }
@@ -116,7 +117,7 @@ public class WishpostFragment extends Fragment {
 
         // 북마크 항목 클릭 시 게시물 상세 페이지로 이동
         bookmarkView.setOnClickListener(v -> {
-            PostDetailFragment postDetailFragment = PostDetailFragment.newInstance(post.getPostId(), post.getName(), post.getTitle(), post.getContent());
+            PostDetailFragment postDetailFragment = PostDetailFragment.newInstance(post);
             replaceFragment(postDetailFragment);
         });
 

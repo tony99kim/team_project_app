@@ -13,10 +13,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
-import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -42,37 +42,43 @@ import java.util.Map;
 public class PostDetailFragment extends Fragment {
 
     private String postId; // Firestore 문서 ID
-    private String postName; // 게시물 작성자 이름
+    private String postAuthorId; // 게시물 작성자 ID
     private String postTitle; // 게시물 제목
     private String postContent; // 게시물 내용
+
+    private String postName; // 게시물 작성자 이름
     private String userId; // 현재 사용자 ID
+
+
 
     private ViewPager2 viewPager2;
     private TextView titleTextView, contentTextView, posterNameTextView, viewsTextView;
     private ImageView bookmarkButton; // 북마크 버튼
     private boolean isBookmarked = false; // 북마크 상태
 
-    public static PostDetailFragment newInstance(String postId, String postName, String postTitle, String postContent) {
+    public static PostDetailFragment newInstance(String postId, String postAuthorId, String postTitle, String postContent, String postName) {
         PostDetailFragment fragment = new PostDetailFragment();
         Bundle args = new Bundle();
         args.putString("postId", postId);
-        args.putString("postName", postName);
+        args.putString("postAuthorId", postAuthorId); // postAuthorId 추가
         args.putString("postTitle", postTitle);
         args.putString("postContent", postContent);
+        args.putString("authorName", postName);
+
         fragment.setArguments(args);
         return fragment;
     }
 
     public static PostDetailFragment newInstance(Post post) {
-        return newInstance(post.getPostId(), post.getName(), post.getTitle(), post.getContent());
+        return newInstance(post.getPostId(), post.getAuthorId(), post.getTitle(), post.getContent(), post.getAuthorName());
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            postId = getArguments().getString("postId"); // Firestore 문서 ID
-            postName = getArguments().getString("postName");
+            postId = getArguments().getString("postId");
+            postAuthorId = getArguments().getString("postAuthorId"); // postAuthorId 초기화
             postTitle = getArguments().getString("postTitle");
             postContent = getArguments().getString("postContent");
         }
@@ -116,6 +122,7 @@ public class PostDetailFragment extends Fragment {
         // 북마크 버튼 클릭 리스너 추가
         bookmarkButton.setOnClickListener(v -> toggleBookmark());
 
+
         return view;
     }
 
@@ -138,13 +145,14 @@ public class PostDetailFragment extends Fragment {
         bookmarkData.put("postId", postId);
         bookmarkData.put("title", postTitle);
         bookmarkData.put("content", postContent);
-        bookmarkData.put("posterName", postName);
+        bookmarkData.put("authorName", postName);
 
         // 사용자 ID로 북마크 컬렉션에 추가
         db.collection("users").document(userId).collection("bookmarks").document(postId)
                 .set(bookmarkData)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("PostDetailFragment", "북마크 추가 성공");
+                    // 북마크 추가 성공 시 Toast 메시지 표시
                     Toast.makeText(getContext(), "관심 게시물에 추가되었습니다.", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> Log.e("PostDetailFragment", "북마크 추가 실패", e));
@@ -161,16 +169,17 @@ public class PostDetailFragment extends Fragment {
                 .addOnFailureListener(e -> Log.e("PostDetailFragment", "북마크 해제 실패", e));
     }
 
+
     private void loadPosterName() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference userRef = db.collection("users").document(userId);
+        DocumentReference userRef = db.collection("users").document(postAuthorId); // postAuthorId로 사용자 정보 조회
 
         userRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     String posterName = document.getString("name");
-                    posterNameTextView.setText(posterName);
+                    posterNameTextView.setText(posterName != null ? posterName : "Unknown User");
                 } else {
                     Log.d("PostDetailFragment", "문서가 존재하지 않습니다");
                 }
@@ -209,7 +218,7 @@ public class PostDetailFragment extends Fragment {
     // 조회수 증가 메서드
     private void incrementViewCount() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference postRef = db.collection("posts").document(postId); // Firestore 문서 ID 사용
+        DocumentReference postRef = db.collection("posts").document(postId);
 
         db.runTransaction((Transaction.Function<Void>) transaction -> {
                     DocumentSnapshot snapshot = transaction.get(postRef);
@@ -218,7 +227,6 @@ public class PostDetailFragment extends Fragment {
                     return null;
                 }).addOnSuccessListener(aVoid -> {
                     Log.d("PostDetailFragment", "조회수 증가 성공");
-                    // 조회수 업데이트
                     updateViewCount();
                 })
                 .addOnFailureListener(e -> Log.e("PostDetailFragment", "조회수 증가 실패", e));
@@ -264,12 +272,12 @@ public class PostDetailFragment extends Fragment {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             Log.e("ViewPagerAdapter", "이미지 로드 실패: " + e);
-                            return false; // 오류를 허용
+                            return false;
                         }
 
                         @Override
                         public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            return false; // 리소스를 Glide가 처리하도록 허용
+                            return false;
                         }
                     })
                     .into(holder.imageView);
