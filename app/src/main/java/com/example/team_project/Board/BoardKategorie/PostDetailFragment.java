@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +19,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -24,7 +28,11 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.team_project.Board.BoardKategorie.ViewPagerAdapter;
+import com.example.team_project.Board.PostCommnet.Comment;
+import com.example.team_project.Board.PostCommnet.CommentAdapter;
+import com.example.team_project.Board.PostCommnet.CommentListFragment;
 import com.example.team_project.R;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -46,25 +54,29 @@ public class PostDetailFragment extends Fragment {
     private String postTitle; // 게시물 제목
     private String postContent; // 게시물 내용
 
+
     private String postName; // 게시물 작성자 이름
     private String userId; // 현재 사용자 ID
-
-
 
     private ViewPager2 viewPager2;
     private TextView titleTextView, contentTextView, posterNameTextView, viewsTextView;
     private ImageView bookmarkButton; // 북마크 버튼
     private boolean isBookmarked = false; // 북마크 상태
 
+    private EditText commentEditText; // 댓글 입력 EditText
+    private Button commentButton; // 댓글 작성 버튼
+    private RecyclerView commentRecyclerView; // 댓글 목록 RecyclerView
+    private CommentAdapter commentAdapter; // 댓글 Adapter
+    private List<Comment> commentList; // 댓글 목록
+
     public static PostDetailFragment newInstance(String postId, String postAuthorId, String postTitle, String postContent, String postName) {
         PostDetailFragment fragment = new PostDetailFragment();
         Bundle args = new Bundle();
         args.putString("postId", postId);
-        args.putString("postAuthorId", postAuthorId); // postAuthorId 추가
+        args.putString("postAuthorId", postAuthorId);
         args.putString("postTitle", postTitle);
         args.putString("postContent", postContent);
         args.putString("authorName", postName);
-
         fragment.setArguments(args);
         return fragment;
     }
@@ -78,18 +90,20 @@ public class PostDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             postId = getArguments().getString("postId");
-            postAuthorId = getArguments().getString("postAuthorId"); // postAuthorId 초기화
+            postAuthorId = getArguments().getString("postAuthorId");
             postTitle = getArguments().getString("postTitle");
             postContent = getArguments().getString("postContent");
+            postName = getArguments().getString("authorName");
+
+            commentList = new ArrayList<>();
+            commentAdapter = new CommentAdapter(commentList);
         }
 
-        // userId 초기화
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             userId = currentUser.getUid();
         }
 
-        // 조회수 증가
         incrementViewCount();
     }
 
@@ -98,33 +112,97 @@ public class PostDetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_board_postdetail, container, false);
 
-        // 툴바 설정
         Toolbar toolbar = view.findViewById(R.id.toolbar_post_detail);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
 
-        // 뷰 초기화
         viewPager2 = view.findViewById(R.id.viewPager_images);
         titleTextView = view.findViewById(R.id.textView_post_title);
         contentTextView = view.findViewById(R.id.textView_post_content);
         posterNameTextView = view.findViewById(R.id.textView_poster_name);
         viewsTextView = view.findViewById(R.id.textView_post_views);
-        bookmarkButton = view.findViewById(R.id.button_bookmark); // 북마크 버튼 초기화
+        bookmarkButton = view.findViewById(R.id.button_bookmark);
 
-        // 데이터 설정
+        commentEditText = view.findViewById(R.id.commentEditText);
+        commentButton = view.findViewById(R.id.commentButton);
+        commentRecyclerView = view.findViewById(R.id.commentListRecyclerView);
+        commentRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        commentRecyclerView.setAdapter(commentAdapter);
+
+        commentButton.setOnClickListener(v -> addComment());
+
         titleTextView.setText(postTitle);
         contentTextView.setText(postContent);
 
         loadPostImages();
         loadPosterName();
+        loadComments();
 
-        // 북마크 버튼 클릭 리스너 추가
         bookmarkButton.setOnClickListener(v -> toggleBookmark());
-
 
         return view;
     }
+
+    private void addComment() {
+        String commentContent = commentEditText.getText().toString().trim();
+        if (!commentContent.isEmpty()) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            // 현재 사용자의 이름을 Firestore에서 조회
+            db.collection("users").document(userId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String userName = documentSnapshot.getString("name"); // 사용자 이름 가져오기
+                            Timestamp timestamp = Timestamp.now();
+                            Map<String, Object> commentData = new HashMap<>();
+                            commentData.put("commentContent", commentContent);
+                            commentData.put("name", userName); // 댓글 작성자 이름을 사용자 이름으로 설정
+                            commentData.put("timestamp", timestamp); // 타임스탬프 추가
+                            commentData.put("postId", postId); // 게시물 ID
+
+                            db.collection("comment")
+                                    .add(commentData)
+                                    .addOnSuccessListener(documentReference -> {
+                                        commentEditText.setText(""); // 입력란 초기화
+                                        loadComments(); // 댓글 로드
+                                        Toast.makeText(getContext(), "댓글이 등록되었습니다.", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .addOnFailureListener(e -> Log.e("PostDetailFragment", "댓글 추가 실패", e));
+                        } else {
+                            Toast.makeText(getContext(), "사용자 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(e -> Log.e("PostDetailFragment", "사용자 이름 가져오기 실패", e));
+        } else {
+            Toast.makeText(getContext(), "댓글을 입력하세요.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
+    private void loadComments() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("comment")
+                .whereEqualTo("postId", postId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    commentList.clear(); // 기존 댓글 목록 초기화
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        // 각 댓글 데이터를 가져와서 추가
+                        String commentContent = document.getString("commentContent");
+                        String name = document.getString("name");
+                        Timestamp timestamp = document.getTimestamp("timestamp");
+                        String postId = document.getString("postId");
+
+                        commentList.add(new Comment(name, commentContent, timestamp, postId));
+                    }
+                    commentAdapter.notifyDataSetChanged(); // RecyclerView 업데이트
+                })
+                .addOnFailureListener(e -> Log.e("PostDetailFragment", "댓글 로드 실패", e));
+    }
+
+
+
 
     private void toggleBookmark() {
         if (isBookmarked) {

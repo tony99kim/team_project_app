@@ -21,7 +21,7 @@
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager_images"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="130dp"
             android:layout_weight="4"
             android:layout_marginTop="8dp" />
 
@@ -37,8 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Poster Name"
-                android:textSize="16sp" />
-
+                android:textSize="13sp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -78,7 +77,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginStart="16dp"
             android:text="Post Title"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <TextView
@@ -88,8 +87,16 @@
             android:layout_marginTop="8dp"
             android:layout_marginStart="16dp"
             android:text="Post Content"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textSize="13sp"
+            android:textStyle=""/>
+
+        <!-- 댓글 목록 RecyclerView 추가 -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/commentListRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -115,14 +122,14 @@
             android:padding="16dp">
 
             <EditText
-                android:id="@+id/board_post_comment_edit_text"
+                android:id="@+id/commentEditText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="댓글을 입력하세요." />
 
             <Button
-                android:id="@+id/board_post_comment_button"
+                android:id="@+id/commentButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="댓글 작성" />
