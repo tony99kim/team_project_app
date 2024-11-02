@@ -63,7 +63,7 @@
                     android:contentDescription="좋아요" />
 
                 <ImageView
-                    android:id="@+id/imageView_bookmark"
+                    android:id="@+id/button_bookmark"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/post_bookmark_border"

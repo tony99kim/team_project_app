@@ -1,25 +1,44 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <!-- 툴바 -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+        android:elevation="4dp" />
 
-
-    <!-- 내용 -->
-    <TextView
-        android:layout_width="wrap_content"
+    <!-- 전체 레이아웃을 감싸는 ScrollView 추가 -->
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="관심 표시한 게시물이 없습니다."
-        android:layout_below="@id/toolbar"
-        android:layout_centerHorizontal="true" />
+        android:fillViewport="true">
 
-</RelativeLayout>
+        <LinearLayout
+            android:id="@+id/bookmarks_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/no_bookmarks_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="관심 표시한 게시물이 없습니다."
+                android:layout_gravity="center"
+                android:visibility="gone" />
+
+            <!-- RecyclerView 추가 -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_images"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:nestedScrollingEnabled="false" /> <!-- RecyclerView의 nestedScrollingEnabled를 false로 설정 -->
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

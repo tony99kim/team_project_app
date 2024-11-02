@@ -23,8 +23,7 @@ public class PostImagesAdapter extends RecyclerView.Adapter<PostImagesAdapter.Vi
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // 이미지 전용 레이아웃으로 변경
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_board_postdetail, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_bord_image, parent, false);
         return new ViewHolder(view);
     }
 
@@ -32,14 +31,12 @@ public class PostImagesAdapter extends RecyclerView.Adapter<PostImagesAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String imageUrl = imageUrls.get(position);
 
-        // URL이 null인지 확인
         if (imageUrl != null && !imageUrl.isEmpty()) {
             Glide.with(holder.itemView.getContext())
                     .load(imageUrl)
-                    .into(holder.imageView);
+                    .into(holder.imageView); // placeholder와 error 없이 단순히 이미지를 로드합니다.
         } else {
-            // URL이 null이거나 비어있을 경우 기본 이미지 설정
-            holder.imageView.setImageResource(R.drawable.base); // 기본 이미지 리소스
+            holder.imageView.setImageResource(R.drawable.base); // 기본 이미지가 필요하다면 설정
         }
     }
 
@@ -53,15 +50,15 @@ public class PostImagesAdapter extends RecyclerView.Adapter<PostImagesAdapter.Vi
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.postImageView); // 게시물 이미지 뷰로 변경
+            imageView = itemView.findViewById(R.id.postImageView);
         }
     }
 
     public void setImageUrls(List<String> newImageUrls) {
-        imageUrls.clear(); // 기존의 이미지 URL 리스트를 지웁니다.
-        if (newImageUrls != null) { // null 체크를 추가합니다.
-            imageUrls.addAll(newImageUrls); // 새로운 이미지 URL 리스트를 추가합니다.
+        imageUrls.clear();
+        if (newImageUrls != null) {
+            imageUrls.addAll(newImageUrls);
         }
-        notifyDataSetChanged(); // 데이터가 변경되었음을 알려 UI를 갱신합니다.
+        notifyDataSetChanged();
     }
 }

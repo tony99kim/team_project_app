@@ -8,20 +8,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
+import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.example.team_project.Board.BoardKategorie.ViewPagerAdapter;
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,7 +35,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PostDetailFragment extends Fragment {
 
@@ -45,7 +49,8 @@ public class PostDetailFragment extends Fragment {
 
     private ViewPager2 viewPager2;
     private TextView titleTextView, contentTextView, posterNameTextView, viewsTextView;
-    private Toolbar toolbar;
+    private ImageView bookmarkButton; // 북마크 버튼
+    private boolean isBookmarked = false; // 북마크 상태
 
     public static PostDetailFragment newInstance(String postId, String postName, String postTitle, String postContent) {
         PostDetailFragment fragment = new PostDetailFragment();
@@ -98,7 +103,8 @@ public class PostDetailFragment extends Fragment {
         titleTextView = view.findViewById(R.id.textView_post_title);
         contentTextView = view.findViewById(R.id.textView_post_content);
         posterNameTextView = view.findViewById(R.id.textView_poster_name);
-        viewsTextView = view.findViewById(R.id.textView_post_views); // 조회수 TextView 초기화
+        viewsTextView = view.findViewById(R.id.textView_post_views);
+        bookmarkButton = view.findViewById(R.id.button_bookmark); // 북마크 버튼 초기화
 
         // 데이터 설정
         titleTextView.setText(postTitle);
@@ -107,7 +113,52 @@ public class PostDetailFragment extends Fragment {
         loadPostImages();
         loadPosterName();
 
+        // 북마크 버튼 클릭 리스너 추가
+        bookmarkButton.setOnClickListener(v -> toggleBookmark());
+
         return view;
+    }
+
+    private void toggleBookmark() {
+        if (isBookmarked) {
+            bookmarkButton.setImageResource(R.drawable.post_bookmark_border); // 원래 이미지
+            removeBookmark();
+            Toast.makeText(getContext(), "북마크가 취소되었습니다.", Toast.LENGTH_SHORT).show(); // 토스트 메시지 추가
+        } else {
+            bookmarkButton.setImageResource(R.drawable.post_bookmark); // 북마크 이미지
+            bookmarkPost();
+            Toast.makeText(getContext(), "관심 게시물에 추가되었습니다.", Toast.LENGTH_SHORT).show(); // 토스트 메시지 추가
+        }
+        isBookmarked = !isBookmarked; // 상태 토글
+    }
+
+    private void bookmarkPost() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> bookmarkData = new HashMap<>();
+        bookmarkData.put("postId", postId);
+        bookmarkData.put("title", postTitle);
+        bookmarkData.put("content", postContent);
+        bookmarkData.put("posterName", postName);
+
+        // 사용자 ID로 북마크 컬렉션에 추가
+        db.collection("users").document(userId).collection("bookmarks").document(postId)
+                .set(bookmarkData)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("PostDetailFragment", "북마크 추가 성공");
+                    Toast.makeText(getContext(), "관심 게시물에 추가되었습니다.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> Log.e("PostDetailFragment", "북마크 추가 실패", e));
+    }
+
+    private void removeBookmark() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(userId).collection("bookmarks").document(postId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("PostDetailFragment", "북마크 해제 성공");
+                    Toast.makeText(getContext(), "관심 게시물에서 제거되었습니다.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> Log.e("PostDetailFragment", "북마크 해제 실패", e));
     }
 
     private void loadPosterName() {
@@ -138,7 +189,7 @@ public class PostDetailFragment extends Fragment {
             for (StorageReference item : listResult.getItems()) {
                 item.getDownloadUrl().addOnSuccessListener(uri -> {
                     imageUrls.add(uri.toString());
-                    Log.d("PostDetailFragment", "가져온 이미지 URL: " + uri.toString()); // URL 로그 추가
+                    Log.d("PostDetailFragment", "가져온 이미지 URL: " + uri.toString());
                     if (imageUrls.size() == listResult.getItems().size()) {
                         setupViewPager(imageUrls);
                     }
@@ -148,7 +199,7 @@ public class PostDetailFragment extends Fragment {
     }
 
     private void setupViewPager(List<String> imageUrls) {
-        if (!imageUrls.isEmpty()) { // 이미지 URL 목록이 비어있지 않은지 확인
+        if (!imageUrls.isEmpty()) {
             viewPager2.setAdapter(new ViewPagerAdapter(imageUrls));
         } else {
             Log.d("PostDetailFragment", "이미지 URL 목록이 비어 있습니다");

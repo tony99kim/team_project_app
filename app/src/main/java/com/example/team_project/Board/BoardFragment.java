@@ -1,51 +1,51 @@
 package com.example.team_project.Board;
 
-import android.graphics.Typeface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.team_project.R;
 import com.example.team_project.Board.BoardKategorie.Post;
 import com.example.team_project.Board.BoardKategorie.PostAdapter;
 import com.example.team_project.Board.BoardKategorie.PostRegistrationFragment;
 import com.example.team_project.Toolbar.NotificationsFragment;
-import com.example.team_project.Toolbar.SearchFragment;
+import com.example.team_project.Toolbar.BordSearchFragment;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
 public class BoardFragment extends Fragment {
-    private ViewPager2 viewPager;
     private Button boardWriteButton;
-    private androidx.appcompat.widget.Toolbar boardToolbar;
     private RecyclerView postsRecyclerView;
     private PostAdapter postAdapter;
     private ArrayList<Post> postList;
     private FirebaseFirestore firestore;
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true); // 메뉴 활성화
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_board, container, false);
 
-        // ViewPager 설정
-        //viewPager = view.findViewById(R.id.board_view_pager);
-        //BoardFragmentPagerAdapter adapter = new BoardFragmentPagerAdapter(getActivity());
-        // viewPager.setAdapter(adapter);
-
         // RecyclerView 설정
-        postsRecyclerView = view.findViewById(R.id.postListRecyclerView); // RecyclerView ID 확인 필요
+        postsRecyclerView = view.findViewById(R.id.postListRecyclerView);
         postList = new ArrayList<>();
         postAdapter = new PostAdapter(getContext(), postList);
         postsRecyclerView.setAdapter(postAdapter);
@@ -65,27 +65,39 @@ public class BoardFragment extends Fragment {
             replaceFragment(new PostRegistrationFragment());
         });
 
-
-
-        boardToolbar = view.findViewById(R.id.board_toolbar);
-        // 툴바 타이틀 설정
-        boardToolbar.setTitle("게시판");
-        boardToolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
-        // 툴바 메뉴 설정
-        boardToolbar.setOnMenuItemClickListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.action_search) {
-                replaceFragment(new SearchFragment());
-                return true;
-            } else if (id == R.id.action_notifications) {
-                replaceFragment(new NotificationsFragment());
-                return true;
-            }
-            return false;
-        });
+        // 툴바 설정
+        androidx.appcompat.widget.Toolbar boardToolbar = view.findViewById(R.id.board_toolbar);
+        if (getActivity() instanceof AppCompatActivity) {
+            ((AppCompatActivity) getActivity()).setSupportActionBar(boardToolbar);
+            boardToolbar.setTitle("게시판");
+            boardToolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        }
 
         return view;
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_home_toolbar, menu); // 메뉴 인플레이트
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_search) {
+            // 검색 아이콘 클릭 시 SearchActivity로 이동
+            Intent intent = new Intent(getActivity(), BordSearchFragment.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_notifications) {
+            replaceFragment(new NotificationsFragment());
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
 
     private void loadPostsFromFirestore() {
         firestore.collection("posts") // Firestore에서 "posts" 컬렉션 참조

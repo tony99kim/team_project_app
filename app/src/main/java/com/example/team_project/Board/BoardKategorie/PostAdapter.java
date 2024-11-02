@@ -113,15 +113,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     // Fragment 교체를 위한 메서드
     private void replaceFragment(Fragment fragment) {
-        ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
-                .setCustomAnimations(
-                        R.anim.slide_in_right,
-                        R.anim.fade_out,
-                        R.anim.fade_in,
-                        R.anim.slide_out_right
-                )
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null)
-                .commit();
+        if (context instanceof FragmentActivity) {
+            ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(
+                            R.anim.slide_in_right,
+                            R.anim.fade_out,
+                            R.anim.fade_in,
+                            R.anim.slide_out_right
+                    )
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 }
