@@ -120,7 +120,6 @@
                     android:text="0"
                     android:textSize="16sp"
                     android:textColor="@color/black"
-                    android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:layout_weight="1"
                     android:gravity="start" />
