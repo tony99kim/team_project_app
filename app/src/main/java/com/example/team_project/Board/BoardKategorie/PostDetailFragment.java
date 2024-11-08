@@ -63,11 +63,17 @@ public class PostDetailFragment extends Fragment {
     private ImageView bookmarkButton; // 북마크 버튼
     private boolean isBookmarked = false; // 북마크 상태
 
+    private ImageView favoriteButton; // 좋아요 버튼
+    private boolean isFavorite = false; // 좋아요 상태
+
+
     private EditText commentEditText; // 댓글 입력 EditText
     private Button commentButton; // 댓글 작성 버튼
     private RecyclerView commentRecyclerView; // 댓글 목록 RecyclerView
     private CommentAdapter commentAdapter; // 댓글 Adapter
     private List<Comment> commentList; // 댓글 목록
+
+
 
     public static PostDetailFragment newInstance(String postId, String postAuthorId, String postTitle, String postContent, String postName) {
         PostDetailFragment fragment = new PostDetailFragment();
@@ -123,6 +129,9 @@ public class PostDetailFragment extends Fragment {
         posterNameTextView = view.findViewById(R.id.textView_poster_name);
         viewsTextView = view.findViewById(R.id.textView_post_views);
         bookmarkButton = view.findViewById(R.id.button_bookmark);
+        favoriteButton = view.findViewById(R.id.button_favorite);
+
+
 
         commentEditText = view.findViewById(R.id.commentEditText);
         commentButton = view.findViewById(R.id.commentButton);
@@ -138,11 +147,96 @@ public class PostDetailFragment extends Fragment {
         loadPostImages();
         loadPosterName();
         loadComments();
+        loadFavoriteStatus(); // 초기 좋아요 상태 로드
 
         bookmarkButton.setOnClickListener(v -> toggleBookmark());
+        favoriteButton.setOnClickListener(v -> toggleFavorite());
 
         return view;
     }
+
+    private void loadFavoriteStatus() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference favoriteRef = db.collection("users").document(userId)
+                .collection("likes").document(postId);
+
+        favoriteRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                isFavorite = true;
+                favoriteButton.setImageResource(R.drawable.post_favorite); // 좋아요 상태 이미지
+            } else {
+                isFavorite = false;
+                favoriteButton.setImageResource(R.drawable.post_favorite_border); // 기본 상태 이미지
+            }
+        });
+    }
+
+    private void toggleFavorite() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference postRef = db.collection("posts").document(postId);
+        DocumentReference favoriteRef = db.collection("users").document(userId)
+                .collection("likes").document(postId);
+
+        db.runTransaction(transaction -> {
+            DocumentSnapshot postSnapshot = transaction.get(postRef);
+            long favoriteCount = postSnapshot.getLong("likes") != null ? postSnapshot.getLong("likes") : 0;
+
+            if (isFavorite) {
+                // 좋아요 취소
+                transaction.update(postRef, "likes", favoriteCount - 1);
+                transaction.delete(favoriteRef);
+            } else {
+                // 좋아요 추가
+                transaction.update(postRef, "likes", favoriteCount + 1);
+                Map<String, Object> favoriteData = new HashMap<>();
+                favoriteData.put("timestamp", Timestamp.now());
+                transaction.set(favoriteRef, favoriteData);
+            }
+            return null;
+        }).addOnSuccessListener(aVoid -> {
+            // 좋아요 상태 토글
+            isFavorite = !isFavorite;
+            favoriteButton.setImageResource(isFavorite ? R.drawable.post_favorite : R.drawable.post_favorite_border);
+
+            // 좋아요 수 업데이트
+            updateLikeCount();
+
+            // 사용자에게 결과 알림
+            Toast.makeText(getContext(), isFavorite ? "좋아요를 눌렀습니다." : "좋아요를 취소했습니다.", Toast.LENGTH_SHORT).show();
+        }).addOnFailureListener(e -> {
+            Log.e("PostDetailFragment", "좋아요 업데이트 실패", e);
+            Toast.makeText(getContext(), "좋아요 상태 업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateLikeCount();  // 화면을 재개할 때마다 좋아요 수 갱신
+    }
+
+    private void updateLikeCount() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference postRef = db.collection("posts").document(postId);
+
+        postRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Long likeCount = documentSnapshot.getLong("likes");
+                likeCount = (likeCount != null) ? likeCount : 0;
+
+                // 안전한 방식으로 UI를 갱신
+                TextView likeCountTextView = getView() != null ? getView().findViewById(R.id.textView_like_count) : null;
+                if (likeCountTextView != null) {
+                    likeCountTextView.setText("" + likeCount);
+                }
+            }
+        }).addOnFailureListener(e -> {
+            Log.e("PostDetailFragment", "좋아요 수 로드 실패", e);
+        });
+    }
+
+
+
 
     private void addComment() {
         String commentContent = commentEditText.getText().toString().trim();

@@ -124,7 +124,7 @@ public class PostRegistrationFragment extends Fragment {
             String postId = db.collection("posts").document().getId();
 
             // Post 객체 생성 시 authorName 추가
-            Post post = new Post(postId, title, description, userId, userName, new ArrayList<>(), 0); // 초기 조회수 0
+            Post post = new Post(postId, title, description, userId, userName, new ArrayList<>(), 0, 0); // 초기 조회수 0
             db.collection("posts").document(postId).set(post)
                     .addOnSuccessListener(aVoid -> uploadImages(postId))
                     .addOnFailureListener(e -> Toast.makeText(getActivity(), "게시물 등록 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show());

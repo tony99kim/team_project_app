@@ -50,23 +50,31 @@
                     android:id="@+id/textView_post_views"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="조회수: 0 "
-                    android:textSize="16sp" />
+                    android:text="조회수: 0"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="8dp" />
 
                 <ImageView
-                    android:id="@+id/imageView_like"
+                    android:id="@+id/button_favorite"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/post_favorite_border"
-                    android:layout_marginEnd="16dp"
-                    android:contentDescription="좋아요" />
+                    android:contentDescription="좋아요 버튼" />
+
+                <TextView
+                    android:id="@+id/textView_like_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="16sp"
+                    android:layout_marginStart="8dp" />
 
                 <ImageView
                     android:id="@+id/button_bookmark"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/post_bookmark_border"
-                    android:contentDescription="북마크" />
+                    android:contentDescription="북마크 버튼" />
             </LinearLayout>
         </RelativeLayout>
 

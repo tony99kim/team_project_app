@@ -1,4 +1,3 @@
-
 package com.example.team_project.Board.BoardKategorie;
 
 import java.util.List;
@@ -11,13 +10,14 @@ public class Post {
     private String authorName; // 작성자 이름
     private List<String> imageUrls; // 이미지 URL 목록
     private long viewCount; // 조회수
+    private long likes; // 좋아요 수
 
     // 기본 생성자
     public Post() {
     }
 
     // 매개변수를 받는 생성자
-    public Post(String postId, String title, String content, String authorId, String authorName, List<String> imageUrls, long viewCount) {
+    public Post(String postId, String title, String content, String authorId, String authorName, List<String> imageUrls, long viewCount, long likes) {
         this.postId = postId; // Firestore 문서 ID로 설정
         this.title = title;
         this.content = content;
@@ -25,6 +25,7 @@ public class Post {
         this.authorName = authorName; // 작성자 이름 설정
         this.imageUrls = imageUrls;
         this.viewCount = viewCount; // 조회수 초기화
+        this.likes = likes; // 좋아요 수 초기화
     }
 
     // Getter 메서드
@@ -56,6 +57,10 @@ public class Post {
         return viewCount; // 조회수 반환
     }
 
+    public long getLikes() {
+        return likes; // 좋아요 수 반환
+    }
+
     // Setter 메서드
     public void setPostId(String postId) {
         this.postId = postId; // Firestore 문서 ID 설정
@@ -83,5 +88,9 @@ public class Post {
 
     public void setViewCount(long viewCount) {
         this.viewCount = viewCount; // 조회수 설정
+    }
+
+    public void setLikes(long likes) {
+        this.likes = likes; // 좋아요 수 설정
     }
 }
