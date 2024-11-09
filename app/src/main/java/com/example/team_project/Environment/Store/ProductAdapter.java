@@ -6,8 +6,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -15,27 +17,31 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.team_project.Profile.ProfileFragment;
 import com.example.team_project.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
     private Context context;
     private List<Product> productList;
-
+    private FirebaseFirestore firestore;
+    private String currentUserId;
 
     // 생성자
     public ProductAdapter(Context context, ArrayList<Product> productList) {
         this.context = context;
         this.productList = productList;
+        this.firestore = FirebaseFirestore.getInstance();
+        this.currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // 현재 로그인한 사용자 UID 가져오기
     }
 
     @NonNull
@@ -51,9 +57,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         holder.productTitleTextView.setText(product.getTitle());
         holder.productPriceTextView.setText(product.getPrice());
 
+        // Firebase Storage에서 이미지 로드
         String directoryPath = "ProductImages/" + product.getProductId();
         StorageReference directoryReference = FirebaseStorage.getInstance().getReference().child(directoryPath);
-
         directoryReference.listAll().addOnSuccessListener(listResult -> {
             if (!listResult.getItems().isEmpty()) {
                 StorageReference firstFileRef = listResult.getItems().get(0);
@@ -65,27 +71,24 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                     }
                 }).addOnFailureListener(e -> Log.e("ProductAdapter", "첫 번째 이미지 로드 실패", e));
             }
-        }).addOnFailureListener(e -> Log.e("ProductAdapter", "파일 목록 가져오기 실패", e)
-        );
-
-
-        // 상품 클릭 이벤트 리스너 설정
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 상품 상세 페이지로 이동
-                ProductDetailFragment productDetailFragment = ProductDetailFragment.newInstance(product);
-                replaceFragment(productDetailFragment);
-
-                // 최근 방문 목록에 추가
-                Fragment currentFragment = ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-                if (currentFragment instanceof ProfileFragment) {
-                    ((ProfileFragment) currentFragment).addRecentVisit(product.getTitle());
-                } else {
-                    Log.d("ProductAdapter", "ProfileFragment is not found");
-                }
-            }
+        }).addOnFailureListener(e -> Log.e("ProductAdapter", "파일 목록 가져오기 실패", e));
+        // 상품 클릭 시 상세 페이지로 이동
+        holder.itemView.setOnClickListener(v -> {
+            ProductDetailFragment productDetailFragment = ProductDetailFragment.newInstance(product);
+            replaceFragment(productDetailFragment);
         });
+        // 사용자 ID 비교하여 버튼 가시성 설정
+        if (product.getUserId().equals(currentUserId)) {
+            holder.editButton.setVisibility(View.VISIBLE);
+            holder.deleteButton.setVisibility(View.VISIBLE);
+        } else {
+            holder.editButton.setVisibility(View.GONE);
+            holder.deleteButton.setVisibility(View.GONE);
+        }
+
+        // 수정 및 삭제 버튼 클릭 리스너 설정
+        holder.editButton.setOnClickListener(v -> navigateToEditProduct(product.getProductId()));
+        holder.deleteButton.setOnClickListener(v -> deleteProduct(product, position));
     }
 
     @Override
@@ -97,18 +100,39 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         ImageView productImageView;
         TextView productTitleTextView;
         TextView productPriceTextView;
+        Button editButton;
+        Button deleteButton;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
             productImageView = itemView.findViewById(R.id.productImageView);
             productTitleTextView = itemView.findViewById(R.id.productTitleTextView);
             productPriceTextView = itemView.findViewById(R.id.productPriceTextView);
+            editButton = itemView.findViewById(R.id.editButton);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }
 
-    // Fragment 교체를 위한 메서드
+    private void deleteProduct(Product product, int position) {
+        firestore.collection("products").document(product.getProductId())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    productList.remove(position);
+                    notifyItemRemoved(position);
+                    Toast.makeText(context, "상품이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("ProductAdapter", "상품 삭제 실패", e);
+                    Toast.makeText(context, "상품 삭제에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void navigateToEditProduct(String productId) {
+        Fragment editProductFragment = new ProductRegistrationFragment(productId);
+        replaceFragment(editProductFragment);
+    }
+
     private void replaceFragment(Fragment fragment) {
-        // context를 FragmentActivity로 캐스팅하여 getSupportFragmentManager()에 접근
         ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(
                         R.anim.slide_in_right,
