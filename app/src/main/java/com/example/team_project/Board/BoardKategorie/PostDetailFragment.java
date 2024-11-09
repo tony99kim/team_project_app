@@ -4,6 +4,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -11,6 +13,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Button;
 import android.widget.EditText;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import androidx.appcompat.app.AlertDialog;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,7 +25,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
+import android.widget.LinearLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.graphics.Color;
+
+
 
 
 import com.bumptech.glide.Glide;
@@ -67,12 +80,11 @@ public class PostDetailFragment extends Fragment {
     private boolean isFavorite = false; // 좋아요 상태
 
 
-    private EditText commentEditText; // 댓글 입력 EditText
+    private EditText commentEditText ; // 댓글 입력 EditText
     private Button commentButton; // 댓글 작성 버튼
     private RecyclerView commentRecyclerView; // 댓글 목록 RecyclerView
     private CommentAdapter commentAdapter; // 댓글 Adapter
     private List<Comment> commentList; // 댓글 목록
-
 
 
     public static PostDetailFragment newInstance(String postId, String postAuthorId, String postTitle, String postContent, String postName) {
@@ -94,6 +106,7 @@ public class PostDetailFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true); // 메뉴 사용을 활성화
         if (getArguments() != null) {
             postId = getArguments().getString("postId");
             postAuthorId = getArguments().getString("postAuthorId");
@@ -118,6 +131,8 @@ public class PostDetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_board_postdetail, container, false);
 
+        setHasOptionsMenu(true);
+
         Toolbar toolbar = view.findViewById(R.id.toolbar_post_detail);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -130,7 +145,6 @@ public class PostDetailFragment extends Fragment {
         viewsTextView = view.findViewById(R.id.textView_post_views);
         bookmarkButton = view.findViewById(R.id.button_bookmark);
         favoriteButton = view.findViewById(R.id.button_favorite);
-
 
 
         commentEditText = view.findViewById(R.id.commentEditText);
@@ -154,6 +168,114 @@ public class PostDetailFragment extends Fragment {
 
         return view;
     }
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_post_detail, menu); // 메뉴 인플레이트
+
+        // 메뉴 아이템을 수정/삭제 버튼을 보이도록 설정
+        MenuItem editItem = menu.findItem(R.id.menu_edit); // 수정 버튼
+        MenuItem deleteItem = menu.findItem(R.id.menu_delete); // 삭제 버튼
+
+        // 작성자 ID와 현재 사용자 ID를 비교하여 수정/삭제 버튼 표시 여부 결정
+        if (userId != null && postAuthorId != null && userId.equals(postAuthorId)) {
+            // 작성자만 수정 및 삭제 가능
+            editItem.setVisible(true);
+            deleteItem.setVisible(true);
+
+            // 글자 색을 변경하기 위해 SpannableString 사용
+            SpannableString editTitle = new SpannableString("수정");
+            editTitle.setSpan(new ForegroundColorSpan(Color.BLACK), 0, editTitle.length(), 0); // 검정색
+
+            SpannableString deleteTitle = new SpannableString("삭제");
+            deleteTitle.setSpan(new ForegroundColorSpan(Color.RED), 0, deleteTitle.length(), 0); // 빨간색
+
+            // 제목을 설정
+            editItem.setTitle(editTitle);
+            deleteItem.setTitle(deleteTitle);
+        } else {
+            editItem.setVisible(false);
+            deleteItem.setVisible(false);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.menu_edit) {
+            // 수정 버튼 클릭 시 처리
+            openEditDialog();
+            return true;
+        } else if (item.getItemId() == R.id.menu_delete) {
+            // 삭제 버튼 클릭 시 처리
+            deletePost();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+    private void openEditDialog() {
+        // 수정할 내용을 입력할 수 있는 다이얼로그 표시
+        final EditText titleEditText = new EditText(getContext());
+        titleEditText.setText(postTitle);
+        final EditText contentEditText = new EditText(getContext());
+        contentEditText.setText(postContent);
+
+        LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.addView(titleEditText);
+        layout.addView(contentEditText);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("게시물 수정")
+                .setView(layout)
+                .setPositiveButton("저장", (dialog, which) -> {
+                    String newTitle = titleEditText.getText().toString();
+                    String newContent = contentEditText.getText().toString();
+                    updatePost(newTitle, newContent);
+                })
+                .setNegativeButton("취소", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    private void updatePost(String newTitle, String newContent) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("posts")
+                .document(postId)
+                .update(
+                        "title", newTitle,
+                        "content", newContent
+                )
+                .addOnSuccessListener(aVoid -> {
+                    postTitle = newTitle;
+                    postContent = newContent;
+                    titleTextView.setText(postTitle);
+                    contentTextView.setText(postContent);
+                    Toast.makeText(getContext(), "게시물이 수정되었습니다.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "게시물 수정 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void deletePost() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("posts")
+                .document(postId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(getContext(), "게시물이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                    getActivity().getSupportFragmentManager().popBackStack();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "게시물 삭제 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+
 
     private void loadFavoriteStatus() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
