@@ -50,7 +50,7 @@ public class StoreFragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String userId = user != null ? user.getUid() : null;
 
-        productAdapter = new ProductAdapter(getContext(), productList);
+        productAdapter = new ProductAdapter(getContext(), productList, false);
         productsRecyclerView.setAdapter(productAdapter);
         productsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 

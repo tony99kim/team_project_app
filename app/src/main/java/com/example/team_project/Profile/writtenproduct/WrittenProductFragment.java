@@ -1,4 +1,4 @@
-package com.example.team_project.Profile;
+package com.example.team_project.Profile.writtenproduct;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -40,7 +40,7 @@ public class WrittenProductFragment extends Fragment {
             activity.setSupportActionBar(toolbar);
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
-            activity.getSupportActionBar().setTitle(""); // 툴바 제목 설정
+            activity.getSupportActionBar().setTitle("작성한 상품"); // 툴바 제목 설정
         }
 
         // 툴바 뒤로가기 버튼 클릭 리스너 설정
@@ -51,7 +51,7 @@ public class WrittenProductFragment extends Fragment {
         writtenProductRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         writtenProductList = new ArrayList<>();
-        productAdapter = new ProductAdapter(getContext(), writtenProductList);
+        productAdapter = new ProductAdapter(getContext(), writtenProductList, true); // isInProfile을 true로 설정
         writtenProductRecyclerView.setAdapter(productAdapter);
 
         loadWrittenProducts();

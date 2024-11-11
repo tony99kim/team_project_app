@@ -57,7 +57,7 @@ public class SearchFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar);
 
         productList = new ArrayList<>();
-        productAdapter = new ProductAdapter(getContext(), productList);
+        productAdapter = new ProductAdapter(getContext(), productList, false);
         searchResultsRecyclerView.setAdapter(productAdapter);
         searchResultsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 

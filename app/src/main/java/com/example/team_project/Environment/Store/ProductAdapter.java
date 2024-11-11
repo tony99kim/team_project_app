@@ -20,6 +20,7 @@ import com.bumptech.glide.Glide;
 import com.example.team_project.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
@@ -27,7 +28,6 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.google.firebase.auth.FirebaseAuth;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
@@ -35,13 +35,15 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     private List<Product> productList;
     private FirebaseFirestore firestore;
     private String currentUserId;
+    private boolean isInProfile; // 프로필 화면 여부를 확인하는 변수
 
     // 생성자
-    public ProductAdapter(Context context, ArrayList<Product> productList) {
+    public ProductAdapter(Context context, ArrayList<Product> productList, boolean isInProfile) {
         this.context = context;
         this.productList = productList;
         this.firestore = FirebaseFirestore.getInstance();
-        this.currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // 현재 로그인한 사용자 UID 가져오기
+        this.currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        this.isInProfile = isInProfile; // 초기화
     }
 
     @NonNull
@@ -72,13 +74,15 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 }).addOnFailureListener(e -> Log.e("ProductAdapter", "첫 번째 이미지 로드 실패", e));
             }
         }).addOnFailureListener(e -> Log.e("ProductAdapter", "파일 목록 가져오기 실패", e));
+
         // 상품 클릭 시 상세 페이지로 이동
         holder.itemView.setOnClickListener(v -> {
             ProductDetailFragment productDetailFragment = ProductDetailFragment.newInstance(product);
             replaceFragment(productDetailFragment);
         });
-        // 사용자 ID 비교하여 버튼 가시성 설정
-        if (product.getUserId().equals(currentUserId)) {
+
+        // 버튼 가시성 설정
+        if (isInProfile && product.getUserId().equals(currentUserId)) {
             holder.editButton.setVisibility(View.VISIBLE);
             holder.deleteButton.setVisibility(View.VISIBLE);
         } else {
@@ -144,5 +148,4 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 .addToBackStack(null)
                 .commit();
     }
-
 }
