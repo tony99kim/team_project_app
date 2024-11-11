@@ -48,6 +48,7 @@ public class ProfileFragment extends Fragment {
     private TextView usernameTextView, environmentPointsTextView, tvEnvironmentPoints, tvAccountBalance;
     private ImageView profileImageView;
     private Button payrecharge, wishpostButton, wishlistButton, editButton, recentVisitButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
+    private Button writtenProductButton;  // 작성한 상품 버튼
     private androidx.appcompat.widget.Toolbar toolbar;
 
     private SharedPreferences sharedPreferences;
@@ -97,6 +98,7 @@ public class ProfileFragment extends Fragment {
         wishlistButton = view.findViewById(R.id.wishlistButton);
         wishpostButton = view.findViewById(R.id.wishpostButton);
         toolbar = view.findViewById(R.id.toolbar);
+        writtenProductButton = view.findViewById(R.id.writtenProductButton);  // 작성한 상품 버튼 초기화
 
         setUsername();
         setProfileImageFromFirebase();
@@ -119,10 +121,14 @@ public class ProfileFragment extends Fragment {
         wishlistButton.setOnClickListener(v -> openFragment(new WishlistFragment()));
         wishpostButton.setOnClickListener(v -> openFragment(new WishpostFragment()));
 
+        // 작성한 상품 버튼 클릭 시 이동
+        writtenProductButton.setOnClickListener(v -> openWrittenProductFragment());
+
         return view;
     }
 
     private void setUsername() {
+        // 사용자 이름을 설정하는 메서드
     }
 
     private void openProductDetailFragment(String productName) {
@@ -176,6 +182,12 @@ public class ProfileFragment extends Fragment {
         transaction.commit();
     }
 
+    private void openWrittenProductFragment() {
+        // 작성한 상품 프래그먼트로 이동
+        WrittenProductFragment writtenProductFragment = new WrittenProductFragment();
+        openFragment(writtenProductFragment);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -191,12 +203,9 @@ public class ProfileFragment extends Fragment {
                     if (documentSnapshot.exists()) {
                         String username = documentSnapshot.getString("username");
                         if (username != null && !username.isEmpty()) {
-                            // 가져온 닉네임을 SharedPreferences에 저장
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString("username", username);
                             editor.apply();
-
-                            // 화면에 표시
                             usernameTextView.setText(username);
                         }
                     }
@@ -206,11 +215,10 @@ public class ProfileFragment extends Fragment {
 
     private void setProfileImageFromFirebase() {
         String userId = mAuth.getCurrentUser().getUid();
-        StorageReference profileImageRef = storageRef.child("profileImage/" + userId + "/"); // 폴더 경로만 설정
+        StorageReference profileImageRef = storageRef.child("profileImage/" + userId + "/");
 
         profileImageRef.listAll().addOnSuccessListener(listResult -> {
             if (listResult.getItems().size() > 0) {
-                // 첫 번째 이미지 가져오기
                 StorageReference firstImageRef = listResult.getItems().get(0);
                 firstImageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     String profileImageUrl = uri.toString();
@@ -220,18 +228,15 @@ public class ProfileFragment extends Fragment {
                             .error(R.drawable.ic_profile)
                             .into(profileImageView);
                 }).addOnFailureListener(e -> {
-                    // 이미지 URL 가져오기 실패 시
-                    profileImageView.setImageDrawable(null); // 이미지 제거
+                    profileImageView.setImageDrawable(null);
                     Toast.makeText(getActivity(), "프로필 사진을 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
                 });
             } else {
-                // 이미지가 없는 경우 처리
-                profileImageView.setImageDrawable(null); // 이미지 제거
+                profileImageView.setImageDrawable(null);
                 Toast.makeText(getActivity(), "프로필 사진이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(e -> {
-            // 폴더 목록 가져오기 실패 시
-            profileImageView.setImageDrawable(null); // 이미지 제거
+            profileImageView.setImageDrawable(null);
             Toast.makeText(getActivity(), "프로필 사진 폴더를 가져오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
         });
     }
@@ -244,13 +249,12 @@ public class ProfileFragment extends Fragment {
                 Long environmentPoint = documentSnapshot.getLong("environmentPoint");
 
                 if (environmentPoint != null) {
-                    // "환경 포인트"라는 레이블 아래에 실제 포인트 값을 표시
                     tvEnvironmentPoints.setText(String.valueOf(environmentPoint));
                 } else {
-                    tvEnvironmentPoints.setText("0"); // 기본값
+                    tvEnvironmentPoints.setText("0");
                 }
             } else {
-                tvEnvironmentPoints.setText("0"); // 기본값
+                tvEnvironmentPoints.setText("0");
             }
         }).addOnFailureListener(e -> {
             Toast.makeText(getContext(), "환경 포인트를 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
@@ -265,13 +269,12 @@ public class ProfileFragment extends Fragment {
                 Long accountBalance = documentSnapshot.getLong("accountBalance");
 
                 if (accountBalance != null) {
-                    // "계좌 잔액"이라는 레이블 아래에 실제 잔액 값을 표시
                     tvAccountBalance.setText(String.valueOf(accountBalance));
                 } else {
-                    tvAccountBalance.setText("0"); // 기본값
+                    tvAccountBalance.setText("0");
                 }
             } else {
-                tvAccountBalance.setText("0"); // 기본값
+                tvAccountBalance.setText("0");
             }
         }).addOnFailureListener(e -> {
             Toast.makeText(getContext(), "계좌 잔액을 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
