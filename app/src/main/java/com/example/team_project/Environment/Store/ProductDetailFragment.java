@@ -42,10 +42,10 @@ import java.util.concurrent.Executors;
 public class ProductDetailFragment extends Fragment {
 
     private String productId, userId, title, price, description;
+    private boolean isBusiness; // 기업 여부 추가
     private ViewPager2 viewPager2;
     private TextView titleTextView, descriptionTextView, priceTextView, sellerNameTextView;
     private Button buttonFavorite, buttonChat;
-    private Toolbar priceToolBar;
     private FirebaseFirestore db; // Firestore 인스턴스 선언
 
     public static ProductDetailFragment newInstance(Product product) {
@@ -56,6 +56,7 @@ public class ProductDetailFragment extends Fragment {
         args.putString("title", product.getTitle());
         args.putString("price", product.getPrice());
         args.putString("description", product.getDescription());
+        args.putBoolean("isBusiness", product.isBusiness()); // 기업 여부를 전달
         fragment.setArguments(args);
         return fragment;
     }
@@ -70,6 +71,7 @@ public class ProductDetailFragment extends Fragment {
             title = getArguments().getString("title");
             price = getArguments().getString("price");
             description = getArguments().getString("description");
+            isBusiness = getArguments().getBoolean("isBusiness"); // 기업 여부 받기
         }
     }
 
@@ -98,9 +100,23 @@ public class ProductDetailFragment extends Fragment {
         descriptionTextView.setText(description);
         priceTextView.setText(price);
 
+        if (isBusiness) {
+            buttonChat.setText("결제하기");
+        } else {
+            buttonChat.setText("채팅하기");
+        }
+
         // 이벤트 설정
         buttonFavorite.setOnClickListener(v -> addToWishlist());
-        buttonChat.setOnClickListener(v -> onStartChat());
+        buttonChat.setOnClickListener(v -> {
+            if (isBusiness) {
+                // "결제하기" 버튼 클릭 시 결제 화면으로 이동
+                navigateToPaymentPage();
+            } else {
+                // "채팅하기" 버튼 클릭 시 채팅방을 만든다
+                onStartChat();
+            }
+        });
 
         loadProductPrice();
         loadProductImages();
@@ -171,8 +187,8 @@ public class ProductDetailFragment extends Fragment {
         if (user != null) {
             DocumentReference wishlistRef = db.collection("wishlists").document(user.getUid());
 
-            // 상품 객체를 Firestore에 추가
-            Product product = new Product(productId, userId, title, price, description);
+            // isBusiness 필드를 추가하여 상품 객체 생성
+            Product product = new Product(productId, userId, title, price, description, isBusiness); // 기업 여부 반영
             wishlistRef.collection("products").document(productId)
                     .set(product)
                     .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "위시리스트에 추가되었습니다", Toast.LENGTH_SHORT).show())
@@ -224,8 +240,6 @@ public class ProductDetailFragment extends Fragment {
         }
     }
 
-
-
     private void addInitialMessage(String chatId, String currentUserEmail, String sellerEmail) {
         Executors.newSingleThreadExecutor().execute(() -> {
             // 현재 날짜를 "yyyy년 MM월 dd일(E)" 형식으로 포맷합니다.
@@ -247,6 +261,18 @@ public class ProductDetailFragment extends Fragment {
         });
     }
 
+    private void navigateToChat(String chatRoomId) {
+        Intent intent = new Intent(getActivity(), ChatActivity.class);
+        intent.putExtra("chatRoomId", chatRoomId);
+        startActivity(intent);
+    }
+
+    private void navigateToPaymentPage() {
+        Intent intent = new Intent(getActivity(), PaymentActivity.class); // 결제 페이지로 이동
+        intent.putExtra("productId", productId); // 상품 ID 전달
+        intent.putExtra("price", price); // 가격 전달
+        startActivity(intent);
+    }
 
     private void navigateToChatRoom(String chatRoomId, String userName) {
         Intent intent = new Intent(getActivity(), ChatActivity.class);

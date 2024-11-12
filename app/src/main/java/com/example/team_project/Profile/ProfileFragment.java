@@ -138,8 +138,13 @@ public class ProfileFragment extends Fragment {
     }
 
     private Product findProductByName(String productName) {
-        return new Product("productId", "userId", productName, "10000", "상품 설명");
+        // 예시로 "isBusiness"를 false로 설정, 실제로는 조건에 맞게 값을 설정해야 함
+        boolean isBusiness = false; // 예시 값, 실제 로직에 맞게 변경
+
+        // "productName"에 해당하는 상품을 찾아서 반환
+        return new Product("productId", "userId", productName, "10000", "상품 설명", isBusiness);
     }
+
 
     private ArrayList<String> loadRecentVisits() {
         Set<String> set = sharedPreferences.getStringSet("recentVisitSet", new LinkedHashSet<>());
