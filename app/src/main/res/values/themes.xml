@@ -3,6 +3,8 @@
     <style name="Base.Theme.Team_project" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">#A7D17A</item>
+        <item name="colorPrimaryDark">#808080</item>
     </style>
 
     <style name="Theme.Team_project" parent="Base.Theme.Team_project" />
