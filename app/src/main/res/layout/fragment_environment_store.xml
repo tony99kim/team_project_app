@@ -20,7 +20,6 @@
         android:text="상품 등록"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:backgroundTint="@color/black"
         android:textColor="@android:color/white"/>
 
 </FrameLayout>
