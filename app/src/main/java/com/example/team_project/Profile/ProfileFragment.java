@@ -220,29 +220,41 @@ public class ProfileFragment extends Fragment {
 
     private void setProfileImageFromFirebase() {
         String userId = mAuth.getCurrentUser().getUid();
-        StorageReference profileImageRef = storageRef.child("profileImage/" + userId + "/");
+        StorageReference profileImageRef = storageRef.child("profileImage/" + userId + "/"); // 폴더 경로만 설정
 
         profileImageRef.listAll().addOnSuccessListener(listResult -> {
             if (listResult.getItems().size() > 0) {
+                // 첫 번째 이미지 가져오기
                 StorageReference firstImageRef = listResult.getItems().get(0);
                 firstImageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     String profileImageUrl = uri.toString();
-                    Glide.with(requireContext())
-                            .load(profileImageUrl)
-                            .placeholder(R.drawable.ic_profile)
-                            .error(R.drawable.ic_profile)
-                            .into(profileImageView);
+                    if (getContext() != null) {
+                        Glide.with(getContext())
+                                .load(profileImageUrl)
+                                .placeholder(R.drawable.ic_profile)
+                                .error(R.drawable.ic_profile)
+                                .into(profileImageView);
+                    }
                 }).addOnFailureListener(e -> {
-                    profileImageView.setImageDrawable(null);
-                    Toast.makeText(getActivity(), "프로필 사진을 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                    // 이미지 URL 가져오기 실패 시
+                    profileImageView.setImageDrawable(null); // 이미지 제거
+                    if (getContext() != null) {
+                        Toast.makeText(getContext(), "프로필 사진을 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                    }
                 });
             } else {
-                profileImageView.setImageDrawable(null);
-                Toast.makeText(getActivity(), "프로필 사진이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+                // 이미지가 없는 경우 처리
+                profileImageView.setImageDrawable(null); // 이미지 제거
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), "프로필 사진이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+                }
             }
         }).addOnFailureListener(e -> {
-            profileImageView.setImageDrawable(null);
-            Toast.makeText(getActivity(), "프로필 사진 폴더를 가져오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+            // 폴더 목록 가져오기 실패 시
+            profileImageView.setImageDrawable(null); // 이미지 제거
+            if (getContext() != null) {
+                Toast.makeText(getContext(), "프로필 사진 폴더를 가져오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
