@@ -1,4 +1,3 @@
-<!-- fragment_toolbar_location_settings.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -12,8 +11,43 @@
         android:background="?attr/colorPrimary"
         app:title="내 동네 설정"
         app:navigationIcon="?attr/homeAsUpIndicator"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    </androidx.appcompat.widget.Toolbar>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="현재 위치"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp" />
 
+    <TextView
+        android:id="@+id/currentAddressTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="주소가 설정되지 않았습니다."
+        android:textSize="16sp"
+        android:layout_marginTop="8dp" />
+
+    <EditText
+        android:id="@+id/newAddressEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="새 주소 입력"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/btnSetLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="내 동네 설정"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/btnSaveAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="저장"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp" />
 </LinearLayout>

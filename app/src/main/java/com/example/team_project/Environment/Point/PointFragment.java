@@ -42,7 +42,7 @@ public class PointFragment extends Fragment {
             int position = recyclerView.getChildAdapterPosition(v);
             PointItem selectedItem = pointItems.get(position);
             // 선택된 아이템을 사용하여 필요한 작업 수행
-            replaceFragment(new PointAuthenticationFragment());
+            replaceFragment(PointAuthenticationFragment.newInstance(selectedItem));
         });
 
         loadImagesFromFirebaseStorage();
@@ -99,7 +99,7 @@ public class PointFragment extends Fragment {
     }
 
     private void replaceFragment(Fragment fragment) {
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
         transaction.setCustomAnimations(
                 R.anim.slide_in_right,
                 R.anim.fade_out,

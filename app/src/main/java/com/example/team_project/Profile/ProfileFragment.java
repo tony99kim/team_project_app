@@ -27,6 +27,8 @@ import com.example.team_project.Environment.Store.Product;
 import com.example.team_project.Environment.Store.ProductDetailFragment;
 import com.example.team_project.LoginActivity;
 import com.example.team_project.Profile.CustomerService.CustomerServiceFragment;
+import com.example.team_project.Profile.Pay.PayExchangeFragment;
+import com.example.team_project.Profile.Pay.PayrechargeFragment;
 import com.example.team_project.Profile.Wishlist.WishlistFragment;
 import com.example.team_project.Profile.Wishlist.WishpostFragment;
 import com.example.team_project.Profile.Wishlist.WithdrawFragment;
@@ -48,7 +50,7 @@ public class ProfileFragment extends Fragment {
 
     private TextView usernameTextView, environmentPointsTextView, tvEnvironmentPoints, tvAccountBalance;
     private ImageView profileImageView;
-    private Button payrecharge, wishpostButton, wishlistButton, editButton, recentVisitButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
+    private Button payrecharge, payExchangeButton, wishpostButton, wishlistButton, editButton, recentVisitButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
     private Button writtenProductButton;  // 작성한 상품 버튼
     private Button eventButton;  // 이벤트 버튼 추가
     private androidx.appcompat.widget.Toolbar toolbar;
@@ -91,7 +93,8 @@ public class ProfileFragment extends Fragment {
         environmentPointsTextView = view.findViewById(R.id.environmentPointsTextView);
         tvEnvironmentPoints = view.findViewById(R.id.tvEnvironmentPoints);
         tvAccountBalance = view.findViewById(R.id.tvAccountBalance);
-        payrecharge = view.findViewById(R.id.payrecharge);
+        payrecharge = view.findViewById(R.id.payRecharge);
+        payExchangeButton = view.findViewById(R.id.payExchange);
         noticeButton = view.findViewById(R.id.noticeButton);
         customerServiceButton = view.findViewById(R.id.customerServiceButton);
         logoutButton = view.findViewById(R.id.logoutButton);
@@ -117,6 +120,7 @@ public class ProfileFragment extends Fragment {
         // 각 버튼 클릭 리스너 설정
         logoutButton.setOnClickListener(v -> logout());
         payrecharge.setOnClickListener(v -> openFragment(new PayrechargeFragment()));
+        payExchangeButton.setOnClickListener(v -> openFragment(new PayExchangeFragment()));
         noticeButton.setOnClickListener(v -> openFragment(new NoticeFragment()));
         customerServiceButton.setOnClickListener(v -> openFragment(new CustomerServiceFragment()));
         withdrawButton.setOnClickListener(v -> openFragment(new WithdrawFragment()));
@@ -183,12 +187,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void openFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getParentFragmentManager();
-        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE); // 백 스택 초기화
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.fragment_container, fragment);
-        transaction.addToBackStack(null); // 백 스택에 추가하여 뒤로가기 가능
-        transaction.commit();
+        replaceFragment(fragment);
     }
 
     private void openWrittenProductFragment() {
@@ -300,5 +299,18 @@ public class ProfileFragment extends Fragment {
         }).addOnFailureListener(e -> {
             Toast.makeText(getContext(), "계좌 잔액을 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private void replaceFragment(Fragment fragment) {
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(
+                R.anim.slide_in_right,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.slide_out_right
+        );
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

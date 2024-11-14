@@ -24,8 +24,13 @@ import com.example.team_project.R;
 import com.example.team_project.Toolbar.LocationSettingsFragment;
 import com.example.team_project.Toolbar.NotificationsFragment;
 import com.example.team_project.Toolbar.SearchFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class EnvironmentFragment extends Fragment {
+
+    private FirebaseFirestore db;
+    private String userId;
 
     @Nullable
     @Override
@@ -51,6 +56,8 @@ public class EnvironmentFragment extends Fragment {
         });
         toolbar.setOnClickListener(v -> showLocationPopupMenu(v));
 
+        db = FirebaseFirestore.getInstance();
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         TabLayout tabLayout = view.findViewById(R.id.tabs);
         ViewPager2 viewPager = view.findViewById(R.id.view_pager);
@@ -94,6 +101,17 @@ public class EnvironmentFragment extends Fragment {
     private void showLocationPopupMenu(View v) {
         PopupMenu popupMenu = new PopupMenu(getContext(), v);
         popupMenu.getMenuInflater().inflate(R.menu.menu_location, popupMenu.getMenu());
+
+        // Fetch and display current address
+        db.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String currentAddress = documentSnapshot.getString("address");
+                if (currentAddress != null) {
+                    String neighborhood = currentAddress.split(" ")[1]; // Assuming the neighborhood is the second word
+                    popupMenu.getMenu().findItem(R.id.action_set_neighborhood).setTitle(neighborhood);
+                }
+            }
+        });
 
         popupMenu.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
@@ -143,5 +161,4 @@ public class EnvironmentFragment extends Fragment {
             return 2; // 탭의 총 개수 반환
         }
     }
-
 }

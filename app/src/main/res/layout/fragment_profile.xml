@@ -147,7 +147,7 @@
                 android:layout_below="@id/environmentPointsLayout">
 
                 <Button
-                    android:id="@+id/payrecharge"
+                    android:id="@+id/payRecharge"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"
@@ -155,7 +155,7 @@
                     android:layout_marginEnd="4dp" />
 
                 <Button
-                    android:id="@+id/payexchange"
+                    android:id="@+id/payExchange"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"

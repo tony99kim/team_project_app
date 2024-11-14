@@ -17,7 +17,7 @@
         android:id="@+id/amountEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="충전 금액 입력"
+        android:hint="환전 금액 입력"
         android:inputType="number"
         android:layout_below="@id/toolbar"
         android:layout_marginTop="16dp"
@@ -25,10 +25,10 @@
         android:layout_marginEnd="16dp" />
 
     <Button
-        android:id="@+id/rechargeButton"
+        android:id="@+id/exchangeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="충전"
+        android:text="환전"
         android:layout_below="@id/amountEditText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp" />
