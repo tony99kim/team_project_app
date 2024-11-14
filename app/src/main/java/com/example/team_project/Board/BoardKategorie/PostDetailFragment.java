@@ -123,7 +123,11 @@ public class PostDetailFragment extends Fragment {
             userId = currentUser.getUid();
         }
 
-        incrementViewCount();
+        if (postId != null) {
+            incrementViewCount();
+        } else {
+            Log.e("PostDetailFragment", "postId가 null입니다.");
+        }
     }
 
     @Nullable

@@ -2,6 +2,7 @@ package com.example.team_project.Home;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,20 +16,27 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.team_project.Board.BoardKategorie.Post;
+import com.example.team_project.Board.BoardKategorie.PostDetailFragment;
 import com.example.team_project.R;
 import com.example.team_project.Toolbar.NotificationsFragment;
 import com.example.team_project.Toolbar.SearchFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class HomeFragment extends Fragment {
-
     private TextView tvEnvironmentPoints;
+    private TextView popularPost1, popularPost2, popularPost3;
     private FirebaseFirestore db;
     private String userId;
     private ListenerRegistration registration;
@@ -40,10 +48,13 @@ public class HomeFragment extends Fragment {
 
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         Button settingsButton = view.findViewById(R.id.btn_home_settings);
-        tvEnvironmentPoints = view.findViewById(R.id.tvEnvironmentPoints); // 환경 포인트 TextView 초기화
+        tvEnvironmentPoints = view.findViewById(R.id.tvEnvironmentPoints);
+        popularPost1 = view.findViewById(R.id.popular_post_1);
+        popularPost2 = view.findViewById(R.id.popular_post_2);
+        popularPost3 = view.findViewById(R.id.popular_post_3);
 
         db = FirebaseFirestore.getInstance();
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // 현재 사용자 ID 가져오기
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         toolbar.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
@@ -59,8 +70,8 @@ public class HomeFragment extends Fragment {
 
         settingsButton.setOnClickListener(v -> replaceFragment(new HomeSettingsFragment()));
 
-        // Firestore에서 환경 포인트 값 가져오기
-        loadenvironmentPoints();
+        loadEnvironmentPoints();
+        loadPopularPosts();
 
         return view;
     }
@@ -68,38 +79,83 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // 설정 변경 반영
         updateLayoutBasedOnSettings();
     }
 
-    private void loadenvironmentPoints() {
+    private void loadEnvironmentPoints() {
         DocumentReference docRef = db.collection("users").document(userId);
 
         registration = docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
-                    // 오류 처리
                     Toast.makeText(getContext(), "Firestore 오류: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (snapshot != null && snapshot.exists()) {
-                    // 환경 포인트 값 가져오기
                     Long environmentPoint = snapshot.getLong("environmentPoint");
-
-                    // null 체크
                     if (environmentPoint != null) {
-                        tvEnvironmentPoints.setText(String.valueOf(environmentPoint)); // 환경 포인트 표시
+                        tvEnvironmentPoints.setText(String.valueOf(environmentPoint));
                     } else {
-                        tvEnvironmentPoints.setText("0"); // 환경 포인트가 없을 경우 기본값으로 0 표시
+                        tvEnvironmentPoints.setText("0");
                     }
                 } else {
-                    tvEnvironmentPoints.setText("0"); // 문서가 없을 경우 기본값으로 0 표시
+                    tvEnvironmentPoints.setText("0");
                 }
             }
         });
     }
 
+    private void loadPopularPosts() {
+        db.collection("posts")
+                .orderBy("viewCount", Query.Direction.DESCENDING)
+                .limit(3)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    AtomicInteger index = new AtomicInteger();
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        String postId = document.getId();
+                        String title = document.getString("title");
+                        String content = document.getString("content");
+                        String authorId = document.getString("authorId");
+                        List<String> imageUrls = (List<String>) document.get("imageUrls");
+                        long viewCount = document.getLong("viewCount") != null ? document.getLong("viewCount") : 0;
+                        long likes = document.getLong("likes") != null ? document.getLong("likes") : 0;
+
+                        if (authorId != null) {
+                            db.collection("users").document(authorId).get().addOnSuccessListener(userSnapshot -> {
+                                String authorName = userSnapshot.getString("username");
+
+                                Post post = new Post(postId, title, content, authorId, authorName, imageUrls, viewCount, likes);
+
+                                if (index.get() == 0) {
+                                    popularPost1.setText(authorName + ": " + title + "\n" + content);
+                                    popularPost1.setEllipsize(TextUtils.TruncateAt.END);
+                                    popularPost1.setMaxLines(1);
+                                    popularPost1.setOnClickListener(v -> openPostDetail(post));
+                                } else if (index.get() == 1) {
+                                    popularPost2.setText(authorName + ": " + title + "\n" + content);
+                                    popularPost2.setEllipsize(TextUtils.TruncateAt.END);
+                                    popularPost2.setMaxLines(1);
+                                    popularPost2.setOnClickListener(v -> openPostDetail(post));
+                                } else if (index.get() == 2) {
+                                    popularPost3.setText(authorName + ": " + title + "\n" + content);
+                                    popularPost3.setEllipsize(TextUtils.TruncateAt.END);
+                                    popularPost3.setMaxLines(1);
+                                    popularPost3.setOnClickListener(v -> openPostDetail(post));
+                                }
+                                index.getAndIncrement();
+                            });
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> Toast.makeText(getContext(), "인기 게시글을 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show());
+    }
+
+    private void openPostDetail(Post post) {
+        Fragment postDetailFragment = PostDetailFragment.newInstance(post);
+        replaceFragment(postDetailFragment);
+    }
 
     private void updateLayoutBasedOnSettings() {
         SharedPreferences sharedPref = getActivity().getSharedPreferences("HomeSettingsPrefs", getContext().MODE_PRIVATE);
@@ -109,10 +165,7 @@ public class HomeFragment extends Fragment {
         View popularPostsSection = getView().findViewById(R.id.fragment_home_section_popular_posts);
         View eventsSection = getView().findViewById(R.id.fragment_home_section_events);
 
-        // 인기 게시글 섹션의 표시 여부 설정
         popularPostsSection.setVisibility(showPopularPosts ? View.VISIBLE : View.GONE);
-
-        // 이벤트 공지 섹션의 표시 여부 설정
         eventsSection.setVisibility(showEvents ? View.VISIBLE : View.GONE);
     }
 
@@ -132,7 +185,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        // 리스너 해제
         if (registration != null) {
             registration.remove();
         }

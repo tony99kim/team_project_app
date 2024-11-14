@@ -22,33 +22,34 @@
         android:padding="8dp"
         android:layout_marginTop="8dp">
 
-        <!-- 여기서 10개의 항목을 예시로 추가합니다. 실제 앱에서는 이 부분을 동적으로 생성하게 될 것입니다. -->
-        <!-- 항목 1 -->
+        <!-- 인기 게시글 1 -->
         <TextView
             android:id="@+id/popular_post_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="게시글 제목 1"
-            android:paddingBottom="4dp"/>
+            android:paddingBottom="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"/>
 
-        <!-- 항목 2 -->
+        <!-- 인기 게시글 2 -->
         <TextView
             android:id="@+id/popular_post_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="게시글 제목 2"
-            android:paddingBottom="4dp"/>
+            android:paddingBottom="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"/>
 
-        <!-- 항목 추가... -->
-
-        <!-- 항목 10 -->
+        <!-- 인기 게시글 3 -->
         <TextView
-            android:id="@+id/popular_post_10"
+            android:id="@+id/popular_post_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="게시글 제목 10"
-            android:paddingBottom="4dp"/>
-
+            android:text="게시글 제목 3"
+            android:paddingBottom="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"/>
     </LinearLayout>
-
 </LinearLayout>
