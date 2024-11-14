@@ -18,6 +18,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.team_project.Board.BoardKategorie.Post;
 import com.example.team_project.Board.BoardKategorie.PostDetailFragment;
+import com.example.team_project.Profile.event.Event;
+import com.example.team_project.Profile.event.EventDetailFragment;
 import com.example.team_project.R;
 import com.example.team_project.Toolbar.NotificationsFragment;
 import com.example.team_project.Toolbar.SearchFragment;
@@ -30,13 +32,16 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class HomeFragment extends Fragment {
     private TextView tvEnvironmentPoints;
     private TextView popularPost1, popularPost2, popularPost3;
+    private TextView event1, event2, event3;
     private FirebaseFirestore db;
     private String userId;
     private ListenerRegistration registration;
@@ -52,6 +57,9 @@ public class HomeFragment extends Fragment {
         popularPost1 = view.findViewById(R.id.popular_post_1);
         popularPost2 = view.findViewById(R.id.popular_post_2);
         popularPost3 = view.findViewById(R.id.popular_post_3);
+        event1 = view.findViewById(R.id.event_1);
+        event2 = view.findViewById(R.id.event_2);
+        event3 = view.findViewById(R.id.event_3);
 
         db = FirebaseFirestore.getInstance();
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -72,6 +80,7 @@ public class HomeFragment extends Fragment {
 
         loadEnvironmentPoints();
         loadPopularPosts();
+        loadLatestEvents();
 
         return view;
     }
@@ -155,6 +164,53 @@ public class HomeFragment extends Fragment {
     private void openPostDetail(Post post) {
         Fragment postDetailFragment = PostDetailFragment.newInstance(post);
         replaceFragment(postDetailFragment);
+    }
+
+    private void loadLatestEvents() {
+        db.collection("events")
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .limit(3)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    AtomicInteger index = new AtomicInteger();
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        String eventId = document.getId();
+                        String title = document.getString("title");
+                        String content = document.getString("content");
+                        Date createdAtDate = document.getDate("createdAt");
+                        String imageUrl = document.getString("imageUrl");
+
+                        if (createdAtDate != null) {
+                            String createdAt = new SimpleDateFormat("yyyy년 MM월 dd일 HH:mm:ss", Locale.getDefault()).format(createdAtDate);
+
+                            Event event = new Event(eventId, title, content, createdAt, imageUrl);
+
+                            if (index.get() == 0) {
+                                event1.setText(title);
+                                event1.setEllipsize(TextUtils.TruncateAt.END);
+                                event1.setMaxLines(1);
+                                event1.setOnClickListener(v -> openEventDetail(event));
+                            } else if (index.get() == 1) {
+                                event2.setText(title);
+                                event2.setEllipsize(TextUtils.TruncateAt.END);
+                                event2.setMaxLines(1);
+                                event2.setOnClickListener(v -> openEventDetail(event));
+                            } else if (index.get() == 2) {
+                                event3.setText(title);
+                                event3.setEllipsize(TextUtils.TruncateAt.END);
+                                event3.setMaxLines(1);
+                                event3.setOnClickListener(v -> openEventDetail(event));
+                            }
+                            index.getAndIncrement();
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> Toast.makeText(getContext(), "이벤트 공지를 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show());
+    }
+
+    private void openEventDetail(Event event) {
+        Fragment eventDetailFragment = EventDetailFragment.newInstance(event);
+        replaceFragment(eventDetailFragment);
     }
 
     private void updateLayoutBasedOnSettings() {

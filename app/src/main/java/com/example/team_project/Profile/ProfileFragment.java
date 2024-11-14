@@ -30,6 +30,7 @@ import com.example.team_project.Profile.CustomerService.CustomerServiceFragment;
 import com.example.team_project.Profile.Wishlist.WishlistFragment;
 import com.example.team_project.Profile.Wishlist.WishpostFragment;
 import com.example.team_project.Profile.Wishlist.WithdrawFragment;
+import com.example.team_project.Profile.event.EventFragment;
 import com.example.team_project.Profile.notice.NoticeFragment;
 import com.example.team_project.Profile.writtenproduct.WrittenProductFragment;
 import com.example.team_project.R;
@@ -49,6 +50,7 @@ public class ProfileFragment extends Fragment {
     private ImageView profileImageView;
     private Button payrecharge, wishpostButton, wishlistButton, editButton, recentVisitButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
     private Button writtenProductButton;  // 작성한 상품 버튼
+    private Button eventButton;  // 이벤트 버튼 추가
     private androidx.appcompat.widget.Toolbar toolbar;
 
     private SharedPreferences sharedPreferences;
@@ -99,6 +101,7 @@ public class ProfileFragment extends Fragment {
         wishpostButton = view.findViewById(R.id.wishpostButton);
         toolbar = view.findViewById(R.id.toolbar);
         writtenProductButton = view.findViewById(R.id.writtenProductButton);  // 작성한 상품 버튼 초기화
+        eventButton = view.findViewById(R.id.eventButton);  // 이벤트 버튼 초기화
 
         setUsername();
         setProfileImageFromFirebase();
@@ -120,6 +123,7 @@ public class ProfileFragment extends Fragment {
         editButton.setOnClickListener(v -> openFragment(new EditButtonFragment()));
         wishlistButton.setOnClickListener(v -> openFragment(new WishlistFragment()));
         wishpostButton.setOnClickListener(v -> openFragment(new WishpostFragment()));
+        eventButton.setOnClickListener(v -> openFragment(new EventFragment()));  // 이벤트 버튼 클릭 리스너 설정
 
         // 작성한 상품 버튼 클릭 시 이동
         writtenProductButton.setOnClickListener(v -> openWrittenProductFragment());

@@ -13,12 +13,44 @@
         android:textStyle="bold"
         android:layout_marginBottom="8dp"/>
 
-    <!-- 이벤트 공지 목록을 표시할 공간. 실제 데이터 연동은 나중에 구현 -->
+    <!-- 여러 항목이 포함된 박스 -->
     <LinearLayout
         android:id="@+id/events_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <!-- 이벤트 데이터가 동적으로 추가될 공간 -->
+        android:background="@drawable/border"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:layout_marginTop="8dp">
+
+        <!-- 이벤트 공지 1 -->
+        <TextView
+            android:id="@+id/event_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="이벤트 제목 1"
+            android:paddingBottom="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"/>
+
+        <!-- 이벤트 공지 2 -->
+        <TextView
+            android:id="@+id/event_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="이벤트 제목 2"
+            android:paddingBottom="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"/>
+
+        <!-- 이벤트 공지 3 -->
+        <TextView
+            android:id="@+id/event_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="이벤트 제목 3"
+            android:paddingBottom="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"/>
     </LinearLayout>
 </LinearLayout>

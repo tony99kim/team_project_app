@@ -244,6 +244,15 @@
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="16dp"/>
 
+            <!-- 이벤트 버튼 추가 -->
+            <Button
+                android:id="@+id/eventButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="이벤트"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="16dp"/>
+
             <!-- 구분선 -->
             <View
                 android:layout_width="match_parent"
