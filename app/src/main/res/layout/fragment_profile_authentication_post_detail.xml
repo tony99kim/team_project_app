@@ -68,5 +68,12 @@
             android:layout_below="@id/lineView"
             android:padding="16dp"
             android:textSize="18sp" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager_images"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_below="@id/textViewDescription"
+            android:layout_marginTop="16dp" />
     </RelativeLayout>
 </ScrollView>
