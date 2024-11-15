@@ -163,45 +163,33 @@
             </LinearLayout>
         </RelativeLayout>
 
-        <!-- 최근 방문 버튼 -->
-        <Button
-            android:id="@+id/recentVisitButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="최근 방문"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="24dp"
-            android:layout_below="@id/userPayLayout" />
-
-
         <!-- LinearLayout -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_below="@id/recentVisitButton"
+            android:layout_below="@id/userPayLayout"
             android:layout_marginTop="16dp">
 
-            <!-- 관심상품 버튼 -->
-
-            <ListView
-                android:id="@+id/recentVisitListView"
-                android:layout_width="match_parent"
+            <!-- 내 인증글 버튼 -->
+            <Button
+                android:id="@+id/myAuthenticationPostsButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:divider="@null"
-                android:dividerHeight="0dp"
-                android:nestedScrollingEnabled="true" />
-            <!-- 작성한 상품 버튼 추가 -->
+                android:text="내 인증글"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="16dp" />
+
+            <!-- 작성한 상품 버튼 -->
             <Button
                 android:id="@+id/writtenProductButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="작성한 상품"
                 android:layout_marginStart="15dp"
-                android:layout_marginTop="16dp"
-                android:layout_below="@id/recentVisitButton" />
+                android:layout_marginTop="16dp" />
 
+            <!-- 관심상품 버튼 -->
             <Button
                 android:id="@+id/wishlistButton"
                 android:layout_width="wrap_content"

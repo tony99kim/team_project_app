@@ -48,7 +48,6 @@
                     android:focusable="true"
                     android:onClick="onRegisterProductClicked" />
 
-
                 <TextView
                     android:id="@+id/post_tvImageCount"
                     android:layout_width="wrap_content"
@@ -65,7 +64,6 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@id/recentVisitListView"
             android:layout_marginTop="8dp"
             android:background="@android:color/darker_gray" />
 
@@ -73,7 +71,8 @@
             android:id="@+id/editTextTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="제목" />
+            android:hint="제목"
+            android:minHeight="48dp" />
 
         <EditText
             android:id="@+id/editTextContent"
@@ -81,7 +80,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="top"
-            android:hint="내용" />
+            android:hint="내용"
+            android:minHeight="48dp" />
 
         <Button
             android:id="@+id/buttonPost"
@@ -89,8 +89,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="게시하기" />
-
-
 
     </LinearLayout>
 

@@ -64,7 +64,7 @@ public class PostRegistrationFragment extends Fragment {
         editTextContent = view.findViewById(R.id.editTextContent);
         buttonPost = view.findViewById(R.id.buttonPost);
 
-        post_ivCameraIcon.setOnClickListener(v -> openFileChooser());
+        post_ivCameraIcon.setOnClickListener(v -> onRegisterProductClicked(v));
         buttonPost.setOnClickListener(v -> uploadPost());
 
         Toolbar toolbar = view.findViewById(R.id.board_toolbar);
@@ -76,6 +76,10 @@ public class PostRegistrationFragment extends Fragment {
         }
 
         return view;
+    }
+
+    public void onRegisterProductClicked(View view) {
+        openFileChooser();
     }
 
     private void openFileChooser() {

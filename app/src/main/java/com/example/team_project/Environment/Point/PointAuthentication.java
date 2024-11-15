@@ -1,44 +1,75 @@
 package com.example.team_project.Environment.Point;
 
-public class PointAuthentication {
-    private String authenticationId;
-    private String userId;
-    private String title; // 인증 제목
-    private String status; // 상태
-    private String description; // 인증 설명
-    private String timestamp; // 인증 날짜 및 시간
+import java.io.Serializable;
 
-    public PointAuthentication(String authenticationId, String userId, String title, String status, String description, String timestamp) {
-        this.authenticationId = authenticationId;
+public class PointAuthentication implements Serializable {
+    private String id;
+    private String userId;
+    private String title;
+    private String status;
+    private String description;
+    private String timestamp;
+
+    // 기본 생성자 추가
+    public PointAuthentication() {
+    }
+
+    // 모든 필드를 포함하는 생성자 추가
+    public PointAuthentication(String id, String userId, String title, String status, String description, String timestamp) {
+        this.id = id;
         this.userId = userId;
         this.title = title;
         this.status = status;
         this.description = description;
-        this.timestamp = timestamp; // 날짜 및 시간 저장
+        this.timestamp = timestamp;
     }
 
-    // Getter 메소드 추가
-    public String getAuthenticationId() {
-        return authenticationId;
+    // Getter 및 Setter 메서드 추가
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUserId() {
         return userId;
     }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getStatus() {
         return status;
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getTimestamp() {
-        return timestamp; // 날짜 및 시간 반환
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 }

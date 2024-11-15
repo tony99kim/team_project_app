@@ -3,6 +3,7 @@ package com.example.team_project;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -113,5 +114,8 @@ public class MainActivity extends AppCompatActivity {
     private void showBottomNav() {
         bottomNav.setVisibility(BottomNavigationView.VISIBLE);
     }
-}
 
+    public void onRegisterProductClicked(View view) {
+        // 클릭 이벤트 처리 로직
+    }
+}

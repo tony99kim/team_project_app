@@ -8,10 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,13 +17,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.example.team_project.Environment.Store.Product;
 import com.example.team_project.Environment.Store.ProductDetailFragment;
 import com.example.team_project.LoginActivity;
+import com.example.team_project.Profile.Authentication.AuthenticationPostFragment;
 import com.example.team_project.Profile.CustomerService.CustomerServiceFragment;
 import com.example.team_project.Profile.Pay.PayExchangeFragment;
 import com.example.team_project.Profile.Pay.PayrechargeFragment;
@@ -42,17 +40,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 public class ProfileFragment extends Fragment {
 
     private TextView usernameTextView, environmentPointsTextView, tvEnvironmentPoints, tvAccountBalance;
     private ImageView profileImageView;
-    private Button payrecharge, payExchangeButton, wishpostButton, wishlistButton, editButton, recentVisitButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
+    private Button payrecharge, payExchangeButton, wishpostButton, wishlistButton, editButton, noticeButton, customerServiceButton, logoutButton, withdrawButton;
     private Button writtenProductButton;  // 작성한 상품 버튼
     private Button eventButton;  // 이벤트 버튼 추가
+    private Button myAuthenticationPostsButton; // 내 인증글 버튼
     private androidx.appcompat.widget.Toolbar toolbar;
 
     private SharedPreferences sharedPreferences;
@@ -60,10 +55,6 @@ public class ProfileFragment extends Fragment {
     private StorageReference storageRef;
     private FirebaseFirestore db;
     private String userId;
-
-    private ListView recentVisitListView;
-    private ArrayAdapter<String> adapter;
-    private ArrayList<String> recentVisitList;
 
     @Nullable
     @Override
@@ -75,17 +66,6 @@ public class ProfileFragment extends Fragment {
         storageRef = FirebaseStorage.getInstance().getReference();
         db = FirebaseFirestore.getInstance();
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-        recentVisitListView = view.findViewById(R.id.recentVisitListView);
-        recentVisitList = loadRecentVisits();
-        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, recentVisitList);
-        recentVisitListView.setAdapter(adapter);
-
-        // 아이템 클릭 리스너 설정
-        recentVisitListView.setOnItemClickListener((parent, view1, position, id) -> {
-            String productName = recentVisitList.get(position);
-            openProductDetailFragment(productName);
-        });
 
         // UI 요소 초기화
         profileImageView = view.findViewById(R.id.profileImageView);
@@ -105,6 +85,7 @@ public class ProfileFragment extends Fragment {
         toolbar = view.findViewById(R.id.toolbar);
         writtenProductButton = view.findViewById(R.id.writtenProductButton);  // 작성한 상품 버튼 초기화
         eventButton = view.findViewById(R.id.eventButton);  // 이벤트 버튼 초기화
+        myAuthenticationPostsButton = view.findViewById(R.id.myAuthenticationPostsButton); // 내 인증글 버튼 초기화
 
         setUsername();
         setProfileImageFromFirebase();
@@ -128,6 +109,7 @@ public class ProfileFragment extends Fragment {
         wishlistButton.setOnClickListener(v -> openFragment(new WishlistFragment()));
         wishpostButton.setOnClickListener(v -> openFragment(new WishpostFragment()));
         eventButton.setOnClickListener(v -> openFragment(new EventFragment()));  // 이벤트 버튼 클릭 리스너 설정
+        myAuthenticationPostsButton.setOnClickListener(v -> openFragment(new AuthenticationPostFragment())); // 내 인증글 버튼 클릭 리스너 설정
 
         // 작성한 상품 버튼 클릭 시 이동
         writtenProductButton.setOnClickListener(v -> openWrittenProductFragment());
@@ -151,26 +133,6 @@ public class ProfileFragment extends Fragment {
 
         // "productName"에 해당하는 상품을 찾아서 반환
         return new Product("productId", "userId", productName, "10000", "상품 설명", isBusiness);
-    }
-
-
-    private ArrayList<String> loadRecentVisits() {
-        Set<String> set = sharedPreferences.getStringSet("recentVisitSet", new LinkedHashSet<>());
-        return new ArrayList<>(set != null ? set : new LinkedHashSet<>());
-    }
-
-    private void saveRecentVisits() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Set<String> set = new LinkedHashSet<>(recentVisitList);
-        editor.putStringSet("recentVisitSet", set);
-        editor.apply();
-    }
-
-    public void addRecentVisit(String visit) {
-        Log.d("ProfileFragment", "Adding visit: " + visit);
-        recentVisitList.add(0, visit);
-        adapter.notifyDataSetChanged();
-        saveRecentVisits();
     }
 
     private void logout() {
