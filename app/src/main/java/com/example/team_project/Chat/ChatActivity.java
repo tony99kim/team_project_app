@@ -2,13 +2,18 @@ package com.example.team_project.Chat;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,6 +44,9 @@ public class ChatActivity extends AppCompatActivity {
     private ImageView btnSend;
     private ImageView btnBack;
     private ImageView btnExit;
+    private ImageView btnAdd;
+    private LinearLayout layoutMenu;
+    private ConstraintLayout layoutInput;
 
     private String user1;
     private String user2;
@@ -94,11 +102,32 @@ public class ChatActivity extends AppCompatActivity {
             alertDialog.show();
         });
 
+        btnAdd = findViewById(R.id.btn_add);
+        layoutMenu = findViewById(R.id.layout_menu);
+        layoutInput = findViewById(R.id.layout_input);
+        btnAdd.setOnClickListener(v -> toggleMenu());
+
         fetchChat(chatId, userEmail1, userEmail2);
         setupRealtimeMessageUpdates(chatId);
         loadUsers();
     }
 
+    private void toggleMenu() {
+        Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
+        Animation slideDown = AnimationUtils.loadAnimation(this, R.anim.slide_down);
+
+        if (layoutMenu.getVisibility() == View.GONE) {
+            layoutInput.startAnimation(slideUp);
+            layoutMenu.startAnimation(slideUp);
+            layoutMenu.setVisibility(View.VISIBLE);
+            btnAdd.setImageResource(R.drawable.ic_close);
+        } else {
+            layoutInput.startAnimation(slideDown);
+            layoutMenu.startAnimation(slideDown);
+            layoutMenu.setVisibility(View.GONE);
+            btnAdd.setImageResource(R.drawable.ic_add);
+        }
+    }
 
     private void loadUsers() {
         Executors.newSingleThreadExecutor().execute(() -> {
@@ -266,4 +295,3 @@ public class ChatActivity extends AppCompatActivity {
     }
 
 }
-
