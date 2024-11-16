@@ -55,6 +55,13 @@ public class MainActivity extends AppCompatActivity {
             // 로그인 상태이므로 메인 화면 구성
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
         }
+
+        // 추가된 코드: navigateTo 인텐트 처리
+        Intent intent = getIntent();
+        if (intent != null && "EnvironmentFragment".equals(intent.getStringExtra("navigateTo"))) {
+            int targetPage = intent.getIntExtra("targetPage", 0); // 기본값은 0 (포인트 페이지)
+            navigateToStoreFragment(targetPage);
+        }
     }
 
     private boolean checkLoginState() {
@@ -113,6 +120,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void showBottomNav() {
         bottomNav.setVisibility(BottomNavigationView.VISIBLE);
+    }
+
+    private void navigateToStoreFragment(int targetPage) {
+        EnvironmentFragment environmentFragment = new EnvironmentFragment();
+        Bundle args = new Bundle();
+        args.putInt("targetPage", targetPage);
+        environmentFragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, environmentFragment).commit();
     }
 
     public void onRegisterProductClicked(View view) {

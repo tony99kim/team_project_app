@@ -268,7 +268,7 @@ public class ProductDetailFragment extends Fragment {
     }
 
     private void navigateToPaymentPage() {
-        Intent intent = new Intent(getActivity(), PaymentActivity.class); // 결제 페이지로 이동
+        Intent intent = new Intent(getActivity(), PaymentFragment.class); // 결제 페이지로 이동
         intent.putExtra("productId", productId); // 상품 ID 전달
         intent.putExtra("price", price); // 가격 전달
         startActivity(intent);

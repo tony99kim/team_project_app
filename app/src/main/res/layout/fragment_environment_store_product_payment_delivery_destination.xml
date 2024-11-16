@@ -1,0 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Environment.Store.DeliveryDestinationActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_delivery_destination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:title="배송지 선택" />
+
+    <EditText
+        android:id="@+id/new_delivery_destination_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="새 배송지 입력" />
+
+    <Button
+        android:id="@+id/add_delivery_destination_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="배송지 추가" />
+
+    <ListView
+        android:id="@+id/delivery_destination_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

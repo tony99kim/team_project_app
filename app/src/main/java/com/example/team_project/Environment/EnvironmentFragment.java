@@ -95,6 +95,12 @@ public class EnvironmentFragment extends Fragment {
             }
         });
 
+        // 추가된 코드: targetPage 인텐트 처리
+        if (getArguments() != null) {
+            int targetPage = getArguments().getInt("targetPage", 0);
+            viewPager.setCurrentItem(targetPage);
+        }
+
         return view;
     }
 
