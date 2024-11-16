@@ -9,19 +9,21 @@ public class PointAuthentication implements Serializable {
     private String status;
     private String description;
     private String timestamp;
+    private String authenticationId; // 추가된 필드
 
     // 기본 생성자 추가
     public PointAuthentication() {
     }
 
     // 모든 필드를 포함하는 생성자 추가
-    public PointAuthentication(String id, String userId, String title, String status, String description, String timestamp) {
+    public PointAuthentication(String id, String userId, String title, String status, String description, String timestamp, String authenticationId) {
         this.id = id;
         this.userId = userId;
         this.title = title;
         this.status = status;
         this.description = description;
         this.timestamp = timestamp;
+        this.authenticationId = authenticationId; // 추가된 필드 초기화
     }
 
     // Getter 및 Setter 메서드 추가
@@ -71,5 +73,13 @@ public class PointAuthentication implements Serializable {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getAuthenticationId() {
+        return authenticationId;
+    }
+
+    public void setAuthenticationId(String authenticationId) {
+        this.authenticationId = authenticationId;
     }
 }

@@ -144,7 +144,7 @@ public class PointAuthenticationFragment extends Fragment {
             String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()); // 현재 날짜 및 시간 가져오기
 
             // 인증 항목 객체 생성
-            PointAuthentication pointAuthentication = new PointAuthentication(authenticationId, userId, title, status, description, timestamp);
+            PointAuthentication pointAuthentication = new PointAuthentication(authenticationId, userId, title, status, description, timestamp, authenticationId);
             db.collection("pointAuthentications").document(authenticationId).set(pointAuthentication)
                     .addOnSuccessListener(aVoid -> {
                         // 이미지 스토리지에 업로드

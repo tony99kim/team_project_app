@@ -68,7 +68,7 @@ public class AuthenticationPostDetailFragment extends Fragment {
             statusTextView.setText(authentication.getStatus());
             descriptionTextView.setText(authentication.getDescription());
 
-            loadImageFromFirebase(authentication.getId());
+            loadImageFromFirebase(authentication.getAuthenticationId());
         }
 
         return view;
