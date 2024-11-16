@@ -1,4 +1,4 @@
-package com.example.team_project.Environment.Store;
+package com.example.team_project.Environment.Store.Product;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,6 +21,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.example.team_project.Chat.Data.Chat;
+import com.example.team_project.Environment.Store.Payment.PaymentFragment;
 import com.example.team_project.R;
 import com.example.team_project.Chat.ChatActivity;
 import com.example.team_project.Chat.Data.Message;

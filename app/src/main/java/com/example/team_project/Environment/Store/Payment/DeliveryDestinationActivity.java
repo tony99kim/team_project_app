@@ -1,4 +1,4 @@
-package com.example.team_project.Environment.Store;
+package com.example.team_project.Environment.Store.Payment;
 
 import android.os.Bundle;
 import android.widget.Button;

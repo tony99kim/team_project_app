@@ -21,8 +21,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.team_project.R;
-import com.example.team_project.Environment.Store.Product;
-import com.example.team_project.Environment.Store.ProductAdapter;
+import com.example.team_project.Environment.Store.Product.Product;
+import com.example.team_project.Environment.Store.Product.ProductAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 

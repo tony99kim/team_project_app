@@ -30,10 +30,10 @@
             android:name=".SignUpActivity">
         </activity>
 
-        <activity android:name=".Environment.Store.PaymentCompleteActivity" />
+        <activity android:name=".Environment.Store.Payment.PaymentCompleteActivity" />
 
         <activity
-            android:name=".Environment.Store.DeliveryDestinationActivity"
+            android:name=".Environment.Store.Payment.DeliveryDestinationActivity"
         />
 
         <activity
@@ -64,7 +64,7 @@
             android:name=".Toolbar.BordSearchFragment"
             android:exported="true">
         </activity>
-        <activity android:name=".Environment.Store.PaymentFragment">
+        <activity android:name=".Environment.Store.Payment.PaymentFragment">
             <!-- 필수 속성들을 추가할 수 있습니다 -->
         </activity>
 

@@ -16,8 +16,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.team_project.Environment.Store.Product;
-import com.example.team_project.Environment.Store.ProductDetailFragment;
+import com.example.team_project.Environment.Store.Product.Product;
+import com.example.team_project.Environment.Store.Product.ProductDetailFragment;
 import com.example.team_project.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;

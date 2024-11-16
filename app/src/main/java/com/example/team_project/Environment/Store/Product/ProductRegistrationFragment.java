@@ -1,4 +1,4 @@
-package com.example.team_project.Environment.Store;
+package com.example.team_project.Environment.Store.Product;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -24,7 +24,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import android.widget.CompoundButton;
 
 public class ProductRegistrationFragment extends Fragment {
 

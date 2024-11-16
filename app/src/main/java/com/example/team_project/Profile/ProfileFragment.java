@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +19,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
-import com.example.team_project.Environment.Store.Product;
-import com.example.team_project.Environment.Store.ProductDetailFragment;
+import com.example.team_project.Environment.Store.Product.Product;
+import com.example.team_project.Environment.Store.Product.ProductDetailFragment;
 import com.example.team_project.LoginActivity;
 import com.example.team_project.Profile.Authentication.AuthenticationPostFragment;
 import com.example.team_project.Profile.CustomerService.CustomerServiceFragment;

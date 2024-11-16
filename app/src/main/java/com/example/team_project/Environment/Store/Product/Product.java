@@ -1,4 +1,4 @@
-package com.example.team_project.Environment.Store;
+package com.example.team_project.Environment.Store.Product;
 
 public class Product {
     public String productId, userId, title, price, description;

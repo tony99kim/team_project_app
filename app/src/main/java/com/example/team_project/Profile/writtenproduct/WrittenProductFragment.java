@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.team_project.Environment.Store.Product;
-import com.example.team_project.Environment.Store.ProductAdapter;
+import com.example.team_project.Environment.Store.Product.Product;
+import com.example.team_project.Environment.Store.Product.ProductAdapter;
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
