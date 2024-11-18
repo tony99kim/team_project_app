@@ -61,6 +61,7 @@
                     android:src="@drawable/post_favorite_border"
                     android:contentDescription="좋아요 버튼" />
 
+
                 <TextView
                     android:id="@+id/textView_like_count"
                     android:layout_width="wrap_content"

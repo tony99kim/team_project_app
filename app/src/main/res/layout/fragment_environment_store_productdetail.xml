@@ -1,25 +1,32 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Environment.Store.Product.ProductDetailFragment">
 
+    <!-- 상단 툴바 -->
+
+    <!-- 이미지 슬라이더 -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_product_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
-        android:layout_alignParentTop="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:title=" ">
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <Button
+        <ImageButton
             android:id="@+id/button_favorite"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:layout_gravity="end"
-            android:text="찜" />
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="Favorite Button"
+            android:scaleType="fitCenter"
+            android:src="@drawable/post_favorite_border" />
     </androidx.appcompat.widget.Toolbar>
 
     <androidx.viewpager2.widget.ViewPager2
@@ -29,6 +36,7 @@
         android:layout_below="@id/toolbar_product_detail"
         android:layout_marginTop="8dp" />
 
+    <!-- 판매자 이름 -->
     <TextView
         android:id="@+id/textView_seller_name"
         android:layout_width="wrap_content"
@@ -37,8 +45,10 @@
         android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:text="Seller Name" />
 
+    <!-- 제품 제목 -->
     <TextView
         android:id="@+id/textView_product_title"
         android:layout_width="wrap_content"
@@ -50,6 +60,7 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
+    <!-- 제품 설명 -->
     <TextView
         android:id="@+id/textView_product_description"
         android:layout_width="wrap_content"
@@ -60,13 +71,16 @@
         android:text="Product Description"
         android:textSize="16sp" />
 
+    <!-- 하단 툴바 -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:padding="8dp">
 
+        <!-- 제품 가격 -->
         <TextView
             android:id="@+id/textView_product_price"
             android:layout_width="wrap_content"
@@ -77,6 +91,7 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
+        <!-- 채팅 버튼 -->
         <Button
             android:id="@+id/product_chat_button"
             android:layout_width="wrap_content"

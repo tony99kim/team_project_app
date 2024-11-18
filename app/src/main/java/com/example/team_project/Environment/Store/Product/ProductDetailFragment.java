@@ -45,10 +45,12 @@ public class ProductDetailFragment extends Fragment {
 
     private String productId, userId, title, price, description;
     private boolean isBusiness; // 기업 여부 추가
+    private boolean isFavorite = false; // 관심상품 여부를 저장
     private ViewPager2 viewPager2;
     private TextView titleTextView, descriptionTextView, priceTextView, sellerNameTextView;
-    private Button buttonFavorite, buttonChat;
-    private FirebaseFirestore db; // Firestore 인스턴스 선언
+    private ImageView buttonFavorite; // ImageView로 변경
+    private Button buttonChat;
+    private FirebaseFirestore db;
 
     public static ProductDetailFragment newInstance(Product product) {
         ProductDetailFragment fragment = new ProductDetailFragment();
@@ -58,7 +60,7 @@ public class ProductDetailFragment extends Fragment {
         args.putString("title", product.getTitle());
         args.putString("price", product.getPrice());
         args.putString("description", product.getDescription());
-        args.putBoolean("isBusiness", product.isBusiness()); // 기업 여부를 전달
+        args.putBoolean("isBusiness", product.isBusiness());
         fragment.setArguments(args);
         return fragment;
     }
@@ -66,17 +68,16 @@ public class ProductDetailFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        db = FirebaseFirestore.getInstance(); // Firestore 인스턴스 초기화
+        db = FirebaseFirestore.getInstance();
         if (getArguments() != null) {
             productId = getArguments().getString("productId");
             userId = getArguments().getString("userId");
             title = getArguments().getString("title");
             price = getArguments().getString("price");
             description = getArguments().getString("description");
-            isBusiness = getArguments().getBoolean("isBusiness"); // 기업 여부 받기
+            isBusiness = getArguments().getBoolean("isBusiness");
         }
     }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -107,6 +108,13 @@ public class ProductDetailFragment extends Fragment {
         } else {
             buttonChat.setText("채팅하기");
         }
+        // 데이터 설정
+        titleTextView.setText(title);
+        descriptionTextView.setText(description);
+        priceTextView.setText(price);
+
+        // 관심상품 상태 초기화
+        checkFavoriteStatus();
 
         // 이벤트 설정
         buttonFavorite.setOnClickListener(v -> addToWishlist());
@@ -117,6 +125,15 @@ public class ProductDetailFragment extends Fragment {
             } else {
                 // "채팅하기" 버튼 클릭 시 채팅방을 만든다
                 onStartChat();
+            }
+
+        });
+// 버튼 클릭 리스너 설정
+        buttonFavorite.setOnClickListener(v -> {
+            if (isFavorite) {
+                removeFromWishlist();
+            } else {
+                addToWishlist();
             }
         });
 
@@ -184,21 +201,76 @@ public class ProductDetailFragment extends Fragment {
         });
     }
 
+    // 관심상품 초기 상태 확인
+    private void checkFavoriteStatus() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String currentUserId = user.getUid();
+
+            // Firestore에서 관심상품 여부 확인
+            db.collection("wishlists").document(currentUserId)
+                    .collection("products")
+                    .document(productId)
+                    .get()
+                    .addOnSuccessListener(document -> {
+                        if (document.exists()) {
+                            isFavorite = true; // 관심상품 상태 업데이트
+                            buttonFavorite.setImageResource(R.drawable.post_favorite);
+                        } else {
+                            isFavorite = false; // 관심상품이 아님
+                            buttonFavorite.setImageResource(R.drawable.post_favorite_border);
+                        }
+                    })
+                    .addOnFailureListener(e -> Log.e("ProductDetailFragment", "관심상품 상태 확인 실패", e));
+        }
+    }
+
+    // 관심상품 추가
     private void addToWishlist() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            DocumentReference wishlistRef = db.collection("wishlists").document(user.getUid());
+            String currentUserId = user.getUid();
 
-            // isBusiness 필드를 추가하여 상품 객체 생성
-            Product product = new Product(productId, userId, title, price, description, isBusiness); // 기업 여부 반영
-            wishlistRef.collection("products").document(productId)
+            // 관심상품으로 추가할 데이터 생성
+            Product product = new Product(productId, userId, title, price, description, false);
+
+            db.collection("wishlists").document(currentUserId)
+                    .collection("products")
+                    .document(productId)
                     .set(product)
-                    .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "위시리스트에 추가되었습니다", Toast.LENGTH_SHORT).show())
+                    .addOnSuccessListener(aVoid -> {
+                        isFavorite = true; // 상태 업데이트
+                        buttonFavorite.setImageResource(R.drawable.post_favorite);
+                        Toast.makeText(getContext(), "위시리스트에 추가되었습니다.", Toast.LENGTH_SHORT).show();
+                    })
                     .addOnFailureListener(e -> Log.e("ProductDetailFragment", "위시리스트 추가 실패", e));
         } else {
             Toast.makeText(getContext(), "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
         }
     }
+
+    // 관심상품 제거
+    private void removeFromWishlist() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String currentUserId = user.getUid();
+
+            db.collection("wishlists").document(currentUserId)
+                    .collection("products")
+                    .document(productId)
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        isFavorite = false; // 상태 업데이트
+                        buttonFavorite.setImageResource(R.drawable.post_favorite_border);
+                        Toast.makeText(getContext(), "위시리스트에서 제거되었습니다.", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> Log.e("ProductDetailFragment", "위시리스트 제거 실패", e));
+        } else {
+            Toast.makeText(getContext(), "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 
     private void onStartChat() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
