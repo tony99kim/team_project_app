@@ -55,7 +55,7 @@ public class UserFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new UserListAdapter(users, user -> {
-            Intent intent = new Intent(getContext(), ChatRoomFragment.class);
+            Intent intent = new Intent(getContext(), ChatActivity.class);
             intent.putExtra("userEmail1", email);
             intent.putExtra("userEmail2", user.getEmail());
             intent.putExtra("user1", name);
