@@ -4,5 +4,5 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="tab_selected">#000000</color>
     <color name="tab_unselected">#8E8E8E</color>
-    <color name="bottom_navigation_active_indicator">#A7D17A</color> <!-- 활성화된 항목 배경색 -->
+    <color name="bottom_navigation_active_indicator">#D3F8AC</color> <!-- 활성화된 항목 배경색 -->
 </resources>
