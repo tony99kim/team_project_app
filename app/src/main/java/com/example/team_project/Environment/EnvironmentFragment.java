@@ -70,9 +70,9 @@ public class EnvironmentFragment extends Fragment {
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             if (position == 0) {
-                tab.setText("포인트 페이지");
+                tab.setText("탄소 중립 실천 인증");
             } else {
-                tab.setText("스토어 페이지");
+                tab.setText("스토어");
             }
         }).attach();
 
