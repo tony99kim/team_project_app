@@ -47,6 +47,7 @@ public class ProfileFragment extends Fragment {
     private Button writtenProductButton;  // 작성한 상품 버튼
     private Button eventButton;  // 이벤트 버튼 추가
     private Button myAuthenticationPostsButton; // 내 인증글 버튼
+    private Button appIntroductionButton; // 앱 소개 버튼 추가
     private androidx.appcompat.widget.Toolbar toolbar;
 
     private SharedPreferences sharedPreferences;
@@ -85,6 +86,7 @@ public class ProfileFragment extends Fragment {
         writtenProductButton = view.findViewById(R.id.writtenProductButton);  // 작성한 상품 버튼 초기화
         eventButton = view.findViewById(R.id.eventButton);  // 이벤트 버튼 초기화
         myAuthenticationPostsButton = view.findViewById(R.id.myAuthenticationPostsButton); // 내 인증글 버튼 초기화
+        appIntroductionButton = view.findViewById(R.id.appIntroductionButton); // 앱 소개 버튼 초기화
 
         setUsername();
         setProfileImageFromFirebase();
@@ -109,6 +111,7 @@ public class ProfileFragment extends Fragment {
         wishpostButton.setOnClickListener(v -> openFragment(new WishpostFragment()));
         eventButton.setOnClickListener(v -> openFragment(new EventFragment()));  // 이벤트 버튼 클릭 리스너 설정
         myAuthenticationPostsButton.setOnClickListener(v -> openFragment(new AuthenticationPostFragment())); // 내 인증글 버튼 클릭 리스너 설정
+        appIntroductionButton.setOnClickListener(v -> openFragment(new AppIntroductionFragment())); // 앱 소개 버튼 클릭 리스너 설정
 
         // 작성한 상품 버튼 클릭 시 이동
         writtenProductButton.setOnClickListener(v -> openWrittenProductFragment());

@@ -240,6 +240,15 @@
                 android:text="이벤트"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="16dp"/>
+            <!-- 앱 소개 버튼 추가 -->
+            <Button
+                android:id="@+id/appIntroductionButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="앱 소개"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="16dp"/>
+
 
             <!-- 구분선 -->
             <View
@@ -247,6 +256,7 @@
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray"
                 android:layout_marginTop="8dp" />
+
 
             <!-- 로그아웃 버튼 -->
             <Button
