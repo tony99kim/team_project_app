@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -44,6 +43,8 @@ public class ChatActivity extends AppCompatActivity {
     private ImageView btnExit;
     private ImageView btnAdd;
     private ConstraintLayout layoutInput;
+    private ConstraintLayout layoutMenu; // 메뉴 레이아웃 추가
+    private boolean isMenuVisible = false; // 메뉴의 상태를 관리할 변수
 
     private String user1;
     private String user2;
@@ -63,7 +64,6 @@ public class ChatActivity extends AppCompatActivity {
         user1 = getIntent().getStringExtra("user1");
         user2 = getIntent().getStringExtra("user2");
 
-        // 상대방 이메일로 사용자 이름 가져오기
         fetchUserName(userEmail2);
 
         String chatId = userEmail1.compareTo(userEmail2) < 0 ? userEmail1 + "_" + userEmail2 : userEmail2 + "_" + userEmail1;
@@ -100,12 +100,52 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         btnAdd = findViewById(R.id.btn_add);
+        btnAdd.setOnClickListener(v -> toggleMenu()); // + 버튼 클릭 이벤트 추가
+
         layoutInput = findViewById(R.id.layout_input);
+        layoutMenu = findViewById(R.id.layout_menu); //
 
         fetchChat(chatId, userEmail1, userEmail2);
         setupRealtimeMessageUpdates(chatId);
         loadUsers();
     }
+
+
+    private void toggleMenu() {
+        if (isMenuVisible) {
+            hideMenu();
+        } else {
+            showMenu();
+        }
+    }
+
+    private void showMenu() {
+        // 메뉴의 높이를 미리 계산
+        layoutMenu.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+
+        int menuHeight = layoutMenu.getMeasuredHeight(); // 메뉴의 높이 가져오기
+
+        layoutInput.animate().translationY(-menuHeight).setDuration(300); // 입력창 올리기
+        layoutMenu.setVisibility(View.VISIBLE);
+        layoutMenu.setTranslationY(menuHeight); // 메뉴를 아래에서 시작하도록 위치 설정
+        layoutMenu.animate().translationY(0).setDuration(300); // 메뉴 나타내기
+
+        // + 아이콘을 X 아이콘으로 변경
+        btnAdd.setImageResource(R.drawable.ic_close); // X 아이콘으로 변경
+        isMenuVisible = true;
+    }
+
+    private void hideMenu() {
+        layoutInput.animate().translationY(0).setDuration(300); // 입력창 내리기
+        layoutMenu.animate().translationY(layoutMenu.getHeight()).setDuration(300)
+                .withEndAction(() -> layoutMenu.setVisibility(View.GONE)); // 메뉴 숨기기
+
+        // X 아이콘을 + 아이콘으로 변경
+        btnAdd.setImageResource(R.drawable.ic_add); // + 아이콘으로 변경
+        isMenuVisible = false;
+    }
+
 
     private void loadUsers() {
         Executors.newSingleThreadExecutor().execute(() -> {
