@@ -55,10 +55,13 @@
             android:exported="true">
         </activity>
 
+
         <activity
             android:name=".AddressPickerActivity"
             android:exported="true">
         </activity>
+
+        <activity android:name=".Chat.SendMoneyActivity" />
 
         <activity
             android:name=".Toolbar.BordSearchFragment"

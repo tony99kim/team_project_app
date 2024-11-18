@@ -126,6 +126,7 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
             <ImageView
+                android:id="@+id/send_money"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/ic_send_money"

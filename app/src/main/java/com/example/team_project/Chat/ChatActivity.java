@@ -1,5 +1,7 @@
+// ChatActivity.java
 package com.example.team_project.Chat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -42,12 +44,14 @@ public class ChatActivity extends AppCompatActivity {
     private ImageView btnBack;
     private ImageView btnExit;
     private ImageView btnAdd;
+    private ImageView btnSendMoney; // 송금 버튼 추가
     private ConstraintLayout layoutInput;
     private ConstraintLayout layoutMenu; // 메뉴 레이아웃 추가
     private boolean isMenuVisible = false; // 메뉴의 상태를 관리할 변수
 
     private String user1;
     private String user2;
+    private String receiverName;
 
     private ArrayList<Message> messages = new ArrayList<>();
     private List<User> users = new ArrayList<>();
@@ -75,29 +79,13 @@ public class ChatActivity extends AppCompatActivity {
 
         editInput = findViewById(R.id.edit_input);
         btnSend = findViewById(R.id.btn_send);
-        btnSend.setOnClickListener(v -> {
-            if (!editInput.getText().toString().isEmpty()) {
-                sendMessage(chatId, userEmail1, editInput.getText().toString());
-                editInput.setText("");
-            }
-        });
+        btnSend.setOnClickListener(v -> sendMessage(chatId, userEmail1, editInput.getText().toString()));
 
         btnBack = findViewById(R.id.btn_back);
         btnBack.setOnClickListener(v -> finish());
 
         btnExit = findViewById(R.id.btn_exit);
-        btnExit.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("채팅 종료");
-            builder.setMessage("채팅방을 나가시겠습니까?");
-            builder.setPositiveButton("확인", (dialog, which) -> {
-                deleteChatAndMessages(chatId);
-                finish();
-            });
-            builder.setNegativeButton("취소", (dialog, which) -> dialog.dismiss());
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
-        });
+        btnExit.setOnClickListener(v -> deleteChatAndMessages(chatId));
 
         btnAdd = findViewById(R.id.btn_add);
         btnAdd.setOnClickListener(v -> toggleMenu()); // + 버튼 클릭 이벤트 추가
@@ -105,11 +93,19 @@ public class ChatActivity extends AppCompatActivity {
         layoutInput = findViewById(R.id.layout_input);
         layoutMenu = findViewById(R.id.layout_menu); //
 
+        btnSendMoney = findViewById(R.id.send_money); // 송금 버튼 초기화
+        btnSendMoney.setOnClickListener(v -> {
+            Intent intent = new Intent(ChatActivity.this, SendMoneyActivity.class);
+            intent.putExtra("senderEmail", userEmail1);
+            intent.putExtra("receiverEmail", userEmail2);
+            intent.putExtra("receiverName", receiverName);
+            startActivity(intent);
+        });
+
         fetchChat(chatId, userEmail1, userEmail2);
         setupRealtimeMessageUpdates(chatId);
         loadUsers();
     }
-
 
     private void toggleMenu() {
         if (isMenuVisible) {
@@ -145,7 +141,6 @@ public class ChatActivity extends AppCompatActivity {
         btnAdd.setImageResource(R.drawable.ic_add); // + 아이콘으로 변경
         isMenuVisible = false;
     }
-
 
     private void loadUsers() {
         Executors.newSingleThreadExecutor().execute(() -> {
