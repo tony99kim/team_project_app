@@ -150,7 +150,6 @@ public class PostDetailFragment extends Fragment {
         bookmarkButton = view.findViewById(R.id.button_bookmark);
         favoriteButton = view.findViewById(R.id.button_favorite);
 
-
         commentEditText = view.findViewById(R.id.commentEditText);
         commentButton = view.findViewById(R.id.commentButton);
         commentRecyclerView = view.findViewById(R.id.commentListRecyclerView);
@@ -163,7 +162,7 @@ public class PostDetailFragment extends Fragment {
         contentTextView.setText(postContent);
 
         loadPostImages();
-        loadPosterName();
+        loadPosterName(); // 올바른 Firestore 문서 참조를 사용하여 호출
         loadComments();
         loadFavoriteStatus(); // 초기 좋아요 상태 로드
 

@@ -24,7 +24,7 @@ import com.example.team_project.Chat.Data.Chat;
 import com.example.team_project.Environment.Store.Payment.PaymentFragment;
 import com.example.team_project.Environment.Store.Product.Product;
 import com.example.team_project.R;
-import com.example.team_project.Chat.ChatActivity;
+import com.example.team_project.Chat.ChatRoomFragment;
 import com.example.team_project.Chat.Data.Message;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -264,7 +264,7 @@ public class ProductDetailFragment extends Fragment {
     }
 
     private void navigateToChat(String chatRoomId) {
-        Intent intent = new Intent(getActivity(), ChatActivity.class);
+        Intent intent = new Intent(getActivity(),ChatRoomFragment.class);
         intent.putExtra("chatRoomId", chatRoomId);
         startActivity(intent);
     }
@@ -277,7 +277,7 @@ public class ProductDetailFragment extends Fragment {
     }
 
     private void navigateToChatRoom(String chatRoomId, String userName) {
-        Intent intent = new Intent(getActivity(), ChatActivity.class);
+        Intent intent = new Intent(getActivity(), ChatRoomFragment.class);
         intent.putExtra("userEmail1", FirebaseAuth.getInstance().getCurrentUser().getEmail());
         intent.putExtra("userEmail2", userName);
 
