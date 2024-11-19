@@ -1,3 +1,4 @@
+// MainActivity.java
 package com.example.team_project;
 
 import android.content.Intent;
@@ -79,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
             } else {
                 // 로그인 실패 처리, 필요한 경우 추가 작업
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                finish();
             }
         }
     }
