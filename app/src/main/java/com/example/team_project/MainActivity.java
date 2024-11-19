@@ -1,4 +1,3 @@
-// MainActivity.java
 package com.example.team_project;
 
 import android.content.Intent;
@@ -16,7 +15,6 @@ import com.example.team_project.Environment.EnvironmentFragment;
 import com.example.team_project.Home.HomeFragment;
 import com.example.team_project.Profile.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,16 +23,12 @@ public class MainActivity extends AppCompatActivity {
 
     private final String PREFERENCES_NAME = "team_project_preferences";
     private final String PREF_KEY_IS_LOGGED_IN = "isLoggedIn";
-    private final String PREF_KEY_USER_ID = "userId"; // 사용자 ID를 저장하기 위한 키
-
-    private FirebaseFirestore db;
+    private final String PREF_KEY_AUTO_LOGIN = "isAutoLogin"; // 자동 로그인 상태를 저장하기 위한 키
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        db = FirebaseFirestore.getInstance();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -54,32 +48,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // 로그인 상태를 확인하고, 필요한 경우 LoginActivity로 이동합니다.
-        checkLoginState();
-    }
-
-    private void checkLoginState() {
-        SharedPreferences preferences = getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE);
-        boolean isLoggedIn = preferences.getBoolean(PREF_KEY_IS_LOGGED_IN, false);
-        String userId = preferences.getString(PREF_KEY_USER_ID, null);
-
-        if (!isLoggedIn || userId == null) {
-            redirectToLogin();
+        if (!checkLoginState()) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivityForResult(intent, LOGIN_REQUEST_CODE); // 로그인 액티비티로 이동 변경
         } else {
-            db.collection("users").document(userId).get().addOnCompleteListener(task -> {
-                if (task.isSuccessful() && task.getResult().exists()) {
-                    // 로그인 상태이므로 메인 화면 구성
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
-                } else {
-                    // 사용자 ID가 존재하지 않으면 로그인 페이지로 이동
-                    redirectToLogin();
-                }
-            });
+            // 로그인 상태이므로 메인 화면 구성
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
+        }
+
+        // 추가된 코드: navigateTo 인텐트 처리
+        Intent intent = getIntent();
+        if (intent != null && "EnvironmentFragment".equals(intent.getStringExtra("navigateTo"))) {
+            int targetPage = intent.getIntExtra("targetPage", 0); // 기본값은 0 (포인트 페이지)
+            navigateToStoreFragment(targetPage);
         }
     }
 
-    private void redirectToLogin() {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivityForResult(intent, LOGIN_REQUEST_CODE); // 로그인 액티비티로 이동
+    private boolean checkLoginState() {
+        SharedPreferences preferences = getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE);
+        return preferences.getBoolean(PREF_KEY_IS_LOGGED_IN, false); // 로그인 상태만 확인하도록 수정
     }
 
     // LoginActivity로부터 결과를 받음
@@ -119,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
                 return true;
             };
+
 
     @Override
     public boolean onSupportNavigateUp() {
