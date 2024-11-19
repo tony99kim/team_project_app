@@ -1,5 +1,6 @@
 package com.example.team_project.Home;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,12 +19,14 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.team_project.Board.BoardKategorie.Post;
 import com.example.team_project.Board.BoardKategorie.PostDetailFragment;
+import com.example.team_project.LoginActivity;
 import com.example.team_project.Profile.event.Event;
 import com.example.team_project.Profile.event.EventDetailFragment;
 import com.example.team_project.R;
 import com.example.team_project.Toolbar.NotificationsFragment;
 import com.example.team_project.Toolbar.SearchFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -62,7 +65,17 @@ public class HomeFragment extends Fragment {
         event3 = view.findViewById(R.id.event_3);
 
         db = FirebaseFirestore.getInstance();
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser == null) {
+            // Redirect to LoginActivity if the user is not logged in
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+            return view;
+        } else {
+            userId = currentUser.getUid();
+        }
 
         toolbar.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
