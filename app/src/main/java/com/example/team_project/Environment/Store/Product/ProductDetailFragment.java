@@ -88,6 +88,7 @@ public class ProductDetailFragment extends Fragment {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("상품상세");
 
         // 뷰 초기화
         viewPager2 = view.findViewById(R.id.viewPager_images);
