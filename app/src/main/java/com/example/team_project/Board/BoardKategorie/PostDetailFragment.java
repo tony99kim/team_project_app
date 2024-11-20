@@ -118,6 +118,7 @@ public class PostDetailFragment extends Fragment {
 
         if (postId != null) {
             incrementViewCount();
+            loadBookmarkStatus(); // Load bookmark status when fragment is created
         } else {
             Log.e("PostDetailFragment", "postId가 null입니다.");
         }
@@ -404,6 +405,24 @@ public class PostDetailFragment extends Fragment {
                     commentAdapter.notifyDataSetChanged(); // RecyclerView 업데이트
                 })
                 .addOnFailureListener(e -> Log.e("PostDetailFragment", "댓글 로드 실패", e));
+    }
+
+    private void loadBookmarkStatus() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference bookmarkRef = db.collection("users").document(userId)
+                .collection("bookmarks").document(postId);
+
+        bookmarkRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                isBookmarked = true;
+                bookmarkButton.setImageResource(R.drawable.post_bookmark); // 북마크 상태 이미지
+            } else {
+                isBookmarked = false;
+                bookmarkButton.setImageResource(R.drawable.post_bookmark_border); // 기본 상태 이미지
+            }
+        }).addOnFailureListener(e -> {
+            Log.e("PostDetailFragment", "북마크 상태 로드 실패", e);
+        });
     }
 
     private void toggleBookmark() {
