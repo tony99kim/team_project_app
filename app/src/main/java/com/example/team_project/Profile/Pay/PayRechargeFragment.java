@@ -18,7 +18,7 @@ import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class PayrechargeFragment extends Fragment {
+public class PayRechargeFragment extends Fragment {
 
     private FirebaseFirestore db;
     private String userId;
@@ -27,7 +27,7 @@ public class PayrechargeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile_payrecharge, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile_pay_recharge, container, false);
 
         // 툴바 설정
         Toolbar toolbar = view.findViewById(R.id.toolbar);
