@@ -34,6 +34,7 @@ import com.example.team_project.Profile.notice.NoticeFragment;
 import com.example.team_project.Profile.writtenproduct.WrittenProductFragment;
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -65,7 +66,19 @@ public class ProfileFragment extends Fragment {
         sharedPreferences = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         storageRef = FirebaseStorage.getInstance().getReference();
         db = FirebaseFirestore.getInstance();
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser != null) {
+            userId = currentUser.getUid();
+        } else {
+            // Handle the case where the user is not logged in
+            // For example, redirect to login screen or show a message
+            Toast.makeText(getActivity(), "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+            return view;
+        }
 
         // UI 요소 초기화
         profileImageView = view.findViewById(R.id.profileImageView);
