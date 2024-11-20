@@ -2,6 +2,8 @@ package com.example.team_project.Environment.Store.Payment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,12 +17,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class PaymentFragment extends AppCompatActivity {
 
-    private String productId, price, deliveryDestination, request;
+    private String productId, price, deliveryDestination, request, productTitle;
     private int accountBalance, environmentPoint;
     private TextView priceTextView, deliveryDestinationTextView, totalPriceTextView, environmentPointTextView;
     private EditText requestEditText, usePointsEditText;
@@ -39,10 +42,11 @@ public class PaymentFragment extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-        // Intent로 전달된 데이터 받기
+        // Intent로 전���된 데이터 받기
         Intent intent = getIntent();
         productId = intent.getStringExtra("productId");
         price = intent.getStringExtra("price");
+        productTitle = intent.getStringExtra("title"); // 상품명 받기
 
         // 결제 관련 UI 구성 (예: 가격 표시, 결제 버튼 등)
         priceTextView = findViewById(R.id.textView_price);
@@ -66,9 +70,21 @@ public class PaymentFragment extends AppCompatActivity {
             startActivityForResult(intent1, 1);
         });
 
-        usePointsEditText.setOnEditorActionListener((v, actionId, event) -> {
-            updateTotalPrice();
-            return false;
+        usePointsEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Do nothing
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updateTotalPrice();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Do nothing
+            }
         });
 
         payButton.setOnClickListener(v -> processPayment());
@@ -109,10 +125,14 @@ public class PaymentFragment extends AppCompatActivity {
         Map<String, Object> paymentInfo = new HashMap<>();
         paymentInfo.put("productId", productId);
         paymentInfo.put("price", price);
+        paymentInfo.put("finalPrice", totalPrice); // 포인트로 삭감된 최종 결제 금액 추가
         paymentInfo.put("deliveryDestination", deliveryDestination);
         paymentInfo.put("request", requestEditText.getText().toString());
         paymentInfo.put("usePoints", usePoints);
         paymentInfo.put("userId", user.getUid());
+        paymentInfo.put("createdAt", new Date());
+        paymentInfo.put("type", "결제"); // 결제 타입 추가
+        paymentInfo.put("productTitle", productTitle); // 상품명 추가
 
         db.collection("payments").add(paymentInfo).addOnSuccessListener(documentReference -> {
             // 잔액 차감

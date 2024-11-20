@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +26,8 @@ import com.example.team_project.LoginActivity;
 import com.example.team_project.Profile.Authentication.AuthenticationPostFragment;
 import com.example.team_project.Profile.CustomerService.CustomerServiceFragment;
 import com.example.team_project.Profile.Pay.PayExchangeFragment;
-import com.example.team_project.Profile.Pay.PayrechargeFragment;
+import com.example.team_project.Profile.Pay.PayRechargeFragment;
+import com.example.team_project.Profile.Pay.TransactionHistoryFragment;
 import com.example.team_project.Profile.Wishlist.WishlistFragment;
 import com.example.team_project.Profile.Wishlist.WishpostFragment;
 import com.example.team_project.Profile.Wishlist.WithdrawFragment;
@@ -114,7 +116,7 @@ public class ProfileFragment extends Fragment {
 
         // 각 버튼 클릭 리스너 설정
         logoutButton.setOnClickListener(v -> logout());
-        payrecharge.setOnClickListener(v -> openFragment(new PayrechargeFragment()));
+        payrecharge.setOnClickListener(v -> openFragment(new PayRechargeFragment()));
         payExchangeButton.setOnClickListener(v -> openFragment(new PayExchangeFragment()));
         noticeButton.setOnClickListener(v -> openFragment(new NoticeFragment()));
         customerServiceButton.setOnClickListener(v -> openFragment(new CustomerServiceFragment()));
@@ -128,6 +130,10 @@ public class ProfileFragment extends Fragment {
 
         // 작성한 상품 버튼 클릭 시 이동
         writtenProductButton.setOnClickListener(v -> openWrittenProductFragment());
+
+        // userPayLayout 클릭 리스너 설정
+        RelativeLayout userPayLayout = view.findViewById(R.id.userPayLayout);
+        userPayLayout.setOnClickListener(v -> openTransactionHistoryFragment());
 
         return view;
     }
@@ -171,6 +177,12 @@ public class ProfileFragment extends Fragment {
         // 작성한 상품 프래그먼트로 이동
         WrittenProductFragment writtenProductFragment = new WrittenProductFragment();
         openFragment(writtenProductFragment);
+    }
+
+    private void openTransactionHistoryFragment() {
+        // TransactionHistoryFragment로 이동
+        TransactionHistoryFragment transactionHistoryFragment = new TransactionHistoryFragment();
+        openFragment(transactionHistoryFragment);
     }
 
     @Override

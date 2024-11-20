@@ -346,6 +346,7 @@ public class ProductDetailFragment extends Fragment {
         Intent intent = new Intent(getActivity(), PaymentFragment.class); // 결제 페이지로 이동
         intent.putExtra("productId", productId); // 상품 ID 전달
         intent.putExtra("price", price); // 가격 전달
+        intent.putExtra("title", title); // 상품명 전달
         startActivity(intent);
     }
 
@@ -355,6 +356,7 @@ public class ProductDetailFragment extends Fragment {
         intent.putExtra("userEmail2", userName);
 
         // 판매자 이름을 추가로 전달
+        intent.putExtra("user2", userName); // 판매자 이름 전달
         intent.putExtra("user2", userName); // 판매자 이름 전달
 
         intent.putExtra("chatRoomTitle", userName); // 채팅방 제목으로 판매자 이름 전달

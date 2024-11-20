@@ -1,4 +1,3 @@
-// SendMoneyActivity.java
 package com.example.team_project.Chat;
 
 import android.content.Intent;
@@ -101,6 +100,7 @@ public class SendMoneyActivity extends AppCompatActivity {
 
                         // 트랜잭션 기록
                         Map<String, Object> transaction = new HashMap<>();
+                        transaction.put("type", "송금");
                         transaction.put("sender", senderEmail);
                         transaction.put("receiver", receiverEmail);
                         transaction.put("amount", amount);
@@ -108,7 +108,7 @@ public class SendMoneyActivity extends AppCompatActivity {
 
                         db.collection("transactions").add(transaction).addOnSuccessListener(documentReference -> {
                             Toast.makeText(this, "송금이 완료되었습니다.", Toast.LENGTH_SHORT).show();
-                            sendTransactionMessage(amount); // 송금 메시지 전송
+                            sendTransactionMessage(amount); // 송금 메시지 ��송
                             Intent intent = new Intent(SendMoneyActivity.this, ChatActivity.class);
                             intent.putExtra("userEmail1", senderEmail);
                             intent.putExtra("userEmail2", receiverEmail);
