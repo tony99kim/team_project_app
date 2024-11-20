@@ -5,7 +5,6 @@
         android:id="@+id/action_search"
         android:title="@string/search"
         android:icon="@drawable/ic_search"
-        app:showAsAction="ifRoom|collapseActionView"
-        app:actionLayout="@layout/search_view_layout" /> <!-- SearchView 레이아웃 추가 -->
+        app:showAsAction="ifRoom|collapseActionView"/>
 
 </menu>
