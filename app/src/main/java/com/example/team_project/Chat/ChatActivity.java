@@ -88,12 +88,12 @@ public class ChatActivity extends AppCompatActivity {
         btnExit.setOnClickListener(v -> deleteChatAndMessages(chatId));
 
         btnAdd = findViewById(R.id.btn_add);
-        btnAdd.setOnClickListener(v -> toggleMenu()); // + 버튼 클릭 이벤트 추가
+        btnAdd.setOnClickListener(v -> toggleMenu());
 
         layoutInput = findViewById(R.id.layout_input);
-        layoutMenu = findViewById(R.id.layout_menu); //
+        layoutMenu = findViewById(R.id.layout_menu);
 
-        btnSendMoney = findViewById(R.id.send_money); // 송금 버튼 초기화
+        btnSendMoney = findViewById(R.id.send_money);
         btnSendMoney.setOnClickListener(v -> {
             Intent intent = new Intent(ChatActivity.this, SendMoneyActivity.class);
             intent.putExtra("senderEmail", userEmail1);
@@ -106,6 +106,7 @@ public class ChatActivity extends AppCompatActivity {
         setupRealtimeMessageUpdates(chatId);
         loadUsers();
     }
+
 
     private void toggleMenu() {
         if (isMenuVisible) {
