@@ -32,9 +32,6 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.graphics.Color;
 
-
-
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -66,8 +63,6 @@ public class PostDetailFragment extends Fragment {
     private String postAuthorId; // 게시물 작성자 ID
     private String postTitle; // 게시물 제목
     private String postContent; // 게시물 내용
-
-
     private String postName; // 게시물 작성자 이름
     private String userId; // 현재 사용자 ID
 
@@ -79,13 +74,11 @@ public class PostDetailFragment extends Fragment {
     private ImageView favoriteButton; // 좋아요 버튼
     private boolean isFavorite = false; // 좋아요 상태
 
-
-    private EditText commentEditText ; // 댓글 입력 EditText
+    private EditText commentEditText; // 댓글 입력 EditText
     private Button commentButton; // 댓글 작성 버튼
     private RecyclerView commentRecyclerView; // 댓글 목록 RecyclerView
     private CommentAdapter commentAdapter; // 댓글 Adapter
     private List<Comment> commentList; // 댓글 목록
-
 
     public static PostDetailFragment newInstance(String postId, String postAuthorId, String postTitle, String postContent, String postName) {
         PostDetailFragment fragment = new PostDetailFragment();
@@ -172,6 +165,7 @@ public class PostDetailFragment extends Fragment {
         return view;
     }
 
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_post_detail, menu); // 메뉴 인플레이트
@@ -216,7 +210,6 @@ public class PostDetailFragment extends Fragment {
             return super.onOptionsItemSelected(item);
         }
     }
-
 
     private void openEditDialog() {
         // 수정할 내용을 입력할 수 있는 다이얼로그 표시
@@ -277,8 +270,6 @@ public class PostDetailFragment extends Fragment {
                     Toast.makeText(getContext(), "게시물 삭제 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
-
 
     private void loadFavoriteStatus() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -360,9 +351,6 @@ public class PostDetailFragment extends Fragment {
         });
     }
 
-
-
-
     private void addComment() {
         String commentContent = commentEditText.getText().toString().trim();
         if (!commentContent.isEmpty()) {
@@ -397,8 +385,6 @@ public class PostDetailFragment extends Fragment {
         }
     }
 
-
-
     private void loadComments() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("comment")
@@ -419,9 +405,6 @@ public class PostDetailFragment extends Fragment {
                 })
                 .addOnFailureListener(e -> Log.e("PostDetailFragment", "댓글 로드 실패", e));
     }
-
-
-
 
     private void toggleBookmark() {
         if (isBookmarked) {
@@ -469,6 +452,10 @@ public class PostDetailFragment extends Fragment {
 
     private void loadPosterName() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        if (postAuthorId == null || postAuthorId.isEmpty()) {
+            posterNameTextView.setText("알 수 없는 사용자");
+            return;
+        }
         DocumentReference userRef = db.collection("users").document(postAuthorId); // postAuthorId로 사용자 정보 조회
 
         userRef.get().addOnCompleteListener(task -> {
@@ -476,12 +463,12 @@ public class PostDetailFragment extends Fragment {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     String posterName = document.getString("name");
-                    posterNameTextView.setText(posterName != null ? posterName : "Unknown User");
+                    posterNameTextView.setText(posterName != null ? posterName : "알 수 없는 사용자");
                 } else {
-                    Log.d("PostDetailFragment", "문서가 존재하지 않습니다");
+                    posterNameTextView.setText("알 수 없는 사용자");
                 }
             } else {
-                Log.d("PostDetailFragment", "문서 가져오기 실패: ", task.getException());
+                posterNameTextView.setText("사용자 로드 오류");
             }
         });
     }
