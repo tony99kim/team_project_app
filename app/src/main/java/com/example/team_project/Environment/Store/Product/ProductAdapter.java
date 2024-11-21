@@ -52,7 +52,15 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         Product product = productList.get(position);
-        holder.productTitleTextView.setText(product.getTitle());
+
+        // 상품 제목 동적 설정
+        if (product.isBusiness()) { // isBusiness()는 Product 클래스에 있는 메서드라고 가정
+            holder.productTitleTextView.setText(product.getTitle() + " (판매상품)");
+        } else {
+            holder.productTitleTextView.setText(product.getTitle());
+        }
+
+        // 가격 설정
         holder.productPriceTextView.setText(product.getPrice());
 
         // Firebase Storage에서 이미지 로드
