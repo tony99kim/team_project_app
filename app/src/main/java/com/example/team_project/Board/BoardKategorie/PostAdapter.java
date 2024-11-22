@@ -75,6 +75,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             String imageUrl = imageUrls.get(0);
             Glide.with(context)
                     .load(imageUrl)
+                    .fitCenter() // 이미지 전체가 보이도록 설정
                     .into(holder.postImageView);
         } else {
             holder.postImageView.setImageResource(R.drawable.tree_image);
