@@ -369,10 +369,11 @@ public class PostDetailFragment extends Fragment implements CommentAdapter.OnCom
                             commentData.put("name", userName); // 댓글 작성자 이름을 사용자 이름으로 설정
                             commentData.put("timestamp", timestamp); // 타임스탬프 추가
                             commentData.put("postId", postId); // 게시물 ID
+                            commentData.put("userId", userId); // 댓글 작성자 ID 추가
 
-                            db.collection("comment")
-                                    .add(commentData)
-                                    .addOnSuccessListener(documentReference -> {
+                            db.collection("comment").document(userId)
+                                    .set(commentData)
+                                    .addOnSuccessListener(aVoid -> {
                                         commentEditText.setText(""); // 입력란 초기화
                                         loadComments(); // 댓글 로드
                                         Toast.makeText(getContext(), "댓글이 등록되었습니다.", Toast.LENGTH_SHORT).show();
@@ -607,12 +608,22 @@ public class PostDetailFragment extends Fragment implements CommentAdapter.OnCom
 
     @Override
     public void onEditComment(Comment comment) {
-        openEditCommentDialog(comment);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null && currentUser.getUid().equals(comment.getUserId())) {
+            openEditCommentDialog(comment);
+        } else {
+            Toast.makeText(getContext(), "자신의 댓글만 수정할 수 있습니다.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     public void onDeleteComment(Comment comment) {
-        deleteComment(comment);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null && currentUser.getUid().equals(comment.getUserId())) {
+            deleteComment(comment);
+        } else {
+            Toast.makeText(getContext(), "자신의 댓글만 삭제할 수 있습니다.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void openEditCommentDialog(Comment comment) {

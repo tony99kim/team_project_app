@@ -4,10 +4,20 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- 상단 툴바 -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_post_detail"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:title=" "/>
+
     <!-- ScrollView 추가 -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/toolbar_post_detail"
         android:layout_above="@+id/board_post_comment_layout">
 
         <LinearLayout
@@ -15,14 +25,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:weightSum="10">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar_post_detail"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:title=" "/>
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewPager_images"

@@ -6,11 +6,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.team_project.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -61,23 +64,31 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         String formattedDate = formatTimestamp(timeInMillis);
         holder.timestampTextView.setText(formattedDate); // 댓글 작성 시간 설정
 
-        holder.commentMenu.setOnClickListener(v -> {
-            PopupMenu popupMenu = new PopupMenu(holder.itemView.getContext(), holder.commentMenu);
-            popupMenu.inflate(R.menu.menu_comment);
-            popupMenu.setOnMenuItemClickListener(item -> {
-                int itemId = item.getItemId();
-                if (itemId == R.id.edit_comment) {
-                    onCommentActionListener.onEditComment(comment);
-                    return true;
-                } else if (itemId == R.id.delete_comment) {
-                    onCommentActionListener.onDeleteComment(comment);
-                    return true;
-                } else {
-                    return false;
-                }
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String currentUserId = currentUser != null ? currentUser.getUid() : null;
+
+        if (currentUserId != null && currentUserId.equals(comment.getUserId())) {
+            holder.commentMenu.setVisibility(View.VISIBLE);
+            holder.commentMenu.setOnClickListener(v -> {
+                PopupMenu popupMenu = new PopupMenu(holder.itemView.getContext(), holder.commentMenu);
+                popupMenu.inflate(R.menu.menu_comment);
+                popupMenu.setOnMenuItemClickListener(item -> {
+                    int itemId = item.getItemId();
+                    if (itemId == R.id.edit_comment) {
+                        onCommentActionListener.onEditComment(comment);
+                        return true;
+                    } else if (itemId == R.id.delete_comment) {
+                        onCommentActionListener.onDeleteComment(comment);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
+                popupMenu.show();
             });
-            popupMenu.show();
-        });
+        } else {
+            holder.commentMenu.setVisibility(View.GONE);
+        }
     }
 
     @Override
