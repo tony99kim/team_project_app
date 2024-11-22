@@ -6,8 +6,8 @@ public class Comment {
     private String name; // 작성자 이름
     private String commentContent; // 댓글 내용
     private Timestamp timestamp; // 댓글 작성 시간
-
     private String postId; // 댓글이 달린 게시물 ID
+    private String commentId; // 댓글 ID
 
     // 기본 생성자
     public Comment() {
@@ -20,6 +20,15 @@ public class Comment {
         this.commentContent = commentContent; // 댓글 내용 초기화
         this.timestamp = timestamp; // 매개변수로 받은 timestamp로 초기화
         this.postId = postId; // 게시물 ID 초기화
+    }
+
+    // 매개변수를 받는 생성자 (commentId 포함)
+    public Comment(String name, String commentContent, Timestamp timestamp, String postId, String commentId) {
+        this.name = name; // 작성자 이름 초기화
+        this.commentContent = commentContent; // 댓글 내용 초기화
+        this.timestamp = timestamp; // 매개변수로 받은 timestamp로 초기화
+        this.postId = postId; // 게시물 ID 초기화
+        this.commentId = commentId; // 댓글 ID 초기화
     }
 
     // Getter 메서드
@@ -39,6 +48,10 @@ public class Comment {
         return postId; // 게시물 ID 반환
     }
 
+    public String getCommentId() {
+        return commentId; // 댓글 ID 반환
+    }
+
     // Setter 메서드
     public void setName(String name) {
         this.name = name; // 작성자 이름 설정
@@ -54,5 +67,9 @@ public class Comment {
 
     public void setPostId(String postId) {
         this.postId = postId; // 게시물 ID 설정
+    }
+
+    public void setCommentId(String commentId) {
+        this.commentId = commentId; // 댓글 ID 설정
     }
 }

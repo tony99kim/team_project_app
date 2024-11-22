@@ -57,7 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PostDetailFragment extends Fragment {
+public class PostDetailFragment extends Fragment implements CommentAdapter.OnCommentActionListener {
 
     private String postId; // Firestore 문서 ID
     private String postAuthorId; // 게시물 작성자 ID
@@ -65,6 +65,8 @@ public class PostDetailFragment extends Fragment {
     private String postContent; // 게시물 내용
     private String postName; // 게시물 작성자 이름
     private String userId; // 현재 사용자 ID
+
+    private String commentId;
 
     private ViewPager2 viewPager2;
     private TextView titleTextView, contentTextView, posterNameTextView, viewsTextView;
@@ -108,7 +110,7 @@ public class PostDetailFragment extends Fragment {
             postName = getArguments().getString("authorName");
 
             commentList = new ArrayList<>();
-            commentAdapter = new CommentAdapter(commentList);
+            commentAdapter = new CommentAdapter(commentList, this);
         }
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -399,8 +401,9 @@ public class PostDetailFragment extends Fragment {
                         String name = document.getString("name");
                         Timestamp timestamp = document.getTimestamp("timestamp");
                         String postId = document.getString("postId");
+                        String commentId = document.getId(); // 댓글 ID 가져오기
 
-                        commentList.add(new Comment(name, commentContent, timestamp, postId));
+                        commentList.add(new Comment(name, commentContent, timestamp, postId, commentId));
                     }
                     commentAdapter.notifyDataSetChanged(); // RecyclerView 업데이트
                 })
@@ -599,5 +602,59 @@ public class PostDetailFragment extends Fragment {
                 imageView = itemView.findViewById(R.id.postImageView);
             }
         }
+    }
+
+
+    @Override
+    public void onEditComment(Comment comment) {
+        openEditCommentDialog(comment);
+    }
+
+    @Override
+    public void onDeleteComment(Comment comment) {
+        deleteComment(comment);
+    }
+
+    private void openEditCommentDialog(Comment comment) {
+        final EditText commentEditText = new EditText(getContext());
+        commentEditText.setText(comment.getCommentContent());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("댓글 수정")
+                .setView(commentEditText)
+                .setPositiveButton("저장", (dialog, which) -> {
+                    String newContent = commentEditText.getText().toString();
+                    updateComment(comment, newContent);
+                })
+                .setNegativeButton("취소", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    private void updateComment(Comment comment, String newContent) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("comment").document(comment.getCommentId())
+                .update("commentContent", newContent)
+                .addOnSuccessListener(aVoid -> {
+                    comment.setCommentContent(newContent);
+                    commentAdapter.notifyDataSetChanged();
+                    Toast.makeText(getContext(), "댓글이 수정되었습니다.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "댓글 수정 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void deleteComment(Comment comment) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("comment").document(comment.getCommentId())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    commentList.remove(comment);
+                    commentAdapter.notifyDataSetChanged();
+                    Toast.makeText(getContext(), "댓글이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "댓글 삭제 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 }
