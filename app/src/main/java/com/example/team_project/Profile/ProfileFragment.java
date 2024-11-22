@@ -73,12 +73,10 @@ public class ProfileFragment extends Fragment {
         if (currentUser != null) {
             userId = currentUser.getUid();
         } else {
-            // Handle the case where the user is not logged in
-            // For example, redirect to login screen or show a message
+            // 로그인 정보가 없을 경우 LoginActivity로 이동
             Toast.makeText(getActivity(), "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getActivity(), LoginActivity.class);
             startActivity(intent);
-            getActivity().finish();
             return view;
         }
 
