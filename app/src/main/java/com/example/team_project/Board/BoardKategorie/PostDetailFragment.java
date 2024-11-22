@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class PostDetailFragment extends Fragment implements CommentAdapter.OnCommentActionListener {
 
@@ -364,6 +365,7 @@ public class PostDetailFragment extends Fragment implements CommentAdapter.OnCom
                         if (documentSnapshot.exists()) {
                             String userName = documentSnapshot.getString("name"); // 사용자 이름 가져오기
                             Timestamp timestamp = Timestamp.now();
+                            String commentId = UUID.randomUUID().toString(); // 댓글 ID 생성
                             Map<String, Object> commentData = new HashMap<>();
                             commentData.put("commentContent", commentContent);
                             commentData.put("name", userName); // 댓글 작성자 이름을 사용자 이름으로 설정
@@ -371,7 +373,7 @@ public class PostDetailFragment extends Fragment implements CommentAdapter.OnCom
                             commentData.put("postId", postId); // 게시물 ID
                             commentData.put("userId", userId); // 댓글 작성자 ID 추가
 
-                            db.collection("comment").document(userId)
+                            db.collection("comment").document(commentId)
                                     .set(commentData)
                                     .addOnSuccessListener(aVoid -> {
                                         commentEditText.setText(""); // 입력란 초기화
@@ -403,8 +405,9 @@ public class PostDetailFragment extends Fragment implements CommentAdapter.OnCom
                         Timestamp timestamp = document.getTimestamp("timestamp");
                         String postId = document.getString("postId");
                         String commentId = document.getId(); // 댓글 ID 가져오기
+                        String userId = document.getString("userId");
 
-                        commentList.add(new Comment(name, commentContent, timestamp, postId, commentId));
+                        commentList.add(new Comment(name, commentContent, timestamp, postId, commentId, userId));
                     }
                     commentAdapter.notifyDataSetChanged(); // RecyclerView 업데이트
                 })
@@ -642,30 +645,38 @@ public class PostDetailFragment extends Fragment implements CommentAdapter.OnCom
     }
 
     private void updateComment(Comment comment, String newContent) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("comment").document(comment.getCommentId())
-                .update("commentContent", newContent)
-                .addOnSuccessListener(aVoid -> {
-                    comment.setCommentContent(newContent);
-                    commentAdapter.notifyDataSetChanged();
-                    Toast.makeText(getContext(), "댓글이 수정되었습니다.", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getContext(), "댓글 수정 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+        if (comment.getCommentId() != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("comment").document(comment.getCommentId())
+                    .update("commentContent", newContent)
+                    .addOnSuccessListener(aVoid -> {
+                        comment.setCommentContent(newContent);
+                        commentAdapter.notifyDataSetChanged();
+                        Toast.makeText(getContext(), "댓글이 수정되었습니다.", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "댓글 수정 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            Toast.makeText(getContext(), "댓글 ID가 없습니다.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void deleteComment(Comment comment) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("comment").document(comment.getCommentId())
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    commentList.remove(comment);
-                    commentAdapter.notifyDataSetChanged();
-                    Toast.makeText(getContext(), "댓글이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getContext(), "댓글 삭제 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+        if (comment.getCommentId() != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("comment").document(comment.getCommentId())
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        commentList.remove(comment);
+                        commentAdapter.notifyDataSetChanged();
+                        Toast.makeText(getContext(), "댓글이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "댓글 삭제 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            Toast.makeText(getContext(), "댓글 ID가 없습니다.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

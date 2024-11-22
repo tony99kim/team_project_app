@@ -1,6 +1,7 @@
 package com.example.team_project.Board.PostCommnet;
 
 import com.google.firebase.Timestamp;
+import java.util.UUID;
 
 public class Comment {
     private String name; // 작성자 이름
@@ -22,6 +23,7 @@ public class Comment {
         this.timestamp = timestamp; // 매개변수로 받은 timestamp로 초기화
         this.postId = postId; // 게시물 ID 초기화
         this.userId = userId; // 댓글 작성자 ID 초기화
+        this.commentId = generateCommentId(); // 댓글 ID 생성
     }
 
     // 매개변수를 받는 생성자 (commentId 포함)
@@ -30,7 +32,7 @@ public class Comment {
         this.commentContent = commentContent; // 댓글 내용 초기화
         this.timestamp = timestamp; // 매개변수로 받은 timestamp로 초기화
         this.postId = postId; // 게시물 ID 초기화
-        this.commentId = commentId; // 댓글 ID 초기화
+        this.commentId = commentId != null ? commentId : generateCommentId(); // 댓글 ID 초기화
         this.userId = userId; // 댓글 작성자 ID 초기화
     }
 
@@ -82,5 +84,10 @@ public class Comment {
 
     public void setUserId(String userId) {
         this.userId = userId; // 댓글 작성자 ID 설정
+    }
+
+    // 댓글 ID 생성 메서드
+    private String generateCommentId() {
+        return UUID.randomUUID().toString();
     }
 }
