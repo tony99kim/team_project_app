@@ -73,10 +73,10 @@ public class ProfileFragment extends Fragment {
         if (currentUser != null) {
             userId = currentUser.getUid();
         } else {
-            // 로그인 정보가 없을 경우 LoginActivity로 이동
             Toast.makeText(getActivity(), "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getActivity(), LoginActivity.class);
             startActivity(intent);
+            getActivity().finish();
             return view;
         }
 
@@ -186,7 +186,15 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        setUsernameFromFirebase(); // Firebase에서 닉네임을 가져와서 설정
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            setUsernameFromFirebase(); // Firebase에서 닉네임을 가져와서 설정
+        } else {
+            Toast.makeText(getActivity(), "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+        }
     }
 
     private void setUsernameFromFirebase() {
