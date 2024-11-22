@@ -26,46 +26,58 @@
             android:src="@drawable/post_favorite_border" />
     </androidx.appcompat.widget.Toolbar>
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager_images"
+    <!-- ScrollView 추가 -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_below="@id/toolbar_product_detail" />
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar_product_detail"
+        android:layout_above="@id/toolbar_bottom">
 
-    <!-- 판매자 이름 -->
-    <TextView
-        android:id="@+id/textView_seller_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/viewPager_images"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:text="Seller Name" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <!-- 제품 제목 -->
-    <TextView
-        android:id="@+id/textView_product_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/textView_seller_name"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:text="Product Title"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager_images"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
 
-    <!-- 제품 설명 -->
-    <TextView
-        android:id="@+id/textView_product_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/textView_product_title"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:text="Product Description"
-        android:textSize="16sp" />
+            <!-- 판매자 이름 -->
+            <TextView
+                android:id="@+id/textView_seller_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="16dp"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="Seller Name" />
+
+            <!-- 제품 제목 -->
+            <TextView
+                android:id="@+id/textView_product_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textView_seller_name"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="16dp"
+                android:text="Product Title"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <!-- 제품 설명 -->
+            <TextView
+                android:id="@+id/textView_product_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textView_product_title"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="16dp"
+                android:text="Product Description"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </ScrollView>
 
     <!-- 하단 툴바 -->
     <androidx.appcompat.widget.Toolbar
