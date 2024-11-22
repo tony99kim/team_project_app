@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.team_project.Environment.Point.PointAuthentication;
 import com.example.team_project.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -29,6 +31,7 @@ public class AuthenticationPostFragment extends Fragment {
     private RecyclerView recyclerView;
     private AuthenticationPostAdapter adapter;
     private List<PointAuthentication> authenticationPosts = new ArrayList<>();
+    private String currentUserId;
 
     @Nullable
     @Override
@@ -47,7 +50,13 @@ public class AuthenticationPostFragment extends Fragment {
         adapter = new AuthenticationPostAdapter(authenticationPosts);
         recyclerView.setAdapter(adapter);
 
-        loadAuthenticationPosts();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            currentUserId = currentUser.getUid();
+            loadAuthenticationPosts();
+        } else {
+            Toast.makeText(getActivity(), "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
+        }
 
         return view;
     }
@@ -55,6 +64,7 @@ public class AuthenticationPostFragment extends Fragment {
     private void loadAuthenticationPosts() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("pointAuthentications")
+                .whereEqualTo("userId", currentUserId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     authenticationPosts.clear();
