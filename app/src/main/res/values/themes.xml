@@ -3,8 +3,12 @@
     <style name="Base.Theme.Team_project" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-        <item name="colorPrimary">#A7D17A</item>
+        <!-- 툴바, 버튼 색상 -->
+        <item name="colorPrimary">#A0D468</item>
         <item name="colorPrimaryDark">#808080</item>
+        <!-- 안드로이드 스튜디오 시작화면 삭제 -->
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="Theme.Team_project" parent="Base.Theme.Team_project" />
