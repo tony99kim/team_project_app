@@ -31,15 +31,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     private List<Product> productList;
     private FirebaseFirestore firestore;
     private String currentUserId;
-    private boolean isInProfile; // 프로필 화면 여부를 확인하는 변수
+    private boolean isInProfile;
 
-    // 생성자
     public ProductAdapter(Context context, ArrayList<Product> productList, boolean isInProfile) {
         this.context = context;
         this.productList = productList;
         this.firestore = FirebaseFirestore.getInstance();
-        this.currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        this.isInProfile = isInProfile; // 초기화
+        this.currentUserId = FirebaseAuth.getInstance().getUid();
+        this.isInProfile = isInProfile;
     }
 
     @NonNull
@@ -53,11 +52,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         Product product = productList.get(position);
 
-        // 상품 제목 동적 설정
-        if (product.isBusiness()) { // isBusiness()는 Product 클래스에 있는 메서드라고 가정
-            holder.productTitleTextView.setText(product.getTitle() + " (판매상품)");
+        // 상품명 설정
+        holder.productTitleTextView.setText(product.getTitle());
+
+        // 기업 여부에 따른 이미지 표시
+        if (product.isBusiness()) {
+            holder.businessIndicatorImageView.setVisibility(View.VISIBLE);
         } else {
-            holder.productTitleTextView.setText(product.getTitle());
+            holder.businessIndicatorImageView.setVisibility(View.GONE);
         }
 
         // 가격 설정
@@ -70,16 +72,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             if (!listResult.getItems().isEmpty()) {
                 StorageReference firstFileRef = listResult.getItems().get(0);
                 firstFileRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                    if (uri != null && context != null && holder.productImageView != null) {
-                        Glide.with(context)
-                                .load(uri)
-                                .into(holder.productImageView);
-                    }
-                }).addOnFailureListener(e -> Log.e("ProductAdapter", "첫 번째 이미지 로드 실패", e));
+                    Glide.with(context)
+                            .load(uri)
+                            .into(holder.productImageView);
+                }).addOnFailureListener(e -> Log.e("ProductAdapter", "이미지 로드 실패", e));
             }
         }).addOnFailureListener(e -> Log.e("ProductAdapter", "파일 목록 가져오기 실패", e));
 
-        // 상품 클릭 시 상세 페이지로 이동
+        // 상품 클릭 이벤트
         holder.itemView.setOnClickListener(v -> {
             ProductDetailFragment productDetailFragment = ProductDetailFragment.newInstance(product);
             replaceFragment(productDetailFragment);
@@ -94,10 +94,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             holder.deleteButton.setVisibility(View.GONE);
         }
 
-        // 수정 및 삭제 버튼 클릭 리스너 설정
+        // 수정 버튼 클릭 리스너
         holder.editButton.setOnClickListener(v -> navigateToEditProduct(product.getProductId()));
+
+        // 삭제 버튼 클릭 리스너
         holder.deleteButton.setOnClickListener(v -> deleteProduct(product, position));
     }
+
 
     @Override
     public int getItemCount() {
@@ -108,6 +111,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         ImageView productImageView;
         TextView productTitleTextView;
         TextView productPriceTextView;
+        ImageView businessIndicatorImageView; // 기업 이미지 뷰
         Button editButton;
         Button deleteButton;
 
@@ -116,6 +120,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             productImageView = itemView.findViewById(R.id.productImageView);
             productTitleTextView = itemView.findViewById(R.id.productTitleTextView);
             productPriceTextView = itemView.findViewById(R.id.productPriceTextView);
+            businessIndicatorImageView = itemView.findViewById(R.id.businessIndicatorImageView); // 연결
             editButton = itemView.findViewById(R.id.editButton);
             deleteButton = itemView.findViewById(R.id.deleteButton);
         }
