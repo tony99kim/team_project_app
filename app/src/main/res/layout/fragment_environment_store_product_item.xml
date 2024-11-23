@@ -41,11 +41,11 @@
 
                 <ImageView
                     android:id="@+id/businessIndicatorImageView"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginStart="8dp"
                     android:visibility="gone"
-                    android:src="@drawable/post_favorite" />
+                    android:src="@drawable/enterprise" />
             </LinearLayout>
 
             <TextView
