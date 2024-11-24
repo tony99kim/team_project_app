@@ -1,6 +1,5 @@
 package com.example.team_project.Board;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -86,9 +85,8 @@ public class BoardFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_search) {
-            // 검색 아이콘 클릭 시 SearchActivity로 이동
-            Intent intent = new Intent(getActivity(), BordSearchFragment.class);
-            startActivity(intent);
+            // 검색 아이콘 클릭 시 BordSearchFragment로 이동
+            replaceFragment(new BordSearchFragment());
             return true;
         } else if (id == R.id.action_notifications) {
             replaceFragment(new NotificationsFragment());
@@ -96,8 +94,6 @@ public class BoardFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 
     private void loadPostsFromFirestore() {
         firestore.collection("posts") // Firestore에서 "posts" 컬렉션 참조

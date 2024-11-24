@@ -1,4 +1,3 @@
-// MainActivity.java
 package com.example.team_project;
 
 import android.content.Intent;
@@ -10,11 +9,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.example.team_project.Board.BoardFragment;
 import com.example.team_project.Chat.ChatFragment;
 import com.example.team_project.Environment.EnvironmentFragment;
 import com.example.team_project.Home.HomeFragment;
 import com.example.team_project.Profile.ProfileFragment;
+import com.example.team_project.Toolbar.BordSearchFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -137,4 +139,5 @@ public class MainActivity extends AppCompatActivity {
     public void onRegisterProductClicked(View view) {
         // 클릭 이벤트 처리 로직
     }
+
 }

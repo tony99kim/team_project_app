@@ -1,5 +1,6 @@
 package com.example.team_project.Environment.Store.Payment;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -42,7 +43,7 @@ public class PaymentFragment extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-        // Intent로 전���된 데이터 받기
+        // Intent로 전달된 데이터 받기
         Intent intent = getIntent();
         productId = intent.getStringExtra("productId");
         price = intent.getStringExtra("price");
@@ -66,8 +67,12 @@ public class PaymentFragment extends AppCompatActivity {
         loadUserInfo();
 
         selectDeliveryDestinationButton.setOnClickListener(v -> {
-            Intent intent1 = new Intent(PaymentFragment.this, DeliveryDestinationActivity.class);
-            startActivityForResult(intent1, 1);
+            try {
+                Intent intent1 = new Intent(PaymentFragment.this, DeliveryDestinationActivity.class);
+                startActivityForResult(intent1, 1);
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(PaymentFragment.this, "배송지 선택 페이지를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+            }
         });
 
         usePointsEditText.addTextChangedListener(new TextWatcher() {

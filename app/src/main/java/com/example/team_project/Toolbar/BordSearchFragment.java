@@ -3,13 +3,17 @@ package com.example.team_project.Toolbar;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,7 +25,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
-public class BordSearchFragment extends AppCompatActivity {
+public class BordSearchFragment extends Fragment {
     private EditText searchEditText;
     private RecyclerView searchResultsRecyclerView;
     private PostAdapter postAdapter;
@@ -30,29 +34,28 @@ public class BordSearchFragment extends AppCompatActivity {
     private ProgressBar progressBar;
     private Toolbar toolbar;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_toobar_bord_search); // 새로 만든 레이아웃 파일
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_toobar_bord_search, container, false);
 
         // Firebase Firestore 초기화
         firestore = FirebaseFirestore.getInstance();
 
         // UI 요소 초기화
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true); // 뒤로가기 버튼 표시
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_black); // 뒤로가기 아이콘 설정
-        getSupportActionBar().setTitle("");
+        toolbar = view.findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_back_black); // 뒤로가기 아이콘 설정
+        toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed()); // 뒤로가기 버튼 클릭 시 동작
+        toolbar.setTitle("");
 
-        searchEditText = findViewById(R.id.searchEditText);
-        searchResultsRecyclerView = findViewById(R.id.searchResultsRecyclerView);
-        progressBar = findViewById(R.id.progressBar);
+        searchEditText = view.findViewById(R.id.searchEditText);
+        searchResultsRecyclerView = view.findViewById(R.id.searchResultsRecyclerView);
+        progressBar = view.findViewById(R.id.progressBar);
 
         postList = new ArrayList<>();
-        postAdapter = new PostAdapter(this, postList);
+        postAdapter = new PostAdapter(getContext(), postList);
         searchResultsRecyclerView.setAdapter(postAdapter);
-        searchResultsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        searchResultsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // EditText에 TextWatcher 추가
         searchEditText.addTextChangedListener(new TextWatcher() {
@@ -67,12 +70,8 @@ public class BordSearchFragment extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {}
         });
-    }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed(); // 뒤로가기 버튼 클릭 시 이전 액티비티로 이동
-        return true;
+        return view;
     }
 
     private void searchPosts(String query) {
@@ -90,7 +89,7 @@ public class BordSearchFragment extends AppCompatActivity {
                         }
                         postAdapter.notifyDataSetChanged(); // RecyclerView 업데이트
                     } else {
-                        Toast.makeText(this, "검색 실패: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "검색 실패: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                     progressBar.setVisibility(View.GONE);
                 });

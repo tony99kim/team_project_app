@@ -139,7 +139,7 @@ public class SignUpActivity extends AppCompatActivity {
         final String gender = radioButtonMale.isChecked() ? "Male" : "Female";
         final String signUpDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
 
-        if (email.isEmpty() || password.isEmpty() || name.isEmpty() || username.isEmpty() || phone.isEmpty() || birthDate.isEmpty() || gender.isEmpty() || address.isEmpty() || detailAddress.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty() || name.isEmpty() || username.isEmpty() || phone.isEmpty() || birthDate.isEmpty() || gender.isEmpty() || address.isEmpty() || detailAddress.isEmpty() || profileImageUri == null) {
             Toast.makeText(SignUpActivity.this, "모든 항목을 입력해주세요.", Toast.LENGTH_LONG).show();
             return;
         }
@@ -175,6 +175,10 @@ public class SignUpActivity extends AppCompatActivity {
         profileImageRef.putFile(profileImageUri)
                 .addOnSuccessListener(taskSnapshot -> Toast.makeText(SignUpActivity.this, "프로필 사진 업로드 성공", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(SignUpActivity.this, "프로필 사진 업로드 실패", Toast.LENGTH_SHORT).show());
+    }
+
+    public void onUploadProfilePhotoClicked(View view) {
+        openFileChooser();
     }
 
     private static class User {
