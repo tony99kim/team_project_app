@@ -1,4 +1,3 @@
-// ChatActivity.java
 package com.example.team_project.Chat;
 
 import android.content.Intent;
@@ -20,6 +19,7 @@ import com.example.team_project.Chat.ChatAdapter.MessageListAdapter;
 import com.example.team_project.Chat.Data.Chat;
 import com.example.team_project.Chat.Data.Message;
 import com.example.team_project.Chat.Data.User;
+import com.example.team_project.MainActivity;
 import com.example.team_project.R;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -82,10 +82,13 @@ public class ChatActivity extends AppCompatActivity {
         btnSend.setOnClickListener(v -> sendMessage(chatId, userEmail1, editInput.getText().toString()));
 
         btnBack = findViewById(R.id.btn_back);
-        btnBack.setOnClickListener(v -> finish());
+        btnBack.setOnClickListener(v -> {
+            finish();
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
+        });
 
         btnExit = findViewById(R.id.btn_exit);
-        btnExit.setOnClickListener(v -> deleteChatAndMessages(chatId));
+        btnExit.setOnClickListener(v -> showExitConfirmationDialog(chatId));
 
         btnAdd = findViewById(R.id.btn_add);
         btnAdd.setOnClickListener(v -> toggleMenu());
@@ -100,6 +103,7 @@ public class ChatActivity extends AppCompatActivity {
             intent.putExtra("receiverEmail", userEmail2);
             intent.putExtra("receiverName", receiverName);
             startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
         });
 
         fetchChat(chatId, userEmail1, userEmail2);
@@ -107,6 +111,17 @@ public class ChatActivity extends AppCompatActivity {
         loadUsers();
     }
 
+    private void showExitConfirmationDialog(String chatId) {
+        new AlertDialog.Builder(this)
+                .setMessage("채팅방을 나가겠습니까?")
+                .setPositiveButton("나가기", (dialog, which) -> {
+                    deleteChatAndMessages(chatId);
+                    finish();
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
+                })
+                .setNegativeButton("취소", null)
+                .show();
+    }
 
     private void toggleMenu() {
         if (isMenuVisible) {
@@ -154,7 +169,7 @@ public class ChatActivity extends AppCompatActivity {
                     }
                     runOnUiThread(() -> recyclerView.getAdapter().notifyDataSetChanged());
                 } else {
-                    Log.e("ChatActivity", "Error loading users: " + task.getException().getMessage());
+                    Log.e("ChatActivity", "사용자 로드 중 오류: " + task.getException().getMessage());
                 }
             });
         });
@@ -166,7 +181,7 @@ public class ChatActivity extends AppCompatActivity {
                 .orderBy("createdAt")
                 .addSnapshotListener((snapshot, e) -> {
                     if (e != null) {
-                        Log.e("ChatActivity", "Listen failed.", e);
+                        Log.e("ChatActivity", "실시간 메시지 업데이트 실패.", e);
                         return;
                     }
 
@@ -184,7 +199,7 @@ public class ChatActivity extends AppCompatActivity {
                             recyclerView.scrollToPosition(messages.size() - 1);
                         });
                     } else {
-                        Log.d("ChatActivity", "Current data: null");
+                        Log.d("ChatActivity", "현재 데이터: null");
                     }
                 });
     }
@@ -201,7 +216,7 @@ public class ChatActivity extends AppCompatActivity {
                         loadMessages(id);
                     }
                 } else {
-                    Log.e("ChatActivity", "Error fetching chat: " + task.getException().getMessage());
+                    Log.e("ChatActivity", "채팅 가져오기 오류: " + task.getException().getMessage());
                 }
             });
         });
@@ -222,7 +237,7 @@ public class ChatActivity extends AppCompatActivity {
                 db.collection("chats").document(chatId)
                         .update("lastMessage", "채팅방이 열렸습니다.", "updatedAt", new Date());
             }).addOnFailureListener(e -> {
-                Log.e("ChatActivity", "addInitialMessage: Error adding initial message: " + e.getMessage());
+                Log.e("ChatActivity", "초기 메시지 추가 오류: " + e.getMessage());
             });
         });
     }
@@ -247,7 +262,7 @@ public class ChatActivity extends AppCompatActivity {
                             recyclerView.scrollToPosition(messages.size() - 1);
                         });
                     }).addOnFailureListener(e -> {
-                        Log.e("ChatActivity", "loadMessages: " + e.getMessage());
+                        Log.e("ChatActivity", "메시지 로드 오류: " + e.getMessage());
                     });
         });
     }
@@ -266,12 +281,12 @@ public class ChatActivity extends AppCompatActivity {
                     db.collection("chats").document(chatId)
                             .update("lastMessage", content, "updatedAt", new Date());
                 }).addOnFailureListener(e -> {
-                    Log.e("ChatActivity", "sendMessage: Error sending message: " + e.getMessage());
+                    Log.e("ChatActivity", "메시지 전송 오류: " + e.getMessage());
                 });
 
-                Log.d("ChatActivity", "Message sent successfully");
+                Log.d("ChatActivity", "메시지 전송 성공");
             } catch (Exception e) {
-                Log.e("ChatActivity", "sendMessage: Error sending message: " + e.getMessage());
+                Log.e("ChatActivity", "메시지 전송 오류: " + e.getMessage());
             }
         });
     }
@@ -279,8 +294,8 @@ public class ChatActivity extends AppCompatActivity {
     private void deleteChatAndMessages(String chatId) {
         db.collection("chats").document(chatId)
                 .delete()
-                .addOnSuccessListener(aVoid -> Log.d("ChatActivity", "Chat successfully deleted!"))
-                .addOnFailureListener(e -> Log.e("ChatActivity", "Error deleting chat", e));
+                .addOnSuccessListener(aVoid -> Log.d("ChatActivity", "채팅 삭제 성공!"))
+                .addOnFailureListener(e -> Log.e("ChatActivity", "채팅 삭제 오류", e));
 
         db.collection("messages")
                 .whereEqualTo("chatId", chatId)
@@ -289,11 +304,11 @@ public class ChatActivity extends AppCompatActivity {
                     for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
                         db.collection("messages").document(document.getId())
                                 .delete()
-                                .addOnSuccessListener(aVoid -> Log.d("ChatActivity", "Message successfully deleted!"))
-                                .addOnFailureListener(e -> Log.e("ChatActivity", "Error deleting message", e));
+                                .addOnSuccessListener(aVoid -> Log.d("ChatActivity", "메시지 삭제 성공!"))
+                                .addOnFailureListener(e -> Log.e("ChatActivity", "메시지 삭제 오류", e));
                     }
                 })
-                .addOnFailureListener(e -> Log.e("ChatActivity", "Error finding messages to delete", e));
+                .addOnFailureListener(e -> Log.e("ChatActivity", "삭제할 메시지 찾기 오류", e));
     }
 
     private void fetchUserName(String userEmail) {
@@ -302,10 +317,10 @@ public class ChatActivity extends AppCompatActivity {
                 DocumentSnapshot document = task.getResult().getDocuments().get(0);
                 String userName = document.getString("name"); // users 컬렉션의 name 필드 가져오기
                 textTitle.setText(userName); // 상단에 판매자 이름 설정
+                receiverName = userName; // receiverName 설정
             } else {
-                Log.e("ChatActivity", "Error fetching user name: " + task.getException());
+                Log.e("ChatActivity", "사용자 이름 가져오기 오류: " + task.getException());
             }
         });
     }
-
 }

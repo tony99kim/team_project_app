@@ -1,3 +1,4 @@
+// DeliveryDestinationActivity.java
 package com.example.team_project.Environment.Store.Payment;
 
 import android.os.Bundle;
@@ -35,7 +36,10 @@ public class DeliveryDestinationActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar_delivery_destination);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        toolbar.setNavigationOnClickListener(v -> {
+            onBackPressed();
+            overridePendingTransition(R.anim.fade_in, R.anim.slide_out_right);
+        });
 
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();

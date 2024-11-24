@@ -2,14 +2,11 @@ package com.example.team_project.Chat;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -69,6 +65,7 @@ public class ChatFragment extends Fragment {
             intent.putExtra("user1", name);
             intent.putExtra("user2", receiverName);
             startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
         });
         recyclerView.setAdapter(adapter);
 
@@ -83,11 +80,7 @@ public class ChatFragment extends Fragment {
 
     private void showFragmentUser() {
         UserFragment fragmentUser = new UserFragment();
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.fragment_container, fragmentUser);
-        transaction.addToBackStack(null);
-        transaction.commit();
+        replaceFragment(fragmentUser);
     }
 
     private void loadUsers() {
@@ -147,5 +140,18 @@ public class ChatFragment extends Fragment {
             }
         }
         return email; // 사용자를 찾지 못한 경우 이메일 반환
+    }
+
+    private void replaceFragment(Fragment fragment) {
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(
+                R.anim.slide_in_right,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.slide_out_right
+        );
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

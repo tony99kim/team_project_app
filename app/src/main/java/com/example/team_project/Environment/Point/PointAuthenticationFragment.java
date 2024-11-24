@@ -1,3 +1,4 @@
+// PointAuthenticationFragment.java
 package com.example.team_project.Environment.Point;
 
 import android.content.Intent;
@@ -17,7 +18,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
+import com.example.team_project.MainActivity;
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -155,7 +158,7 @@ public class PointAuthenticationFragment extends Fragment {
                                 if (task.isSuccessful()) {
                                     showToast("인증이 업로드되었습니다.");
                                     if (getActivity() != null) {
-                                        getActivity().getSupportFragmentManager().popBackStack();
+                                        navigateToEnvironmentFragment(0); // 포인트 페이지로 이동
                                     }
                                 }
                             });
@@ -171,5 +174,14 @@ public class PointAuthenticationFragment extends Fragment {
     private String getFileExtension(Uri uri) {
         // ContentResolver를 사용하여 파일 확장자를 가져옵니다.
         return "jpg"; // 예시로 "jpg"를 반환합니다.
+    }
+
+    private void navigateToEnvironmentFragment(int targetPage) {
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        intent.putExtra("navigateTo", "EnvironmentFragment");
+        intent.putExtra("targetPage", targetPage);
+        startActivity(intent);
+        getActivity().overridePendingTransition(R.anim.fade_in, R.anim.slide_out_right);
+        getActivity().finish();
     }
 }

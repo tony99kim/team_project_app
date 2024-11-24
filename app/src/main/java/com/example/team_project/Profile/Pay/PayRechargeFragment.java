@@ -18,6 +18,10 @@ import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 public class PayRechargeFragment extends Fragment {
 
     private FirebaseFirestore db;
@@ -56,6 +60,14 @@ public class PayRechargeFragment extends Fragment {
                                 .addOnSuccessListener(aVoid -> {
                                     Toast.makeText(getContext(), "충전 완료", Toast.LENGTH_SHORT).show();
                                     amountEditText.setText("");
+
+                                    // 거래 기록 추가
+                                    Map<String, Object> transaction = new HashMap<>();
+                                    transaction.put("type", "충전");
+                                    transaction.put("amount", amount);
+                                    transaction.put("createdAt", new Date());
+
+                                    db.collection("users").document(userId).collection("rechargeRecords").add(transaction);
                                 })
                                 .addOnFailureListener(e -> {
                                     Toast.makeText(getContext(), "충전 실패", Toast.LENGTH_SHORT).show();

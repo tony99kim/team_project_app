@@ -1,9 +1,9 @@
+// DeliveryDestinationAdapter.java
 package com.example.team_project.Environment.Store.Payment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,6 +92,7 @@ public class DeliveryDestinationAdapter extends ArrayAdapter<String> {
             resultIntent.putExtra("deliveryDestination", deliveryDestination);
             ((Activity) context).setResult(Activity.RESULT_OK, resultIntent);
             ((Activity) context).finish();
+            ((Activity) context).overridePendingTransition(R.anim.fade_in, R.anim.slide_out_right);
         });
 
         return convertView;

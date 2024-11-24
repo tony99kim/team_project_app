@@ -34,9 +34,10 @@ public class PaymentCompleteFragment extends Fragment {
         homeButton.setOnClickListener(v -> {
             // 스토어 페이지로 이동
             Intent intent = new Intent(getActivity(), MainActivity.class);
-            intent.putExtra("navigateTo", "EnvironmentFragment");
-            intent.putExtra("targetPage", 1); // 스토어 페이지를 지정
+            intent.putExtra("navigateTo", "StoreFragment");
+            intent.putExtra("targetPage", 1); // 스토어 페이지를 지정 > 환경프레그먼트로 이동
             startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.fade_in, R.anim.slide_out_right);
             getActivity().finish();
         });
 

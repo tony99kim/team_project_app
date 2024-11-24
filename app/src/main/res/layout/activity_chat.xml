@@ -141,7 +141,7 @@
                 android:layout_marginTop="5dp"
                 android:gravity="center_horizontal"
                 android:paddingLeft="10dp"
-            android:paddingRight="10dp"/>
+                android:paddingRight="10dp"/>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

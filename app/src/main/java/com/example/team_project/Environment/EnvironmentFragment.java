@@ -31,6 +31,7 @@ public class EnvironmentFragment extends Fragment {
 
     private FirebaseFirestore db;
     private String userId;
+    private ViewPager2 viewPager;
 
     @Nullable
     @Override
@@ -60,7 +61,7 @@ public class EnvironmentFragment extends Fragment {
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         TabLayout tabLayout = view.findViewById(R.id.tabs);
-        ViewPager2 viewPager = view.findViewById(R.id.view_pager);
+        viewPager = view.findViewById(R.id.view_pager);
 
         EnvironmentPagerAdapter adapter = new EnvironmentPagerAdapter(this);
         viewPager.setAdapter(adapter);

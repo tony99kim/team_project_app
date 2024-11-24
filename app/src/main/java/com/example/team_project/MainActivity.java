@@ -61,9 +61,19 @@ public class MainActivity extends AppCompatActivity {
 
         // 추가된 코드: navigateTo 인텐트 처리
         Intent intent = getIntent();
-        if (intent != null && "EnvironmentFragment".equals(intent.getStringExtra("navigateTo"))) {
-            int targetPage = intent.getIntExtra("targetPage", 0); // 기본값은 0 (포인트 페이지)
-            navigateToStoreFragment(targetPage);
+        if (intent != null) {
+            String navigateTo = intent.getStringExtra("navigateTo");
+            if ("EnvironmentFragment".equals(navigateTo)) {
+                int targetPage = intent.getIntExtra("targetPage", 0); // 기본값은 0 (포인트 페이지)
+                navigateToStoreFragment(targetPage);
+                bottomNav.setSelectedItemId(R.id.navigation_environment);
+            } else if ("StoreFragment".equals(navigateTo)) {
+                bottomNav.setSelectedItemId(R.id.navigation_environment);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new EnvironmentFragment()).commit();
+            } else if ("ChatFragment".equals(navigateTo)) {
+                bottomNav.setSelectedItemId(R.id.navigation_chat);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ChatFragment()).commit();
+            }
         }
     }
 
@@ -113,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             };
 
-
     @Override
     public boolean onSupportNavigateUp() {
         getSupportFragmentManager().popBackStack();
@@ -140,4 +149,9 @@ public class MainActivity extends AppCompatActivity {
         // 클릭 이벤트 처리 로직
     }
 
+    public void showHomeFragment() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, new HomeFragment());
+        transaction.commit();
+    }
 }

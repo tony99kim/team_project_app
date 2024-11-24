@@ -48,7 +48,10 @@ public class SendMoneyActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("송금하기");
 
-        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setNavigationOnClickListener(v -> {
+            finish();
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
+        });
 
         textReceiverName = findViewById(R.id.text_receiver_name);
         editAmount = findViewById(R.id.edit_amount);
@@ -108,13 +111,9 @@ public class SendMoneyActivity extends AppCompatActivity {
 
                         db.collection("transactions").add(transaction).addOnSuccessListener(documentReference -> {
                             Toast.makeText(this, "송금이 완료되었습니다.", Toast.LENGTH_SHORT).show();
-                            sendTransactionMessage(amount); // 송금 메시지 ��송
-                            Intent intent = new Intent(SendMoneyActivity.this, ChatActivity.class);
-                            intent.putExtra("userEmail1", senderEmail);
-                            intent.putExtra("userEmail2", receiverEmail);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
+                            sendTransactionMessage(amount); // 송금 메시지 전송
                             finish();
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
                         }).addOnFailureListener(e -> {
                             Toast.makeText(this, "송금에 실패했습니다.", Toast.LENGTH_SHORT).show();
                         });

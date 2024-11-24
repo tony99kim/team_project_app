@@ -1,3 +1,4 @@
+// PaymentFragment.java
 package com.example.team_project.Environment.Store.Payment;
 
 import android.content.ActivityNotFoundException;
@@ -5,13 +6,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.team_project.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,7 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PaymentFragment extends AppCompatActivity {
+public class PaymentFragment extends Fragment {
 
     private String productId, price, deliveryDestination, request, productTitle;
     private int accountBalance, environmentPoint;
@@ -32,34 +40,36 @@ public class PaymentFragment extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseUser user;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_environment_store_product_payment);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_environment_store_product_payment, container, false);
 
         // 툴바 설정
-        Toolbar toolbar = findViewById(R.id.toolbar_payment);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        Toolbar toolbar = view.findViewById(R.id.toolbar_payment);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(v -> navigateBack());
 
         // Intent로 전달된 데이터 받기
-        Intent intent = getIntent();
-        productId = intent.getStringExtra("productId");
-        price = intent.getStringExtra("price");
-        productTitle = intent.getStringExtra("title"); // 상품명 받기
+        Bundle args = getArguments();
+        if (args != null) {
+            productId = args.getString("productId");
+            price = args.getString("price");
+            productTitle = args.getString("title"); // 상품명 받기
+        }
 
         // 결제 관련 UI 구성 (예: 가격 표시, 결제 버튼 등)
-        priceTextView = findViewById(R.id.textView_price);
+        priceTextView = view.findViewById(R.id.textView_price);
         priceTextView.setText(price);
 
-        deliveryDestinationTextView = findViewById(R.id.textView_delivery_destination);
-        requestEditText = findViewById(R.id.editText_request);
-        totalPriceTextView = findViewById(R.id.textView_total_price);
-        environmentPointTextView = findViewById(R.id.textView_environment_point);
-        usePointsEditText = findViewById(R.id.editText_use_points);
-        selectDeliveryDestinationButton = findViewById(R.id.button_select_delivery_destination);
-        payButton = findViewById(R.id.button_pay);
+        deliveryDestinationTextView = view.findViewById(R.id.textView_delivery_destination);
+        requestEditText = view.findViewById(R.id.editText_request);
+        totalPriceTextView = view.findViewById(R.id.textView_total_price);
+        environmentPointTextView = view.findViewById(R.id.textView_environment_point);
+        usePointsEditText = view.findViewById(R.id.editText_use_points);
+        selectDeliveryDestinationButton = view.findViewById(R.id.button_select_delivery_destination);
+        payButton = view.findViewById(R.id.button_pay);
 
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -68,10 +78,11 @@ public class PaymentFragment extends AppCompatActivity {
 
         selectDeliveryDestinationButton.setOnClickListener(v -> {
             try {
-                Intent intent1 = new Intent(PaymentFragment.this, DeliveryDestinationActivity.class);
+                Intent intent1 = new Intent(getActivity(), DeliveryDestinationActivity.class);
                 startActivityForResult(intent1, 1);
+                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out);
             } catch (ActivityNotFoundException e) {
-                Toast.makeText(PaymentFragment.this, "배송지 선택 페이지를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "배송지 선택 페이지를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -93,6 +104,8 @@ public class PaymentFragment extends AppCompatActivity {
         });
 
         payButton.setOnClickListener(v -> processPayment());
+
+        return view;
     }
 
     private void loadUserInfo() {
@@ -122,7 +135,7 @@ public class PaymentFragment extends AppCompatActivity {
         int usePoints = usePointsStr.isEmpty() ? 0 : Integer.parseInt(usePointsStr);
 
         if (totalPrice > accountBalance) {
-            Toast.makeText(this, "잔액이 부족합니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "잔액이 부족합니다.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -147,18 +160,36 @@ public class PaymentFragment extends AppCompatActivity {
             db.collection("users").document(user.getUid()).update("environmentPoint", environmentPoint);
 
             // 결제 완료 페이지로 이동
-            Intent intent = new Intent(PaymentFragment.this, PaymentCompleteActivity.class);
-            startActivity(intent);
-            finish();
-        }).addOnFailureListener(e -> Toast.makeText(this, "결제에 실패했습니다.", Toast.LENGTH_SHORT).show());
+            PaymentCompleteFragment paymentCompleteFragment = new PaymentCompleteFragment();
+            replaceFragment(paymentCompleteFragment);
+        }).addOnFailureListener(e -> Toast.makeText(getActivity(), "결제에 실패했습니다.", Toast.LENGTH_SHORT).show());
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK) {
+        if (requestCode == 1 && resultCode == getActivity().RESULT_OK) {
             deliveryDestination = data.getStringExtra("deliveryDestination");
             deliveryDestinationTextView.setText(deliveryDestination);
+            getActivity().overridePendingTransition(R.anim.fade_in, R.anim.slide_out_right);
         }
+    }
+
+    private void navigateBack() {
+        getActivity().getSupportFragmentManager().popBackStack();
+        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
+    }
+
+    private void replaceFragment(Fragment fragment) {
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(
+                R.anim.slide_in_right,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.slide_out_right
+        );
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -78,6 +79,7 @@ public class ProductDetailFragment extends Fragment {
             isBusiness = getArguments().getBoolean("isBusiness");
         }
     }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -109,10 +111,6 @@ public class ProductDetailFragment extends Fragment {
         } else {
             buttonChat.setText("채팅하기");
         }
-        // 데이터 설정
-        titleTextView.setText(title);
-        descriptionTextView.setText(description);
-        priceTextView.setText(price);
 
         // 관심상품 상태 초기화
         checkFavoriteStatus();
@@ -127,9 +125,9 @@ public class ProductDetailFragment extends Fragment {
                 // "채팅하기" 버튼 클릭 시 채팅방을 만든다
                 onStartChat();
             }
-
         });
-// 버튼 클릭 리스너 설정
+
+        // 버튼 클릭 리스너 설정
         buttonFavorite.setOnClickListener(v -> {
             if (isFavorite) {
                 removeFromWishlist();
@@ -271,8 +269,6 @@ public class ProductDetailFragment extends Fragment {
         }
     }
 
-
-
     private void onStartChat() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
@@ -337,17 +333,29 @@ public class ProductDetailFragment extends Fragment {
     }
 
     private void navigateToChat(String chatRoomId) {
-        Intent intent = new Intent(getActivity(),ChatActivity.class);
+        Intent intent = new Intent(getActivity(), ChatActivity.class);
         intent.putExtra("chatRoomId", chatRoomId);
         startActivity(intent);
     }
 
     private void navigateToPaymentPage() {
-        Intent intent = new Intent(getActivity(), PaymentFragment.class); // 결제 페이지로 이동
-        intent.putExtra("productId", productId); // 상품 ID 전달
-        intent.putExtra("price", price); // 가격 전달
-        intent.putExtra("title", title); // 상품명 전달
-        startActivity(intent);
+        PaymentFragment paymentFragment = new PaymentFragment();
+        Bundle args = new Bundle();
+        args.putString("productId", productId);
+        args.putString("price", price);
+        args.putString("title", title);
+        paymentFragment.setArguments(args);
+
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(
+                R.anim.slide_in_right,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.slide_out_right
+        );
+        transaction.replace(R.id.fragment_container, paymentFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     private void navigateToChatRoom(String chatRoomId, String userName) {
@@ -361,8 +369,8 @@ public class ProductDetailFragment extends Fragment {
 
         intent.putExtra("chatRoomTitle", userName); // 채팅방 제목으로 판매자 이름 전달
         startActivity(intent);
+        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left); // 화면전환 효과 추가
     }
-
 
     private static class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewHolder> {
         private final List<String> imageUrls;
@@ -399,5 +407,6 @@ public class ProductDetailFragment extends Fragment {
                 imageView = itemView.findViewById(R.id.productImageView);
             }
         }
+
     }
 }
