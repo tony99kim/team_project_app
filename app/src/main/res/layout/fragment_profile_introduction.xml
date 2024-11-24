@@ -25,13 +25,23 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="70dp"
+                android:src="@drawable/ic_home_logo"
+                android:layout_gravity="center"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="앱 소개"
-                android:textSize="24sp"
-                android:textStyle="bold"
+                android:text="환경지커는 쉽게 환경 보호 활동에 참여하고 소통할 수 있는 종합적인 어플리케이션입니다!"
+                android:textSize="16sp"
                 android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:padding="10dp"
                 android:layout_marginBottom="16dp" />
 
             <!-- 홈 프레그먼트 설명 -->
@@ -53,14 +63,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="홈"
+                        android:text="탄소 중립 실천 인증"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="홈 프레그먼트에서는 최신 소식과 추천 콘텐츠를 확인할 수 있습니다."
+                        android:text="탄소 중립 실천 인증 글을 작성하고 포인트를 적립해 친환경 소비에 활용할 수 있습니다"
                         android:textSize="16sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -84,14 +94,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="환경"
+                        android:text="환경 스토어"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="환경 프레그먼트에서는 환경 포인트를 조회하고 관리할 수 있습니다."
+                        android:text="환경 상점에서 중고 상품을 등록하고 거래하거나, 환경 페이를 통해 기업의 친환경 상품을 구매하며 자원 순환과 친환경 소비를 실천할 수 있습니다."
                         android:textSize="16sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -122,7 +132,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="게시판 프레그먼트에서는 다양한 주제의 게시글을 작성하고 읽을 수 있습니다."
+                        android:text="게시판에서 환경 보호와 관련된 정보를 공유하고 소통합니다."
                         android:textSize="16sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -153,7 +163,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="채팅 프레그먼트에서는 다른 사용자와 실시간으로 대화할 수 있습니다."
+                        android:text="채팅 기능을 통해 중고 거래 상대와 소통하고 포인트를 손쉽게 송금할 수 있습니다."
                         android:textSize="16sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -177,14 +187,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="프로필"
+                        android:text="환경 페이 / 환경 포인트"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="프로필 프레그먼트에서는 사용자 정보를 관리하고 설정을 변경할 수 있습니다."
+                        android:text="탄소 중립 실천 인증과 환경 페이를 통해 포인트를 적립하거나 충전하고, 환경 상점에서 친환경 소비에 활용할 수 있습니다."
                         android:textSize="16sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

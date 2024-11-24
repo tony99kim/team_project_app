@@ -101,12 +101,12 @@
                     android:id="@+id/cbBusinessOrIndividual"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="기업으로 등록" />
+                    android:text="기업" />
                 <TextView
                     android:id="@+id/tvPaymentInfo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="체크시 상품결제 페이지가 표시됩니다"
+                    android:text="기업으로 등록하면 개인 간 중고 거래가 아닌, 결제된 고객에게 상품을 배송하는 시스템이 제공됩니다."
                     android:layout_marginTop="4dp"
                     android:textColor="@android:color/darker_gray" />
             </LinearLayout>
