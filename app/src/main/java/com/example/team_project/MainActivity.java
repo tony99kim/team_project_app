@@ -16,7 +16,7 @@ import com.example.team_project.Chat.ChatFragment;
 import com.example.team_project.Environment.EnvironmentFragment;
 import com.example.team_project.Home.HomeFragment;
 import com.example.team_project.Profile.ProfileFragment;
-import com.example.team_project.Toolbar.BordSearchFragment;
+import com.example.team_project.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -70,9 +70,6 @@ public class MainActivity extends AppCompatActivity {
             } else if ("StoreFragment".equals(navigateTo)) {
                 bottomNav.setSelectedItemId(R.id.navigation_environment);
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new EnvironmentFragment()).commit();
-            } else if ("ChatFragment".equals(navigateTo)) {
-                bottomNav.setSelectedItemId(R.id.navigation_chat);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ChatFragment()).commit();
             }
         }
     }
