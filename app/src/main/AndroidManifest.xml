@@ -37,7 +37,6 @@
         <activity android:name=".MainActivity" android:exported="true" />
         <activity android:name=".Chat.ChatActivity" android:exported="true" />
         <activity android:name=".AddressPickerActivity" android:exported="true" />
-        <activity android:name=".Environment.Store.Payment.PaymentFragment" />
         <activity android:name=".Environment.Store.Payment.DeliveryDestinationActivity" />
         <activity android:name=".Environment.Store.Payment.PaymentCompleteActivity" />
         <activity android:name=".Chat.SendMoneyActivity" />
