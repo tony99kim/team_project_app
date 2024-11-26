@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">team_project</string> //앱 이름
+    <string name="app_name">환경지커</string> //앱 이름
 
     //로그인,회원가입
     <string name="login" >로그인</string>  //로그인 페이지 로그인
