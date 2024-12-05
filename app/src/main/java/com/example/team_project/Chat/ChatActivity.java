@@ -19,7 +19,6 @@ import com.example.team_project.Chat.ChatAdapter.MessageListAdapter;
 import com.example.team_project.Chat.Data.Chat;
 import com.example.team_project.Chat.Data.Message;
 import com.example.team_project.Chat.Data.User;
-import com.example.team_project.MainActivity;
 import com.example.team_project.R;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;

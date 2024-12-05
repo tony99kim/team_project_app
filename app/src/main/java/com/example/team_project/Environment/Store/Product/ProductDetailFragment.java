@@ -23,7 +23,6 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.bumptech.glide.Glide;
 import com.example.team_project.Chat.Data.Chat;
 import com.example.team_project.Environment.Store.Payment.PaymentFragment;
-import com.example.team_project.Environment.Store.Product.Product;
 import com.example.team_project.R;
 import com.example.team_project.Chat.ChatActivity;
 import com.example.team_project.Chat.Data.Message;
@@ -52,6 +51,7 @@ public class ProductDetailFragment extends Fragment {
     private ImageView buttonFavorite; // ImageView로 변경
     private Button buttonChat;
     private FirebaseFirestore db;
+    private boolean initialMessageSent = false; // 초기 메시지 전송 여부를 저장
 
     public static ProductDetailFragment newInstance(Product product) {
         ProductDetailFragment fragment = new ProductDetailFragment();
@@ -292,8 +292,16 @@ public class ProductDetailFragment extends Fragment {
                                     // 새로운 채팅 생성
                                     Chat newChat = new Chat(chatRoomId, currentUserEmail, sellerEmail, "", new Date());
                                     db.collection("chats").document(chatRoomId).set(newChat)
-                                            .addOnSuccessListener(aVoid -> addInitialMessage(chatRoomId, currentUserEmail, sellerEmail))
+                                            .addOnSuccessListener(aVoid -> {
+                                                addInitialMessage(chatRoomId, currentUserEmail, sellerEmail);
+                                            })
                                             .addOnFailureListener(e -> Log.e("ProductDetailFragment", "채팅 생성 실패: ", e));
+                                } else {
+                                    // 기존 채팅방이라도 상품 정보 메시지 전송
+                                    if (!initialMessageSent) {
+                                        sendProductInfoMessage(chatRoomId, currentUserEmail);
+                                        initialMessageSent = true;
+                                    }
                                 }
                                 // 채팅방으로 이동
                                 navigateToChatRoom(chatRoomId, sellerEmail);
@@ -311,6 +319,21 @@ public class ProductDetailFragment extends Fragment {
         }
     }
 
+    private void sendProductInfoMessage(String chatId, String currentUserEmail) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            String messageContent = "상품명: " + title + "\n가격: " + price + "\n이 상품을 거래하고 싶습니다.";
+            Message productInfoMessage = new Message(chatId, currentUserEmail, messageContent, new Date());
+
+            db.collection("messages").add(productInfoMessage).addOnSuccessListener(documentReference -> {
+                Log.d("ProductDetailFragment", "상품 정보 메시지 추가 성공");
+                db.collection("chats").document(chatId)
+                        .update("lastMessage", messageContent, "updatedAt", new Date());
+            }).addOnFailureListener(e -> {
+                Log.e("ProductDetailFragment", "상품 정보 메시지 추가 실패: ", e);
+            });
+        });
+    }
+
     private void addInitialMessage(String chatId, String currentUserEmail, String sellerEmail) {
         Executors.newSingleThreadExecutor().execute(() -> {
             // 현재 날짜를 "yyyy년 MM월 dd일(E)" 형식으로 포맷합니다.
@@ -318,7 +341,7 @@ public class ProductDetailFragment extends Fragment {
             String currentDate = dateFormat.format(new Date());
 
             // 초기 메시지 객체를 생성합니다.
-            Message initialMessage = new Message(chatId, "system", currentDate, new Date());
+            Message initialMessage = new Message(chatId, "system", "채팅방이 열렸습니다.\n" + currentDate, new Date());
 
             // Firestore에 초기 메시지를 추가합니다.
             db.collection("messages").add(initialMessage).addOnSuccessListener(documentReference -> {
@@ -326,6 +349,9 @@ public class ProductDetailFragment extends Fragment {
                 // 채팅방의 마지막 메시지 및 업데이트 시간을 설정합니다.
                 db.collection("chats").document(chatId)
                         .update("lastMessage", "채팅방이 열렸습니다.", "updatedAt", new Date());
+                // 초기 메시지 추가 후 상품 정보 메시지 전송
+                sendProductInfoMessage(chatId, currentUserEmail);
+                initialMessageSent = true; // 초기 메시지 전송 여부 업데이트
             }).addOnFailureListener(e -> {
                 Log.e("ProductDetailFragment", "초기 메시지 추가 실패: ", e);
             });
@@ -364,7 +390,6 @@ public class ProductDetailFragment extends Fragment {
         intent.putExtra("userEmail2", userName);
 
         // 판매자 이름을 추가로 전달
-        intent.putExtra("user2", userName); // 판매자 이름 전달
         intent.putExtra("user2", userName); // 판매자 이름 전달
 
         intent.putExtra("chatRoomTitle", userName); // 채팅방 제목으로 판매자 이름 전달
