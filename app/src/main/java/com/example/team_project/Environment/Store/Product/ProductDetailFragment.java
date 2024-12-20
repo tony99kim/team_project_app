@@ -16,12 +16,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.example.team_project.Chat.Data.Chat;
 import com.example.team_project.Environment.Store.Payment.PaymentActivity;
+import com.example.team_project.Environment.Store.Payment.PaymentFragment;
 import com.example.team_project.R;
 import com.example.team_project.Chat.ChatActivity;
 import com.example.team_project.Chat.Data.Message;
@@ -382,12 +384,23 @@ public class ProductDetailFragment extends Fragment {
     }
 
     private void navigateToPaymentPage() {
-        Intent intent = new Intent(getActivity(), PaymentActivity.class);
-        intent.putExtra("productId", productId);
-        intent.putExtra("price", price);
-        intent.putExtra("title", title);
-        intent.putExtra("phone", sellerPhone); // 판매자 전화번호 전달
-        startActivity(intent);
+        PaymentFragment paymentFragment = new PaymentFragment();
+        Bundle args = new Bundle();
+        args.putString("productId", productId);
+        args.putString("price", price);
+        args.putString("title", title);
+        paymentFragment.setArguments(args);
+
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(
+                R.anim.slide_in_right,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.slide_out_right
+        );
+        transaction.replace(R.id.fragment_container, paymentFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     private void navigateToChatRoom(String chatRoomId, String userName) {

@@ -1,4 +1,3 @@
-// PaymentFragment.java
 package com.example.team_project.Environment.Store.Payment;
 
 import android.content.ActivityNotFoundException;
@@ -32,7 +31,7 @@ import java.util.Map;
 
 public class PaymentFragment extends Fragment {
 
-    private String productId, price, deliveryDestination, request, productTitle;
+    private String productId, price, deliveryDestination, request, productTitle, phone;
     private int accountBalance, environmentPoint;
     private TextView priceTextView, deliveryDestinationTextView, totalPriceTextView, environmentPointTextView;
     private EditText requestEditText, usePointsEditText;
@@ -57,6 +56,7 @@ public class PaymentFragment extends Fragment {
             productId = args.getString("productId");
             price = args.getString("price");
             productTitle = args.getString("title"); // 상품명 받기
+            phone = args.getString("phone"); // 전화번호 받기
         }
 
         // 결제 관련 UI 구성 (예: 가격 표시, 결제 버튼 등)
@@ -139,30 +139,16 @@ public class PaymentFragment extends Fragment {
             return;
         }
 
-        // 결제 정보 저장
-        Map<String, Object> paymentInfo = new HashMap<>();
-        paymentInfo.put("productId", productId);
-        paymentInfo.put("price", price);
-        paymentInfo.put("finalPrice", totalPrice); // 포인트로 삭감된 최종 결제 금액 추가
-        paymentInfo.put("deliveryDestination", deliveryDestination);
-        paymentInfo.put("request", requestEditText.getText().toString());
-        paymentInfo.put("usePoints", usePoints);
-        paymentInfo.put("userId", user.getUid());
-        paymentInfo.put("createdAt", new Date());
-        paymentInfo.put("type", "결제"); // 결제 타입 추가
-        paymentInfo.put("productTitle", productTitle); // 상품명 추가
-
-        db.collection("payments").add(paymentInfo).addOnSuccessListener(documentReference -> {
-            // 잔액 차감
-            accountBalance -= totalPrice;
-            environmentPoint -= usePoints;
-            db.collection("users").document(user.getUid()).update("accountBalance", accountBalance);
-            db.collection("users").document(user.getUid()).update("environmentPoint", environmentPoint);
-
-            // 결제 완료 페이지로 이동
-            PaymentCompleteFragment paymentCompleteFragment = new PaymentCompleteFragment();
-            replaceFragment(paymentCompleteFragment);
-        }).addOnFailureListener(e -> Toast.makeText(getActivity(), "결제에 실패했습니다.", Toast.LENGTH_SHORT).show());
+        // PaymentActivity로 이동
+        Intent intent = new Intent(getActivity(), PaymentActivity.class);
+        intent.putExtra("productId", productId);
+        intent.putExtra("price", String.valueOf(totalPrice)); // 최종 결제 금액 전달
+        intent.putExtra("title", productTitle);
+        intent.putExtra("phone", phone);
+        intent.putExtra("deliveryDestination", deliveryDestination);
+        intent.putExtra("request", requestEditText.getText().toString());
+        intent.putExtra("usePoints", usePoints);
+        startActivity(intent);
     }
 
     @Override

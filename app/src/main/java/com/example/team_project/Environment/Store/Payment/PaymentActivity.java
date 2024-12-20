@@ -9,8 +9,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.team_project.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,16 +27,27 @@ import kr.co.bootpay.android.models.BootUser;
 import kr.co.bootpay.android.models.Payload;
 
 public class PaymentActivity extends AppCompatActivity {
+    private FirebaseFirestore db;
+    private String productId, price, title, phone, deliveryDestination, request;
+    private int usePoints;
+    private FirebaseAuth auth;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
 
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+
         // Intent로부터 결제 정보 가져오기
-        String productId = getIntent().getStringExtra("productId");
-        String price = getIntent().getStringExtra("price");
-        String title = getIntent().getStringExtra("title");
-        String phone = getIntent().getStringExtra("phone");
+        productId = getIntent().getStringExtra("productId");
+        price = getIntent().getStringExtra("price");
+        title = getIntent().getStringExtra("title");
+        phone = getIntent().getStringExtra("phone");
+        deliveryDestination = getIntent().getStringExtra("deliveryDestination");
+        request = getIntent().getStringExtra("request");
+        usePoints = getIntent().getIntExtra("usePoints", 0);
 
         // Bootpay 결제 요청
         BootUser user = new BootUser().setPhone(phone); // 구매자 정보
@@ -94,11 +109,33 @@ public class PaymentActivity extends AppCompatActivity {
                     @Override
                     public void onDone(String data) {
                         Log.d("done", data);
-                        // 결제 완료 후 PaymentCompleteActivity로 이동
+                        // 결제 완료 후 PaymentCompleteFragment로 이동
+                        savePaymentInfo();
                         Intent intent = new Intent(PaymentActivity.this, PaymentCompleteActivity.class);
                         startActivity(intent);
                         finish();
                     }
                 }).requestPayment();
+    }
+
+    private void savePaymentInfo() {
+        // 결제 정보 저장
+        Map<String, Object> paymentInfo = new HashMap<>();
+        paymentInfo.put("productId", productId);
+        paymentInfo.put("price", price);
+        paymentInfo.put("finalPrice", price); // 최종 결제 금액
+        paymentInfo.put("deliveryDestination", deliveryDestination);
+        paymentInfo.put("request", request);
+        paymentInfo.put("usePoints", usePoints);
+        paymentInfo.put("userId", auth.getCurrentUser().getUid());
+        paymentInfo.put("createdAt", new Date());
+        paymentInfo.put("type", "결제"); // 결제 타입 추가
+        paymentInfo.put("productTitle", title); // 상품명 추가
+
+        db.collection("payments").add(paymentInfo).addOnSuccessListener(documentReference -> {
+            // 잔액 차감
+            db.collection("users").document(auth.getCurrentUser().getUid()).update("accountBalance", FieldValue.increment(-Double.parseDouble(price)));
+            db.collection("users").document(auth.getCurrentUser().getUid()).update("environmentPoint", FieldValue.increment(-usePoints));
+        }).addOnFailureListener(e -> Log.e("PaymentActivity", "결제 정보 저장 실패", e));
     }
 }
