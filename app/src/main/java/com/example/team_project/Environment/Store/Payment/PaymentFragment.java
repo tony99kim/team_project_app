@@ -125,6 +125,13 @@ public class PaymentFragment extends Fragment {
         int totalPrice = Integer.parseInt(price);
         String usePointsStr = usePointsEditText.getText().toString();
         int usePoints = usePointsStr.isEmpty() ? 0 : Integer.parseInt(usePointsStr);
+
+        // 사용 가능한 포인트보다 많이 입력하지 않도록 제한
+        if (usePoints > environmentPoint) {
+            usePointsEditText.setText(String.valueOf(environmentPoint));
+            usePoints = environmentPoint;
+        }
+
         totalPrice -= usePoints;
         totalPriceTextView.setText(String.valueOf(totalPrice));
     }

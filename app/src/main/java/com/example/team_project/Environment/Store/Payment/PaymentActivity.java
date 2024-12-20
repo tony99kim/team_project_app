@@ -60,7 +60,7 @@ public class PaymentActivity extends AppCompatActivity {
         items.add(item);
 
         Payload payload = new Payload();
-        payload.setApplicationId("5b8f6a4d396fa665fdc2b5e8")
+        payload.setApplicationId("6641c2390a4877c5eb277af5")
                 .setOrderName(title)
                 .setPg("kcp")
                 .setMethod("card")
