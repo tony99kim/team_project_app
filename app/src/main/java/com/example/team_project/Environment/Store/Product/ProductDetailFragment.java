@@ -16,13 +16,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.example.team_project.Chat.Data.Chat;
-import com.example.team_project.Environment.Store.Payment.PaymentFragment;
+import com.example.team_project.Environment.Store.Payment.PaymentActivity;
 import com.example.team_project.R;
 import com.example.team_project.Chat.ChatActivity;
 import com.example.team_project.Chat.Data.Message;
@@ -43,7 +42,7 @@ import java.util.concurrent.Executors;
 
 public class ProductDetailFragment extends Fragment {
 
-    private String productId, userId, title, price, description;
+    private String productId, userId, title, price, description, sellerPhone;
     private boolean isBusiness; // 기업 여부 추가
     private boolean isFavorite = false; // 관심상품 여부를 저장
     private ViewPager2 viewPager2;
@@ -139,6 +138,7 @@ public class ProductDetailFragment extends Fragment {
         loadProductPrice();
         loadProductImages();
         loadSellerName(); // 판매자 이름 불러오기 함수 호출
+        loadSellerPhoneNumber(); // 판매자 전화번호 불러오기 함수 호출
 
         return view;
     }
@@ -152,6 +152,23 @@ public class ProductDetailFragment extends Fragment {
                 if (document.exists()) {
                     String sellerName = document.getString("name"); // 이름 필드로 변경
                     sellerNameTextView.setText(sellerName);
+                } else {
+                    Log.d("ProductDetailFragment", "문서가 존재하지 않습니다");
+                }
+            } else {
+                Log.d("ProductDetailFragment", "문서 가져오기 실패: ", task.getException());
+            }
+        });
+    }
+
+    private void loadSellerPhoneNumber() {
+        DocumentReference userRef = db.collection("users").document(userId);
+
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    sellerPhone = document.getString("phone"); // 전화번호 필드 가져오기
                 } else {
                     Log.d("ProductDetailFragment", "문서가 존재하지 않습니다");
                 }
@@ -365,23 +382,12 @@ public class ProductDetailFragment extends Fragment {
     }
 
     private void navigateToPaymentPage() {
-        PaymentFragment paymentFragment = new PaymentFragment();
-        Bundle args = new Bundle();
-        args.putString("productId", productId);
-        args.putString("price", price);
-        args.putString("title", title);
-        paymentFragment.setArguments(args);
-
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(
-                R.anim.slide_in_right,
-                R.anim.fade_out,
-                R.anim.fade_in,
-                R.anim.slide_out_right
-        );
-        transaction.replace(R.id.fragment_container, paymentFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+        Intent intent = new Intent(getActivity(), PaymentActivity.class);
+        intent.putExtra("productId", productId);
+        intent.putExtra("price", price);
+        intent.putExtra("title", title);
+        intent.putExtra("phone", sellerPhone); // 판매자 전화번호 전달
+        startActivity(intent);
     }
 
     private void navigateToChatRoom(String chatRoomId, String userName) {

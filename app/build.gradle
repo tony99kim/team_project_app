@@ -74,7 +74,7 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
-    // 다른 의존성
+    implementation 'io.github.bootpay:android:4.4.3'
 }
 
 apply plugin: 'com.google.gms.google-services'

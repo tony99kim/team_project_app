@@ -6,7 +6,6 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:8.3.0'  // 안드로이드 그래들 플러그인
         classpath 'com.google.gms:google-services:4.4.1'  // Google Services 플러그인
-
         // NOTE: 기타 클래스패스 추가할 수 있습니다.
     }
 }
@@ -15,4 +14,6 @@ buildscript {
 plugins {
 alias(libs.plugins.androidApplication) apply false
 }
+
+
 
