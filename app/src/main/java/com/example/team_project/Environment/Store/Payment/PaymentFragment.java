@@ -149,7 +149,8 @@ public class PaymentFragment extends Fragment {
         // PaymentActivity로 이동
         Intent intent = new Intent(getActivity(), PaymentActivity.class);
         intent.putExtra("productId", productId);
-        intent.putExtra("price", String.valueOf(totalPrice)); // 최종 결제 금액 전달
+        intent.putExtra("price", price); // 원래 상품 가격 전달
+        intent.putExtra("totalPrice", String.valueOf(totalPrice)); // 최종 결제 금액 전달
         intent.putExtra("title", productTitle);
         intent.putExtra("phone", phone);
         intent.putExtra("deliveryDestination", deliveryDestination);

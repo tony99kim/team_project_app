@@ -10,7 +10,7 @@ public class Transaction {
     private String receiver;
     private String sender;
     private String productId;
-    private String price;
+    private double price;
     private double finalPrice;
     private String productTitle;
     private String senderUsername;
@@ -20,7 +20,7 @@ public class Transaction {
         // Firestore requires a public no-argument constructor
     }
 
-    public Transaction(String type, double amount, Date createdAt, String description, String receiver, String sender, String productId, String price, double finalPrice, String productTitle, String senderUsername, String receiverUsername) {
+    public Transaction(String type, double amount, Date createdAt, String description, String receiver, String sender, String productId, double price, double finalPrice, String productTitle, String senderUsername, String receiverUsername) {
         this.type = type;
         this.amount = amount;
         this.createdAt = createdAt;
@@ -92,11 +92,11 @@ public class Transaction {
         this.productId = productId;
     }
 
-    public String getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

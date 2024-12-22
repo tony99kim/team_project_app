@@ -28,7 +28,8 @@ import kr.co.bootpay.android.models.Payload;
 
 public class PaymentActivity extends AppCompatActivity {
     private FirebaseFirestore db;
-    private String productId, price, title, phone, deliveryDestination, request;
+    private String productId, title, phone, deliveryDestination, request;
+    private double price, totalPrice;
     private int usePoints;
     private FirebaseAuth auth;
 
@@ -42,7 +43,8 @@ public class PaymentActivity extends AppCompatActivity {
 
         // Intent로부터 결제 정보 가져오기
         productId = getIntent().getStringExtra("productId");
-        price = getIntent().getStringExtra("price");
+        price = Double.parseDouble(getIntent().getStringExtra("price"));
+        totalPrice = Double.parseDouble(getIntent().getStringExtra("totalPrice"));
         title = getIntent().getStringExtra("title");
         phone = getIntent().getStringExtra("phone");
         deliveryDestination = getIntent().getStringExtra("deliveryDestination");
@@ -56,7 +58,7 @@ public class PaymentActivity extends AppCompatActivity {
                 .setCardQuota("0,2,3"); // 일시불, 2개월, 3개월 할부 허용
 
         List<BootItem> items = new ArrayList<>();
-        BootItem item = new BootItem().setName(title).setId(productId).setQty(1).setPrice(Double.parseDouble(price));
+        BootItem item = new BootItem().setName(title).setId(productId).setQty(1).setPrice(totalPrice);
         items.add(item);
 
         Payload payload = new Payload();
@@ -65,7 +67,7 @@ public class PaymentActivity extends AppCompatActivity {
                 .setPg("kcp")
                 .setMethod("card")
                 .setOrderId("order_" + System.currentTimeMillis())
-                .setPrice(Double.parseDouble(price))
+                .setPrice(totalPrice)
                 .setUser(user)
                 .setExtra(extra)
                 .setItems(items);
@@ -74,6 +76,7 @@ public class PaymentActivity extends AppCompatActivity {
         map.put("productId", productId);
         map.put("title", title);
         map.put("price", price);
+        map.put("totalPrice", totalPrice);
         payload.setMetadata(map);
 
         Bootpay.init(getSupportFragmentManager(), getApplicationContext())
@@ -123,7 +126,7 @@ public class PaymentActivity extends AppCompatActivity {
         Map<String, Object> paymentInfo = new HashMap<>();
         paymentInfo.put("productId", productId);
         paymentInfo.put("price", price);
-        paymentInfo.put("finalPrice", price); // 최종 결제 금액
+        paymentInfo.put("finalPrice", totalPrice); // 최종 결제 금액
         paymentInfo.put("deliveryDestination", deliveryDestination);
         paymentInfo.put("request", request);
         paymentInfo.put("usePoints", usePoints);
@@ -134,7 +137,7 @@ public class PaymentActivity extends AppCompatActivity {
 
         db.collection("payments").add(paymentInfo).addOnSuccessListener(documentReference -> {
             // 잔액 차감
-            db.collection("users").document(auth.getCurrentUser().getUid()).update("accountBalance", FieldValue.increment(-Double.parseDouble(price)));
+            db.collection("users").document(auth.getCurrentUser().getUid()).update("accountBalance", FieldValue.increment(-totalPrice));
             db.collection("users").document(auth.getCurrentUser().getUid()).update("environmentPoint", FieldValue.increment(-usePoints));
         }).addOnFailureListener(e -> Log.e("PaymentActivity", "결제 정보 저장 실패", e));
     }
